@@ -3149,18 +3149,52 @@ class HorillaDetailView(DetailView):
         url = resolve(self.request.path)
         context["url_name"] = url.url_name
         context["app_label"] = self.model._meta.app_label
-        breadcrumbs = []
+
+        # Session keys for storing breadcrumb state
+        breadcrumbs_session_key = (
+            f"detail_view_breadcrumbs_{self.model._meta.model_name}_{current_id}"
+        )
         referer_session_key = (
             f"detail_referer_{self.model._meta.model_name}_{current_id}"
         )
 
         hx_current_url = self.request.headers.get("HX-Current-URL")
         http_referer = self.request.META.get("HTTP_REFERER")
+
+        # Check if this is a reload (same page request)
+        is_reload = False
+        if hx_current_url:
+            from urllib.parse import urlparse
+
+            current_path = urlparse(hx_current_url).path
+            is_reload = current_path == self.request.path
+
+        # If it's a reload, use the stored breadcrumbs
+        if is_reload:
+            stored_breadcrumbs = self.request.session.get(breadcrumbs_session_key)
+            if stored_breadcrumbs:
+                # Convert stored breadcrumbs back to proper format
+                # The last item should be the current object, not from session
+                breadcrumbs_for_context = (
+                    stored_breadcrumbs[:-1] if stored_breadcrumbs else []
+                )
+                breadcrumbs_for_context.append((current_obj, None))
+                context["breadcrumbs"] = breadcrumbs_for_context
+                context["actions"] = self.actions
+                context["model_name"] = self.model._meta.model_name
+                if self.pipeline_field:
+                    context["pipeline_field"] = self.pipeline_field
+                    context["pipeline_field_verbose_name"] = self.model._meta.get_field(
+                        self.pipeline_field
+                    ).verbose_name
+                return context
+
+        # Normal breadcrumb calculation for non-reload requests
+        breadcrumbs = []
         stored_referer = self.request.session.get(referer_session_key)
 
-        if hx_current_url:
+        if hx_current_url and not is_reload:
             referer = hx_current_url
-            # Store it for future reloads
             from urllib.parse import urlparse
 
             referer_path = urlparse(referer).path
@@ -3291,7 +3325,20 @@ class HorillaDetailView(DetailView):
                             dynamic_breadcrumbs.append((referrer_label, referrer_url))
 
         dynamic_breadcrumbs.append((current_obj, None))
+
+        # Store breadcrumbs in session (convert model instance to string for JSON serialization)
         self.request.session["detail_view_breadcrumbs"] = breadcrumbs
+
+        # Store breadcrumbs with current object as string (JSON serializable)
+        serializable_breadcrumbs = []
+        for label, url in dynamic_breadcrumbs:
+            # Convert model instances to strings
+            if hasattr(label, "_meta"):  # It's a model instance
+                label = str(label)
+            serializable_breadcrumbs.append((label, url))
+
+        self.request.session[breadcrumbs_session_key] = serializable_breadcrumbs
+
         context["breadcrumbs"] = dynamic_breadcrumbs
         context["actions"] = self.actions
         context["model_name"] = self.model._meta.model_name
@@ -3844,7 +3891,6 @@ class HorillaRelatedListSectionView(DetailView):
         This method ensures CompanyFilteredManager is invoked by querying the related model directly.
         """
         try:
-            from django.db.models import OuterRef, Subquery
 
             related_model = apps.get_model(
                 custom_config["app_label"], custom_config["model_name"]
@@ -3887,18 +3933,13 @@ class HorillaRelatedListSectionView(DetailView):
                         )
 
                         if related_obj_field:
-                            # Step 3: Get IDs of related objects from intermediate model
                             related_ids = list(
                                 intermediate_qs.values_list(
                                     f"{related_obj_field}_id", flat=True
                                 ).distinct()
                             )
-
-                            # Step 4: Query the related model directly using its manager
-                            # THIS IS CRITICAL: This ensures CompanyFilteredManager is invoked
                             queryset = related_model.objects.filter(pk__in=related_ids)
 
-                            # Step 5: Add annotations for intermediate model fields
                             columns = config.get("columns", [])
                             annotations = self._build_intermediate_annotations(
                                 intermediate_model,

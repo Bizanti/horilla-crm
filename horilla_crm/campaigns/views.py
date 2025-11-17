@@ -684,10 +684,6 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
         Return configuration for related lists
         """
         user = self.request.user
-        query_params = {}
-        if "section" in self.request.GET:
-            query_params["section"] = self.request.GET.get("section")
-        query_string = urlencode(query_params)
         pk = self.request.GET.get("object_id")
         referrer_url = "campaign_detail_view"
 
@@ -696,11 +692,11 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
             "can_add": True,
             "add_url": reverse_lazy("campaigns:add_campaign_members"),
             "columns": [
+                ("Name", "get_title"),
                 (
                     CampaignMember._meta.get_field("member_type").verbose_name,
                     "get_member_type_display",
                 ),
-                ("Name", "get_title"),
                 (
                     CampaignMember._meta.get_field("member_status").verbose_name,
                     "get_member_status_display",
@@ -748,7 +744,7 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "hx-get": (
                             f"{{get_detail_view}}?referrer_app={self.model._meta.app_label}"
                             f"&referrer_model={self.model._meta.model_name}"
-                            f"&referrer_id={pk}&referrer_url={referrer_url}&{query_string}"
+                            f"&referrer_id={pk}&referrer_url={referrer_url}"
                         ),
                         "hx-target": "#mainContent",
                         "hx-swap": "outerHTML",
@@ -811,7 +807,7 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "hx-get": (
                             f"{{get_detail_view_url}}?referrer_app={self.model._meta.app_label}"
                             f"&referrer_model={self.model._meta.model_name}"
-                            f"&referrer_id={pk}&referrer_url={referrer_url}&{query_string}"
+                            f"&referrer_id={pk}&referrer_url={referrer_url}"
                         ),
                         "hx-target": "#mainContent",
                         "hx-swap": "outerHTML",
@@ -860,7 +856,7 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "hx-get": (
                             f"{{get_detail_url}}?referrer_app={self.model._meta.app_label}"
                             f"&referrer_model={self.model._meta.model_name}"
-                            f"&referrer_id={pk}&referrer_url={referrer_url}&{query_string}"
+                            f"&referrer_id={pk}&referrer_url={referrer_url}"
                         ),
                         "hx-target": "#mainContent",
                         "hx-swap": "outerHTML",
