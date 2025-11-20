@@ -1,12 +1,42 @@
 import copy
+import csv
+import io
+import json
+import logging
+from datetime import datetime
 from functools import cached_property
 from urllib.parse import urlencode, urlparse
-from django.http import HttpResponse, QueryDict, Http404
-from django.urls import reverse, reverse_lazy
-from django.views.generic import DetailView
+
+import openpyxl
+import pandas as pd
+from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-import json
+from django.contrib.auth.views import redirect_to_login
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import ForeignKey, Q
+from django.http import Http404, HttpResponse, QueryDict
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.views import View
+from django.views.decorators.http import require_POST
+from django.views.generic import DetailView
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
 from horilla.exceptions import HorillaHttp404
+from horilla_core.decorators import (
+    htmx_required,
+    permission_required,
+    permission_required_or_denied,
+)
 from horilla_generics.forms import HorillaModelForm
 from horilla_generics.mixins import RecentlyViewedMixin
 from horilla_generics.views import (
@@ -14,52 +44,21 @@ from horilla_generics.views import (
     HorillaNavView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
-    HorillaSingleFormView,
 )
 from horilla_reports.filters import ReportFilter
 from horilla_reports.forms import ReportForm
 from horilla_reports.models import Report, ReportFolder
-import pandas as pd
-from django.views import View
-from django.shortcuts import redirect, render
-from django.db.models import ForeignKey
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404, render
-from django.views.decorators.http import require_POST
-from django.db.models import Q
-from django.template.loader import render_to_string
-from django import forms
-from django.contrib.contenttypes.models import ContentType
 from horilla_utils.methods import get_section_info_for_model
 from horilla_utils.middlewares import _thread_local
-import openpyxl
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-import io
-import csv
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from datetime import datetime
-from reportlab.lib.units import inch
-from django.utils.decorators import method_decorator
-from horilla_core.decorators import (
-    htmx_required,
-    permission_required,
-    permission_required_or_denied,
-)
-from django.contrib import messages
-import logging
-from django.contrib.auth.views import redirect_to_login
-
 
 logger = logging.getLogger(__name__)
 
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class ReportNavbar(LoginRequiredMixin, HorillaNavView):
@@ -100,11 +99,11 @@ class ReportNavbar(LoginRequiredMixin, HorillaNavView):
                 "url": f"""{ reverse_lazy('horilla_reports:create_report')}""",
                 "attrs": {"id": "report-create"},
             }
-        
+
     @cached_property
     def actions(self):
         """Actions for lead"""
-        if self.request.user.has_perm("horilla_reports.view_report") :
+        if self.request.user.has_perm("horilla_reports.view_report"):
             return [
                 {
                     "action": "Load Default Reports",
@@ -129,7 +128,9 @@ class ReportNavbar(LoginRequiredMixin, HorillaNavView):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class ReportsListView(LoginRequiredMixin, HorillaListView):
@@ -156,13 +157,8 @@ class ReportsListView(LoginRequiredMixin, HorillaListView):
                 "attrs": 'id="reports-load"',
                 "title": "Load Default Reports",
             }
-        
-    columns = [
-        "name",
-        (_("Module"),"module_verbose_name"),
-        "folder"
-    ]
 
+    columns = ["name", (_("Module"), "module_verbose_name"), "folder"]
 
     @cached_property
     def action_method(self):
@@ -202,7 +198,9 @@ class ReportsListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class FavouriteReportsListView(LoginRequiredMixin, HorillaListView):
@@ -234,13 +232,8 @@ class FavouriteReportsListView(LoginRequiredMixin, HorillaListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(is_favourite=True)
         return queryset
-    
-    columns = [
-        "name",
-        (_("Module"),"module_verbose_name"),
-        "folder"
-    ]
 
+    columns = ["name", (_("Module"), "module_verbose_name"), "folder"]
 
     @cached_property
     def col_attrs(self):
@@ -271,10 +264,12 @@ class FavouriteReportsListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
-class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
+class ReportDetailView(RecentlyViewedMixin, LoginRequiredMixin, DetailView):
     model = Report
     template_name = "report_detail.html"
     context_object_name = "report"
@@ -473,8 +468,12 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
         list_view = HorillaListView(
             model=model_class,
             view_id="report-details-sec",
-            search_url=reverse_lazy("horilla_reports:report_detail", kwargs={"pk": report.pk}),
-            main_url=reverse_lazy("horilla_reports:report_detail", kwargs={"pk": report.pk}),
+            search_url=reverse_lazy(
+                "horilla_reports:report_detail", kwargs={"pk": report.pk}
+            ),
+            main_url=reverse_lazy(
+                "horilla_reports:report_detail", kwargs={"pk": report.pk}
+            ),
             table_width=False,
             columns=columns,
         )
@@ -494,9 +493,9 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
             queryset = queryset.order_by("-id")
         list_view.object_list = queryset
         context.update(list_view.get_context_data(object_list=queryset))
-        session_referer_key = f'report_detail_referer_{report.pk}'
-        current_referer = self.request.META.get('HTTP_REFERER')
-        hx_current_url = self.request.headers.get('HX-Current-URL')
+        session_referer_key = f"report_detail_referer_{report.pk}"
+        current_referer = self.request.META.get("HTTP_REFERER")
+        hx_current_url = self.request.headers.get("HX-Current-URL")
         stored_referer = self.request.session.get(session_referer_key)
         if hx_current_url:
             previous_url = hx_current_url
@@ -511,10 +510,10 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                 previous_url = current_referer
                 self.request.session[session_referer_key] = current_referer
             else:
-                previous_url = reverse_lazy('horilla_reports:reports_list_view')
+                previous_url = reverse_lazy("horilla_reports:reports_list_view")
         else:
-            previous_url = reverse_lazy('horilla_reports:reports_list_view')
-        context['previous_url'] = previous_url
+            previous_url = reverse_lazy("horilla_reports:reports_list_view")
+        context["previous_url"] = previous_url
         return context
 
     def create_temp_report(self, original_report, preview_data):
@@ -1286,7 +1285,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
             "label_field": "Count",
             "stacked_data": {},
             "has_multiple_groups": False,
-            "urls" : []
+            "urls": [],
         }
 
         if df.empty:
@@ -1306,7 +1305,6 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                 chart_data["data"] = [len(df)]
                 chart_data["label_field"] = "Records"
                 chart_data["urls"] = [section_info["url"]]
-
 
             elif (
                 report.chart_type in ["stacked_vertical", "stacked_horizontal"]
@@ -1334,7 +1332,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                     chart_field = report.row_groups_list[0]
                     if not report.chart_field:
                         report.chart_field = chart_field
-                        report.save(update_fields=['chart_field'])
+                        report.save(update_fields=["chart_field"])
                 # Fallback to first column group if available
                 elif (
                     report.column_groups_list
@@ -1343,8 +1341,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                     chart_field = report.column_groups_list[0]
                     if not report.chart_field:
                         report.chart_field = chart_field
-                        report.save(update_fields=['chart_field'])
-
+                        report.save(update_fields=["chart_field"])
 
                 if chart_field:
                     grouped = df.groupby(chart_field).size()
@@ -1358,13 +1355,15 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                     )
                     urls = []
                     for value in grouped.index:
-                        query = urlencode({
-                            "section": section_info["section"],
-                            "apply_filter": "true",
-                            "field": chart_field,
-                            "operator": "exact",
-                            "value": value if value is not None else ""
-                        })
+                        query = urlencode(
+                            {
+                                "section": section_info["section"],
+                                "apply_filter": "true",
+                                "field": chart_field,
+                                "operator": "exact",
+                                "value": value if value is not None else "",
+                            }
+                        )
                         urls.append(f"{section_info['url']}?{query}")
                     chart_data["urls"] = urls
                 else:
@@ -1373,8 +1372,6 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                     chart_data["data"] = [len(df)]
                     chart_data["label_field"] = "Records"
                     chart_data["urls"] = [section_info["url"]]
-
-                    
 
         except Exception as e:
             chart_data["error"] = f"Error generating chart data: {str(e)}"
@@ -1492,18 +1489,21 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
             for i in range(len(categories)):
                 total = sum(s["data"][i] for s in series if i < len(s["data"]))
                 totals.append(total)
-            
+
             section_info = get_section_info_for_model(model_class)
             urls = []
             for idx in pivot_table.index:
                 from urllib.parse import urlencode
-                query = urlencode({
-                    "section": section_info["section"],
-                    "apply_filter": "true",
-                    "field": primary_field,
-                    "operator": "exact",
-                    "value": idx if idx is not None else ""
-                })
+
+                query = urlencode(
+                    {
+                        "section": section_info["section"],
+                        "apply_filter": "true",
+                        "field": primary_field,
+                        "operator": "exact",
+                        "value": idx if idx is not None else "",
+                    }
+                )
                 urls.append(f"{section_info['url']}?{query}")
 
             stacked_data = {"categories": categories, "series": series}
@@ -1514,7 +1514,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
             return {
                 "labels": categories,
                 "data": totals,
-                "urls" : urls,
+                "urls": urls,
                 "stacked_data": stacked_data,
                 "label_field": f"{primary_verbose} by {secondary_verbose}",
                 "has_stacked_data": True,
@@ -1553,13 +1553,16 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                 urls = []
                 for value in grouped.index:
                     from urllib.parse import urlencode
-                    query = urlencode({
-                        "section": section_info["section"],
-                        "apply_filter": "true",
-                        "field": fallback_field,
-                        "operator": "exact",
-                        "value": value if value is not None else ""
-                    })
+
+                    query = urlencode(
+                        {
+                            "section": section_info["section"],
+                            "apply_filter": "true",
+                            "field": fallback_field,
+                            "operator": "exact",
+                            "value": value if value is not None else "",
+                        }
+                    )
                     urls.append(f"{section_info['url']}?{query}")
                 return {
                     "labels": [
@@ -1567,7 +1570,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
                         for k in grouped.index
                     ],
                     "data": [float(v) for v in grouped.values],
-                    "urls" : urls,
+                    "urls": urls,
                     "stacked_data": {},
                     "label_field": self.get_verbose_name(fallback_field, model_class),
                     "has_stacked_data": False,
@@ -1578,7 +1581,7 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
         # Ultimate fallback
         return {
             "labels": ["Records"],
-            "urls":[section_info["url"]],
+            "urls": [section_info["url"]],
             "data": [len(df)],
             "stacked_data": {},
             "label_field": "Records",
@@ -1588,7 +1591,9 @@ class ReportDetailView(RecentlyViewedMixin,LoginRequiredMixin, DetailView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class ReportDetailFilteredView(LoginRequiredMixin, View):
@@ -1600,7 +1605,7 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
         report = Report.objects.get(pk=pk)
 
         model_class = report.model_class
-        section = get_section_info_for_model(self,model_class)
+        section = get_section_info_for_model(self, model_class)
         section_value = section["section"]
         query_params["section"] = section_value
         query_string = urlencode(query_params)
@@ -2308,7 +2313,9 @@ class RemoveColumnView(LoginRequiredMixin, View):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class CloseReportPanelView(LoginRequiredMixin, View):
@@ -2323,7 +2330,9 @@ class CloseReportPanelView(LoginRequiredMixin, View):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class AddFilterFieldView(LoginRequiredMixin, View):
@@ -3179,7 +3188,9 @@ class ChangeChartTypeView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class ChangeChartFieldView(LoginRequiredMixin, HorillaSingleFormView):
@@ -3360,7 +3371,6 @@ class CreateReportView(LoginRequiredMixin, HorillaSingleFormView):
             "</div>"
         )
 
-
     def form_invalid(self, form):
         module_id = self.request.POST.get("module") or (
             form.instance.module.id if form.instance.module else None
@@ -3436,9 +3446,9 @@ class UpdateReportView(LoginRequiredMixin, HorillaSingleFormView):
 
     def get(self, request, *args, **kwargs):
         report_id = self.kwargs.get("pk")
-        if request.user.has_perm("horilla_reports.change_report") or request.user.has_perm(
-            "horilla_reports.add_report"
-        ):
+        if request.user.has_perm(
+            "horilla_reports.change_report"
+        ) or request.user.has_perm("horilla_reports.add_report"):
             return super().get(request, *args, **kwargs)
 
         if report_id:
@@ -3469,13 +3479,15 @@ class MoveReportView(LoginRequiredMixin, HorillaSingleFormView):
     def form_url(self):
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
-            return reverse_lazy("horilla_reports:move_report_to_folder", kwargs={"pk": pk})
+            return reverse_lazy(
+                "horilla_reports:move_report_to_folder", kwargs={"pk": pk}
+            )
 
     def get(self, request, *args, **kwargs):
         report_id = self.kwargs.get("pk")
-        if request.user.has_perm("horilla_reports.change_report") or request.user.has_perm(
-            "horilla_reports.add_report"
-        ):
+        if request.user.has_perm(
+            "horilla_reports.change_report"
+        ) or request.user.has_perm("horilla_reports.add_report"):
             return super().get(request, *args, **kwargs)
 
         if report_id:
@@ -3521,13 +3533,15 @@ class MoveFolderView(LoginRequiredMixin, HorillaSingleFormView):
     def form_url(self):
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
-            return reverse_lazy("horilla_reports:move_folder_to_folder", kwargs={"pk": pk})
+            return reverse_lazy(
+                "horilla_reports:move_folder_to_folder", kwargs={"pk": pk}
+            )
 
     def get(self, request, *args, **kwargs):
         folder_id = self.kwargs.get("pk")
-        if request.user.has_perm("horilla_reports.change_report") or request.user.has_perm(
-            "horilla_reports.add_report"
-        ):
+        if request.user.has_perm(
+            "horilla_reports.change_report"
+        ) or request.user.has_perm("horilla_reports.add_report"):
             return super().get(request, *args, **kwargs)
 
         if folder_id:
@@ -3636,9 +3650,9 @@ class CreateFolderView(LoginRequiredMixin, HorillaSingleFormView):
 
     def get(self, request, *args, **kwargs):
         folder_id = self.kwargs.get("pk")
-        if request.user.has_perm("horilla_reports.change_report") or request.user.has_perm(
-            "horilla_reports.add_report"
-        ):
+        if request.user.has_perm(
+            "horilla_reports.change_report"
+        ) or request.user.has_perm("horilla_reports.add_report"):
             return super().get(request, *args, **kwargs)
 
         if folder_id:
@@ -3672,10 +3686,7 @@ class ReportFolderListView(LoginRequiredMixin, HorillaListView):
     table_width = False
     sorting_target = f"#tableview-{view_id}"
 
-    columns = [
-        "name"
-    ]
-
+    columns = ["name"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -3725,7 +3736,9 @@ class ReportFolderListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class FavouriteReportFolderListView(LoginRequiredMixin, HorillaListView):
@@ -3742,10 +3755,8 @@ class FavouriteReportFolderListView(LoginRequiredMixin, HorillaListView):
         ) or self.request.user.has_perm("horilla_reports.delete_report"):
             action_method = "actions"
         return action_method
-    
-    columns = [
-        "name"
-    ]
+
+    columns = ["name"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -3786,7 +3797,9 @@ class FavouriteReportFolderListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(
-    permission_required_or_denied(["horilla_reports.view_report", "horilla_reports.view_own_report"]),
+    permission_required_or_denied(
+        ["horilla_reports.view_report", "horilla_reports.view_own_report"]
+    ),
     name="dispatch",
 )
 class ReportFolderDetailView(LoginRequiredMixin, HorillaListView):
@@ -3797,13 +3810,10 @@ class ReportFolderDetailView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
 
-
     columns = [
         (_("Name"), "name"),
         (_("Type"), "get_item_type"),
     ]
-
- 
 
     def action_method(self):
         action_method = ""
@@ -3891,27 +3901,33 @@ class ReportFolderDetailView(LoginRequiredMixin, HorillaListView):
         breadcrumbs = []
         source = self.request.GET.get("source")
         if source == "favourites":
-            breadcrumbs.append({
-                "name": "Favourites",
-                "url": f"{reverse('horilla_reports:favourite_folder_list_view')}?{query_string}",
-                "active": False,
-            })
+            breadcrumbs.append(
+                {
+                    "name": "Favourites",
+                    "url": f"{reverse('horilla_reports:favourite_folder_list_view')}?{query_string}",
+                    "active": False,
+                }
+            )
         else:
-            breadcrumbs.append({
-                "name": "All Folders",
-                "url": f"{reverse('horilla_reports:report_folder_list')}?{query_string}",
-                "active": False,
-            })
+            breadcrumbs.append(
+                {
+                    "name": "All Folders",
+                    "url": f"{reverse('horilla_reports:report_folder_list')}?{query_string}",
+                    "active": False,
+                }
+            )
 
         # Build dynamic breadcrumbs for parent folders
         current_folder = ReportFolder.objects.filter(id=folder_id).first()
         folder_chain = []
         while current_folder:
-            folder_chain.append({
-                "name": current_folder.name,
-                "url": f"{reverse('horilla_reports:report_folder_detail', kwargs={'pk': current_folder.id})}?{query_string}",
-                "active": current_folder.id == folder_id,
-            })
+            folder_chain.append(
+                {
+                    "name": current_folder.name,
+                    "url": f"{reverse('horilla_reports:report_folder_detail', kwargs={'pk': current_folder.id})}?{query_string}",
+                    "active": current_folder.id == folder_id,
+                }
+            )
             current_folder = current_folder.parent
 
         # Reverse parent breadcrumbs to correct order
@@ -3996,7 +4012,8 @@ class ReportDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_reports.delete_reportfolder"), name="dispatch"
+    permission_required_or_denied("horilla_reports.delete_reportfolder"),
+    name="dispatch",
 )
 class FolderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReportFolder

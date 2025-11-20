@@ -74,7 +74,7 @@
               <img src="{% static '/assets/icons/search.svg' %}" alt="" width="20" />
             </button>
           </div>
-  
+
           <div class="mb-3 custom-scroll h-[250px] overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2" id="available-columns-list">
             {% for field in available_fields %}
               {% if field.name not in report.selected_columns_list %}
@@ -92,7 +92,7 @@
               {% endif %}
             {% endfor %}
           </div>
-  
+
           <h3 class="text-sm font-semibold mb-1">{% trans "Selected Columns" %}</h3>
           <div class="h-[200px] custom-scroll overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2">
             {% for column in report.selected_columns_list %}
@@ -110,7 +110,7 @@
             {% endfor %}
           </div>
         </div>
-  
+
         <!-- Grouping Tab -->
         <div
           class="hidden tab-content"
@@ -134,7 +134,7 @@
               <img src="{% static '/assets/icons/search.svg' %}" alt="" width="20" />
             </button>
           </div>
-  
+
           <div class="mb-3 h-[250px] custom-scroll overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2" id="available-grouping-list">
             {% for field in available_fields %}
               <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
@@ -185,7 +185,7 @@
               </div>
             {% endfor %}
           </div>
-  
+
           <h3 class="text-sm font-semibold mb-1">{% trans "Grouped Columns" %}</h3>
           <div class="h-[200px]  overflow-hidden custom-scroll overflow-y-auto bg-[#00000008] rounded-md p-2">
             <h3 class="text-sm font-semibold mb-1">{% trans "Row Groups" %}</h3>
@@ -197,7 +197,7 @@
                   </button>
                 {% else %}
                   <button
-                    class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['-'] before:right-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto" 
+                    class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['-'] before:right-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
                     hx-post="{% url 'horilla_reports:remove_row_group' report.pk %}"
                     hx-vals='{"field_name": "{{ row_group }}"}'
                     hx-target="#report-content"
@@ -280,7 +280,7 @@
                   <img src="{% static '/assets/icons/search.svg' %}" alt="" width="20" />
               </button>
           </div>
-      
+
           <div class="mb-5 h-[250px] custom-scroll overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2" id="available-filter-list">
             {% for field in available_fields %}
               <button
@@ -294,7 +294,7 @@
               </button>
             {% endfor %}
           </div>
-      
+
           <h3 class="text-sm font-semibold mb-1">{% trans "Apply Filters" %}</h3>
           <div class="pb-2 custom-scroll overflow-x-auto h-[200px] overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2">
               {% for filter_key, filter_value in report.filters_dict.items %}
@@ -402,10 +402,10 @@
     function initTabSystem() {
         const tabs = document.querySelectorAll('#panel .tab-button');
         const contents = document.querySelectorAll('#panel .tab-content');
-        
+
         // Get the stored active tab or default to 'columns'
         const activeTab = sessionStorage.getItem('activeReportTab') || 'columns';
-        
+
         // Function to switch tabs
         function switchTab(targetTabName) {
             tabs.forEach(tab => {
@@ -420,7 +420,7 @@
                     tab.setAttribute('aria-selected', 'false');
                 }
             });
-            
+
             contents.forEach(content => {
                 const contentId = content.id;
                 if (
@@ -434,10 +434,10 @@
                 }
             });
         }
-        
+
         // Set initial active tab
         switchTab(activeTab);
-        
+
         // Add click handlers
         tabs.forEach(tab => {
             tab.addEventListener('click', function(e) {
@@ -448,12 +448,12 @@
             });
         });
     }
-    
+
     // Initialize tab system when panel loads
     if (document.getElementById('panel')) {
         initTabSystem();
     }
-    
+
     // Reinitialize after HTMX updates the panel
     document.body.addEventListener('htmx:afterSettle', function(event) {
         if (event.target.id === 'panel') {

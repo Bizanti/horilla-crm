@@ -7,7 +7,7 @@
     <div>
         <div class="flex justify-between items-center mb-1">
             <label class="text-xs font-semibold text-gray-700">{% trans "IFRAME EMBED CODE" %}</label>
-            <button 
+            <button
                 onclick="copyEmbedCode()"
                 class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs font-medium"
             >
@@ -41,21 +41,21 @@
             </div>
         </div>
         <div class="relative">
-            <textarea 
-                id="htmlCode" 
+            <textarea
+                id="htmlCode"
                 readonly
                 class="w-full bg-gray-50 border border-dark-50 p-4 rounded-lg text-xs font-mono h-96 resize-none"
                 onclick="this.select()"
             >{{ html_code }}</textarea>
         </div>
     </div>
-   
-    
+
+
 </div>
 
 <script>
 
-    
+
     // Copy HTML Code
     function copyHtmlCode() {
         const code = document.getElementById('htmlCode').textContent;
@@ -67,7 +67,7 @@
         document.body.removeChild(textarea);
         showCopyFeedback(event.target, 'Code Copied!');
     }
-    
+
     // Copy Embed Code
     function copyEmbedCode() {
         const code = document.getElementById('embedCode').textContent;
@@ -79,16 +79,16 @@
         document.body.removeChild(textarea);
         showCopyFeedback(event.target, 'Embed Copied!');
     }
-    
+
     // Show copy feedback
     function showCopyFeedback(button, message) {
         const originalText = button.textContent;
         const originalClasses = button.className;
-        
+
         button.textContent = message;
         button.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'bg-purple-600', 'hover:bg-purple-700');
         button.classList.add('bg-green-600', 'hover:bg-green-700');
-        
+
         setTimeout(() => {
             button.textContent = originalText;
             button.className = originalClasses;

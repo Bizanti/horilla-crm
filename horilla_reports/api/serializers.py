@@ -1,14 +1,19 @@
 """
 Serializers for horilla_crm.reports models
 """
+
 from rest_framework import serializers
-from horilla_reports.models import Report, ReportFolder
+
 from horilla_core.api.serializers import HorillaUserSerializer
+from horilla_reports.models import Report, ReportFolder
 
 
 class ReportFolderSerializer(serializers.ModelSerializer):
     """Serializer for ReportFolder model"""
-    report_folder_owner_details = HorillaUserSerializer(source='report_folder_owner', read_only=True)
+
+    report_folder_owner_details = HorillaUserSerializer(
+        source="report_folder_owner", read_only=True
+    )
 
     class Meta:
         model = ReportFolder
@@ -17,8 +22,9 @@ class ReportFolderSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     """Serializer for Report model"""
-    report_owner_details = HorillaUserSerializer(source='report_owner', read_only=True)
-    folder_details = ReportFolderSerializer(source='folder', read_only=True)
+
+    report_owner_details = HorillaUserSerializer(source="report_owner", read_only=True)
+    folder_details = ReportFolderSerializer(source="folder", read_only=True)
 
     class Meta:
         model = Report

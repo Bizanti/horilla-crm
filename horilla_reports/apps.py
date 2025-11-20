@@ -16,11 +16,11 @@ class ReportsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_reports"
     verbose_name = _("Reports")
-    
+
     # def get_api_paths(self):
     #     """
     #     Return API path configurations for this app.
-        
+
     #     Returns:
     #         list: List of dictionaries containing path configuration
     #     """
@@ -36,13 +36,13 @@ class ReportsConfig(AppConfig):
     def ready(self):
         """Auto-register URLs and import the app menu."""
         from django.urls import include, path
+
         from horilla.urls import urlpatterns
 
         try:
             urlpatterns.append(
                 path("reports/", include("horilla_reports.urls")),
             )
-       
 
             __import__("horilla_reports.menu")  # noqa: F401
             __import__("horilla_reports.signals")

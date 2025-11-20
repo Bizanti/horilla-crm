@@ -8,23 +8,23 @@
     <div id="mainContent" class="flex-[1_0] leftspace transition-all duration-300 ease-in-out pt-0">
         <button hidden id="reloadButton" hx-get="{% url 'horilla_reports:report_detail' report.pk %}?{{request.GET.urlencode}}" hx-target="#report-content" hx-trigger="click" hx-swap="outerHTML" hx-select="#report-content">click</button>
         <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-20">
-            <div class="flex items-center gap-2 justify-between"> 
+            <div class="flex items-center gap-2 justify-between">
                 <div class="flex items-start">
                     <button class=""
-                    hx-get="{{ previous_url }}" 
-                    hx-target="#mainContent" 
+                    hx-get="{{ previous_url }}"
+                    hx-target="#mainContent"
                     hx-select-oob="#sideMenuContainer"
                     hx-swap="outerHTML"
                     hx-select="#mainContent"
-                    hx-push-url="true" > 
-                    <i class="fas fa-arrow-left mr-2"></i> 
+                    hx-push-url="true" >
+                    <i class="fas fa-arrow-left mr-2"></i>
                 </button>
                     <div>
                         <h3 class="text-md font-semibold">{{ report.name }}</h3>
                         <p class="text-xs">{% trans "Report:" %} {{ report.module_verbose_name }}</p>
                     </div>
                 </div>
-                <div id="nav-actions"  class="flex items-center gap-5 h-[70px]"> 
+                <div id="nav-actions"  class="flex items-center gap-5 h-[70px]">
                     <div class="flex items-center">
                         <button onclick="$('#reloadButton').click();"
                         ><img src="{% static 'assets/icons/l5.svg' %}" alt="" width="17" /></button>
@@ -32,9 +32,9 @@
                     {% if panel_open %}
                         {% if has_unsaved_changes %}
                             <div class="flex items-center">
-                                <button id="saveBtn" 
+                                <button id="saveBtn"
                                         title="Save"
-                                        hx-post="{% url 'horilla_reports:save_report_changes' report.pk %}" 
+                                        hx-post="{% url 'horilla_reports:save_report_changes' report.pk %}"
                                         hx-trigger="click"
                                         hx-target="#mainContent"
                                         hx-swap="outerHTML"
@@ -44,9 +44,9 @@
                                 </button>
                             </div>
                             <div class="flex items-center">
-                                <button id="discardBtn" 
+                                <button id="discardBtn"
                                         title="Discard Changes"
-                                        hx-post="{% url 'horilla_reports:discard_report_changes' report.pk %}" 
+                                        hx-post="{% url 'horilla_reports:discard_report_changes' report.pk %}"
                                         hx-trigger="click"
                                         hx-target="#mainContent"
                                         hx-swap="outerHTML"
@@ -57,9 +57,9 @@
                             </div>
                         {% else %}
                             <div class="flex items-center">
-                                <button id="closeBtn" 
+                                <button id="closeBtn"
                                         title="Close Panel"
-                                        hx-get="{% url 'horilla_reports:report_detail' report.pk %}" 
+                                        hx-get="{% url 'horilla_reports:report_detail' report.pk %}"
                                         hx-target="#mainContent"
                                         hx-swap="outerHTML"
                                         hx-select="#mainContent">
@@ -70,9 +70,9 @@
                     {% else %}
                         <!-- Edit button when panel is closed -->
                         <div class="flex items-center">
-                            <button id="toggleBtn" 
+                            <button id="toggleBtn"
                                     title="Edit Report"
-                                    hx-get="{% url 'horilla_reports:report_update' report.pk %}" 
+                                    hx-get="{% url 'horilla_reports:report_update' report.pk %}"
                                     hx-target="#panel"
                                     hx-swap="outerHTML"
                                     hx-headers='{"HX-Trigger": "togglePanel"}'>
@@ -81,40 +81,40 @@
                         </div>
                     {% endif %}
                     <div class="flex items-center relative">
-                        <button id="exportDropdownButton" 
-                                data-dropdown-toggle="exportDropdown" 
-                                type="button" 
+                        <button id="exportDropdownButton"
+                                data-dropdown-toggle="exportDropdown"
+                                type="button"
                                 class="flex items-center">
                             {% comment %} <i class="fas fa-file-export mr-2"></i> {% endcomment %}
                             <img src="{% static 'assets/icons/down.svg' %}" alt="" width="15" class="ml-1" />
                         </button>
                         <!-- Dropdown menu -->
-                        <div id="exportDropdown" 
+                        <div id="exportDropdown"
                              class="z-10 hidden bg-white rounded-lg shadow-lg min-w-[160px] absolute top-8 right-0">
                             <ul class="text-sm" aria-labelledby="exportDropdownButton">
                                 <li>
-                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=excel" 
+                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=excel"
                                        class="block px-4 py-2 hover:bg-gray-100 flex items-center">
                                         <i class="fas fa-file-excel text-green-600 mr-2"></i>
                                         Excel (.xlsx)
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=csv" 
+                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=csv"
                                        class="block px-4 py-2 hover:bg-gray-100 flex items-center">
                                         <i class="fas fa-file-csv text-blue-600 mr-2"></i>
                                         CSV (.csv)
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=pdf" 
+                                    <a href="{% url 'horilla_reports:report_export' report.pk %}?format=pdf"
                                        class="block px-4 py-2 hover:bg-gray-100 flex items-center">
                                         <i class="fas fa-file-pdf text-red-600 mr-2"></i>
                                         PDF (.pdf)
                                     </a>
                                 </li>
                             </ul>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                             <a href="" class="bg-[#25c32417] border border-[solid] border-[#25c32429] text-[#21b320] font-medium text-xs px-3 py-1.5 flex items-center justify-center rounded-md">
                                 {% trans 'Total Count' %} - {{ total_count }}
                             </a>
-                        </li> 
+                        </li>
                     </ul>
                 </div>
                 <div class="grid grid-cols-12 gap-4 mb-4">
@@ -169,24 +169,24 @@
                                     </button>
                                     <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
                                         <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">
-                                            <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
-                                                  hx-get="{% url 'horilla_reports:change_chart_type' report.pk %}" 
+                                            <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                  hx-get="{% url 'horilla_reports:change_chart_type' report.pk %}"
                                                   hx-on:click="openModal();"
                                                   hx-target="#modalBox"
                                                   hx-swap="innerHTML"
                                                   >{% trans 'Change Chart' %}</a></li>
-                                                  <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
-                                                    hx-get="{% url 'horilla_reports:change_chart_field' report.pk %}" 
+                                                  <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                    hx-get="{% url 'horilla_reports:change_chart_field' report.pk %}"
                                                     hx-on:click="openModal();"
                                                     hx-target="#modalBox"
                                                     hx-swap="innerHTML"
                                                     >{% trans 'Change Field' %}</a></li>
-                                                <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
+                                                <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
                                                         onclick="exportChartAsPDF('chart-{{ report.pk }}', 'report_{{ report.pk }}')">Export as PDF</a></li>
-                                                  <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
+                                                  <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
                                                         onclick="EChartsConfig.exportChart(window.reportChartInstance_{{ report.pk }}, 'report_{{ report.pk }}', 'png')">Export as PNG</a></li>
                                             <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                                hx-get="{% url 'horilla_dashboard:report_to_dashboard' %}?report_id={{report.pk}}" 
+                                                hx-get="{% url 'horilla_dashboard:report_to_dashboard' %}?report_id={{report.pk}}"
                                                 hx-on:click="openModal();"
                                                 hx-target="#modalBox"
                                                 hx-swap="innerHTML">{% trans "Add to Dashboard" %}</a></li>
@@ -206,7 +206,7 @@
                     </div>
                 </div>
             </div>
-            <div id="panel" 
+            <div id="panel"
                  class="transition-all duration-300 overflow-hidden overflow-x-auto {% if panel_open %}w-80{% else %}w-0{% endif %} bg-white [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] rounded-lg h-[calc(100vh_-_220px)] ms-4"
                  {% if panel_open %}hx-get="{% url 'horilla_reports:report_update' report.pk %}" hx-trigger="load" hx-swap="outerHTML"{% endif %}>
             </div>
@@ -215,11 +215,11 @@
                     const REPORT_ID = '{{ report.pk }}';
                     const CHART_CONTAINER_ID = `chart-${REPORT_ID}`;
                     const CHART_INSTANCE_KEY = `reportChartInstance_${REPORT_ID}`;
-                    
+
                     let initializationAttempts = 0;
                     const MAX_ATTEMPTS = 10;
                     const RETRY_DELAY = 200;
-                
+
                     // Function to export chart as PDF
                     window.exportChartAsPDF = function(chartId, filename) {
                         try {
@@ -228,44 +228,44 @@
                                 alert('Failed to export PDF: jsPDF library is not loaded.');
                                 return;
                             }
-                
+
                             const chartInstance = window[`reportChartInstance_${chartId.split('-')[1]}`];
                             if (!chartInstance || chartInstance.isDisposed()) {
                                 console.error('Chart instance not found or disposed for ID:', chartId);
                                 alert('Failed to export PDF: Chart instance not available.');
                                 return;
                             }
-                
+
                             chartInstance.resize();
-                            
+
                             const imgData = chartInstance.getDataURL({
                                 pixelRatio: 2,
                                 backgroundColor: '#fff',
                                 excludeComponents: ['toolbox']
                             });
-                
+
                             if (!imgData) {
                                 console.error('Failed to generate chart image data.');
                                 alert('Failed to export PDF: Could not generate chart image.');
                                 return;
                             }
-                
+
                             const { jsPDF } = window.jspdf;
                             const pdf = new jsPDF({
                                 orientation: 'landscape',
                                 unit: 'px',
                                 format: [800, 400]
                             });
-                
+
                             const imgProps = pdf.getImageProperties(imgData);
                             const pdfWidth = pdf.internal.pageSize.getWidth();
                             const pdfHeight = pdf.internal.pageSize.getHeight();
                             const imgWidth = 700;
                             const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-                
+
                             const x = (pdfWidth - imgWidth) / 2;
                             const y = (pdfHeight - imgHeight) / 2;
-                
+
                             pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
                             pdf.save(`${filename}.pdf`);
                         } catch (error) {
@@ -273,7 +273,7 @@
                             alert('Failed to export PDF: An error occurred.');
                         }
                     };
-                
+
                     function cleanupChart() {
                         // Clean up existing chart instance
                         if (window[CHART_INSTANCE_KEY]) {
@@ -287,41 +287,41 @@
                             window[CHART_INSTANCE_KEY] = null;
                         }
                     }
-                
+
                     function initChart() {
                         {% if not chart_data.error %}
                             const chartContainer = document.getElementById(CHART_CONTAINER_ID);
-                            
+
                             // Check if container exists and is visible
                             if (!chartContainer) {
                                 console.warn(`Chart container #${CHART_CONTAINER_ID} not found. Attempt ${initializationAttempts + 1}/${MAX_ATTEMPTS}`);
-                                
+
                                 if (initializationAttempts < MAX_ATTEMPTS) {
                                     initializationAttempts++;
                                     setTimeout(initChart, RETRY_DELAY);
                                 }
                                 return false;
                             }
-                
+
                             // Check if required libraries are loaded
                             if (typeof echarts === 'undefined' || typeof EChartsConfig === 'undefined') {
                                 console.warn(`ECharts or EChartsConfig not loaded. Attempt ${initializationAttempts + 1}/${MAX_ATTEMPTS}`);
-                                
+
                                 if (initializationAttempts < MAX_ATTEMPTS) {
                                     initializationAttempts++;
                                     setTimeout(initChart, RETRY_DELAY);
                                 }
                                 return false;
                             }
-                
+
                             try {
                                 // Clean up any existing instance
                                 cleanupChart();
-                
+
                                 // Initialize new chart instance
                                 const chartInstance = echarts.init(chartContainer);
                                 window[CHART_INSTANCE_KEY] = chartInstance;
-                
+
                                 const chartConfig = {
                                     type: '{{ chart_data.type|lower|safe|default:"pie" }}',
                                     labels: {{ chart_data.labels|safe|default:"[]" }},
@@ -332,7 +332,7 @@
                                     hasMultipleGroups: {{ chart_data.has_multiple_groups|yesno:"true,false" }},
                                     urls : {{ chart_data.urls|safe|default:"[]"}}
                                 };
-                
+
                                 const option = EChartsConfig.getChartOption(chartConfig);
                                 chartInstance.setOption(option, true);
 
@@ -341,18 +341,18 @@
                                     EChartsConfig.attachClickHandler(chartInstance, chartUrls);
                                     console.log('Click handlers attached for report chart navigation');
                                 }
-                
+
                                 // Force resize after a short delay
                                 setTimeout(() => {
                                     if (chartInstance && !chartInstance.isDisposed()) {
                                         chartInstance.resize();
                                     }
                                 }, 100);
-                
+
                                 console.log('Chart initialized successfully');
                                 initializationAttempts = 0; // Reset counter on success
                                 return true;
-                
+
                             } catch (error) {
                                 console.error('Error initializing chart:', error);
                                 if (initializationAttempts < MAX_ATTEMPTS) {
@@ -363,7 +363,7 @@
                             }
                         {% endif %}
                     }
-                
+
                     // Global resize handler (attached once)
                     let resizeTimeout;
                     function handleResize() {
@@ -375,36 +375,36 @@
                             }
                         }, 250);
                     }
-                
+
                     // Remove existing resize listener if any
                     window.removeEventListener('resize', handleResize);
                     window.addEventListener('resize', handleResize);
-                
+
                     // Initialize chart on page load
                     if (document.readyState === 'loading') {
                         document.addEventListener('DOMContentLoaded', initChart);
                     } else {
                         initChart();
                     }
-                
+
                     // Reinitialize chart after HTMX updates
                     document.body.addEventListener('htmx:afterSettle', function(event) {
-                        if (event.target.id === 'report-content' || 
-                            event.target.id === 'mainContent' || 
+                        if (event.target.id === 'report-content' ||
+                            event.target.id === 'mainContent' ||
                             event.target.id === 'chart-container') {
-                            
+
                             initializationAttempts = 0; // Reset counter
                             setTimeout(initChart, 150);
                         }
                     });
-                
+
                     // Handle before swap to clean up
                     document.body.addEventListener('htmx:beforeSwap', function(event) {
                         if (event.target.id === 'report-content' || event.target.id === 'mainContent') {
                             cleanupChart();
                         }
                     });
-                
+
                     // Handle refreshReport trigger
                     document.body.addEventListener('htmx:afterRequest', function(event) {
                         if (event.detail.requestConfig.headers['HX-Trigger'] === 'refreshReport') {
@@ -415,19 +415,19 @@
                         }
                     });
                 })();
-                
+
                 // Export dropdown handler
                 document.addEventListener('DOMContentLoaded', function() {
                     const dropdownButton = document.getElementById('exportDropdownButton');
                     const dropdownMenu = document.getElementById('exportDropdown');
-                    
+
                     if (dropdownButton && dropdownMenu) {
                         dropdownButton.addEventListener('click', function(e) {
                             e.preventDefault();
                             e.stopPropagation();
                             dropdownMenu.classList.toggle('hidden');
                         });
-                        
+
                         document.addEventListener('click', function(e) {
                             if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
                                 dropdownMenu.classList.add('hidden');
@@ -436,7 +436,7 @@
                     }
                 });
             </script>
-        </div>   
+        </div>
     </div>
 </div>
 {% endblock %}

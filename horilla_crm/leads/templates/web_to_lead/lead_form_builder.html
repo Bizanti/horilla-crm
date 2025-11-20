@@ -10,8 +10,8 @@
         </div>
     </div>
 
-    <form 
-        id="formBuilderForm" 
+    <form
+        id="formBuilderForm"
         hx-post="{% url 'leads:save_form' %}"
         hx-target="#formBuilderForm"
         hx-swap="outerHTML"
@@ -23,7 +23,7 @@
             <h3 class="text-sm font-semibold border-b border-[solid] border-[#e7e7e7] pb-2 mb-3">
                 {% trans "Form Builder" %}
             </h3>
-    
+
             <!-- Form Name -->
             <label for="form_name" class="text-xs text-color-600">{% trans "Form Name" %}</label>
             <input
@@ -45,7 +45,7 @@
                     {{ errors.form_name.0 }}
                 </div>
             {% endif %}
-    
+
             <!-- Field Selection -->
             <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-6">
@@ -68,7 +68,7 @@
                         {% endfor %}
                     </div>
                 </div>
-    
+
                 <div class="col-span-6">
                     <h3 class="text-sm font-semibold mb-1">{% trans "Selected Fields" %}</h3>
                     <div id="selectedFields" class="h-44 overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2">
@@ -102,10 +102,10 @@
             <div class="text-sm flex gap-2 relative mb-3 mt-3 items-center">
                 <span class="text-xs text-color-600">{% trans "Enable Return URL" %}</span>
                 <label class="inline-flex items-center cursor-pointer">
-                    <input 
-                        type="checkbox" 
-                        id="return_url_enable" 
-                        name="return_url_enable" 
+                    <input
+                        type="checkbox"
+                        id="return_url_enable"
+                        name="return_url_enable"
                         class="sr-only peer"
                         {% if form_data.return_url_enable %}checked{% endif %}
                         hx-post="{% url 'leads:toggle_return_url' %}"
@@ -116,7 +116,7 @@
                     <div class="relative w-11 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-6"></div>
                 </label>
             </div>
-           
+
 
             <!-- Conditional Fields Container -->
             <div id="conditional-fields">
@@ -174,13 +174,13 @@
                     {% endif %}
                 {% endif %}
             </div>
-    
+
             <!-- Language -->
             <div class="flex flex-col gap-2 mb-3">
                 <label for="language" class="text-xs text-color-600">{% trans "Language" %}</label>
-                <select 
-                    name="language" 
-                    id="language" 
+                <select
+                    name="language"
+                    id="language"
                     class="js-example-basic-single headselect w-full"
                     hx-post="{% url 'leads:update_preview' %}"
                     hx-trigger="change"
@@ -201,8 +201,8 @@
                     {% trans "Lead Owner" %}
                     <span class="text-red-500">*</span>
                 </label>
-                <select 
-                    name="lead_owner" 
+                <select
+                    name="lead_owner"
                     id="lead_owner"
                     required
                     class="js-example-basic-single headselect w-full"
@@ -224,7 +224,7 @@
                 {% endif %}
             </div>
 
-    
+
             <!-- Color Picker -->
             <div class="mt-3">
                 <label for="colorInput" class="text-xs text-color-600">Color</label>
@@ -254,7 +254,7 @@
                     />
                 </div>
             </div>
-    
+
             <!-- Submit Button -->
             <button
                 type="submit"
@@ -263,7 +263,7 @@
                 {% trans "Generate" %}
             </button>
         </div>
-    
+
         <!-- RIGHT COLUMN: Preview -->
         <div class="col-span-6">
             <div id="formPreview" class="p-5 border border-dark-50 rounded-md sticky top-0">
@@ -278,31 +278,30 @@
     <script>
         // Handle field addition and removal tracking
         document.body.addEventListener('htmx:afterSwap', function(event) {
-            
+
             // Update color input display
             const colorPicker = document.getElementById('colorPicker');
             const colorInput = document.getElementById('colorInput');
             if (colorPicker && colorInput) {
                 colorInput.value = colorPicker.value;
             }
-    
+
             // Remove placeholder when first field is added
             const selectedContainer = document.getElementById('selectedFields');
             const placeholder = selectedContainer.querySelector('p.text-gray-400');
             const hasSelectedFields = selectedContainer.querySelectorAll('.selected-field').length > 0;
-    
+
             if (hasSelectedFields && placeholder) {
                 placeholder.remove();
             } else if (!hasSelectedFields && !placeholder) {
                 selectedContainer.innerHTML = '<p class="text-xs text-gray-400 text-center mt-16">Click fields to add</p>';
             }
         });
-        
+
         document.body.addEventListener('updatePreview', function() {
             htmx.trigger('#colorPicker', 'change');
         });
-  
+
     </script>
 </div>
 {% endblock %}
-

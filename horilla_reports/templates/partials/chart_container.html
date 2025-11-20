@@ -8,20 +8,20 @@
             </button>
             <div id="dropdownLeftEnd12" class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] top-8 -right-[15px]">
                 <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">
-                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
-                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}" 
+                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}"
                           hx-vals='{"chart_type": "bar"}'
                           hx-target="#chart-container"
                           hx-swap="innerHTML"
                           hx-headers='{"HX-Trigger": "refreshReport"}'>{% trans "Bar Chart" %}</a></li>
-                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
-                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}" 
+                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}"
                           hx-vals='{"chart_type": "pie"}'
                           hx-target="#chart-container"
                           hx-swap="innerHTML"
                           hx-headers='{"HX-Trigger": "refreshReport"}'>{% trans "Pie Chart" %}</a></li>
-                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]" 
-                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}" 
+                    <li><a href="#" class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                          hx-post="{% url 'horilla_reports:update_chart_type' report.pk %}"
                           hx-vals='{"chart_type": "line"}'
                           hx-target="#chart-container"
                           hx-swap="innerHTML"
@@ -50,7 +50,7 @@
             const ctx = document.getElementById('chart-{{ report.pk }}').getContext('2d');
             const chartType = '{{ chart_data.type|lower|safe|default:"pie" }}';
             const tension = chartType === 'line' ? 0.4 : 0;
-            
+
             const chartData = {
                 labels: {{ chart_data.labels|safe|default:"[]" }},
                 datasets: [{
@@ -72,7 +72,7 @@
                     categoryPercentage: 0.8
                 }]
             };
-            
+
             let legendConfig = {
                 display: true,
                 position: 'bottom',
@@ -88,17 +88,17 @@
                     }
                 }
             };
-            
+
             {% if chart_data.type|lower|safe == 'bar' or chart_data.type|lower|safe == 'line' %}
             legendConfig.labels.generateLabels = function(chart) {
                 const labels = chart.data.labels;
                 const dataset = chart.data.datasets[0];
                 const colors = dataset.backgroundColor;
-                
+
                 return labels.map((label, index) => {
                     const isHidden = dataset.data[index] === null;
                     const originalColor = Array.isArray(colors) ? colors[index] : colors;
-                    
+
                     return {
                         text: label,
                         fillStyle: originalColor,
@@ -111,17 +111,17 @@
                     };
                 });
             };
-            
+
             legendConfig.onClick = function(e, legendItem, legend) {
                 const chart = legend.chart;
                 const index = legendItem.index;
                 const dataset = chart.data.datasets[0];
-                
+
                 if (chartType === 'bar' || chartType === 'line') {
                     if (!chart.originalData) {
                         chart.originalData = [...dataset.data];
                     }
-                    
+
                     if (dataset.data[index] === null) {
                         dataset.data[index] = chart.originalData[index];
                     } else {
@@ -133,11 +133,11 @@
                         meta.data[index].hidden = !meta.data[index].hidden;
                     }
                 }
-                
+
                 chart.update('none');
             };
             {% endif %}
-            
+
             new Chart(ctx, {
                 type: chartType,
                 data: chartData,

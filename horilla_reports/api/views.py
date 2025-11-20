@@ -4,31 +4,24 @@ API views for horilla_crm.reports models
 This module mirrors horilla_core/accounts API patterns including search, filtering,
 bulk update, bulk delete, permissions, and documentation.
 """
-from rest_framework import viewsets, permissions
-from drf_yasg.utils import swagger_auto_schema
+
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, viewsets
 
-from horilla_reports.models import Report, ReportFolder
-from horilla_reports.api.serializers import (
-    ReportSerializer,
-    ReportFolderSerializer,
-)
+from horilla_core.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
+from horilla_core.api.mixins import BulkOperationsMixin, SearchFilterMixin
 from horilla_core.api.permissions import IsCompanyMember
-from horilla_core.api.mixins import SearchFilterMixin, BulkOperationsMixin
-from horilla_core.api.docs import (
-    SEARCH_FILTER_DOCS,
-    BULK_UPDATE_DOCS,
-    BULK_DELETE_DOCS,
-)
 from horilla_reports.api.docs import (
-    REPORT_FOLDER_LIST_DOCS,
-    REPORT_FOLDER_DETAIL_DOCS,
-    REPORT_FOLDER_CREATE_DOCS,
-    REPORT_LIST_DOCS,
-    REPORT_DETAIL_DOCS,
     REPORT_CREATE_DOCS,
+    REPORT_DETAIL_DOCS,
+    REPORT_FOLDER_CREATE_DOCS,
+    REPORT_FOLDER_DETAIL_DOCS,
+    REPORT_FOLDER_LIST_DOCS,
+    REPORT_LIST_DOCS,
 )
-
+from horilla_reports.api.serializers import ReportFolderSerializer, ReportSerializer
+from horilla_reports.models import Report, ReportFolder
 
 # Common Swagger parameter for search
 search_param = openapi.Parameter(
@@ -39,7 +32,9 @@ search_param = openapi.Parameter(
 )
 
 
-class ReportFolderViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet):
+class ReportFolderViewSet(
+    SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet
+):
     """ViewSet for ReportFolder model"""
 
     queryset = ReportFolder.objects.all()
