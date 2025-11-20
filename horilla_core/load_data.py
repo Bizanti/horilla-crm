@@ -66,46 +66,44 @@ class ConfigureDemoData(View):
 
     def get_configurable_entities(self):
         """
-        Collect all configurable entities from apps that define demo_data_config.
-        Returns a list of entity configurations with display name, key, and options.
+        Collect all configurable entities from apps that define demo_data.
+        Each entity includes: key, display_name, default, options, order, files.
         """
         entities = []
 
         for app_config in apps.get_app_configs():
-            if hasattr(app_config, "demo_data_config"):
-                config = app_config.demo_data_config
+            demo_data = getattr(app_config, "demo_data", None)
+            if not demo_data:
+                continue
 
-                # Support both single dict and list of dicts
-                configs = config if isinstance(config, list) else [config]
+            # Normalize to list of configs
+            configs = demo_data if isinstance(demo_data, list) else [demo_data]
 
-                for cfg in configs:
-                    # Use default options and value if not specified
-                    options_raw = cfg.get("options", self.DEFAULT_OPTIONS)
-                    default_value = cfg.get(
-                        "default", options_raw[0] if options_raw else self.DEFAULT_VALUE
-                    )
+            for cfg in configs:
+                options_raw = cfg.get("options", self.DEFAULT_OPTIONS)
+                default_value = cfg.get("default", options_raw[0])
 
-                    # Format options with labels
-                    options_formatted = [
-                        {"value": opt, "label": self.format_option_label(opt)}
-                        for opt in options_raw
-                    ]
+                key = cfg.get("key") or (
+                    str(app_config.verbose_name).lower().replace(" ", "_") + "_count"
+                )
 
-                    entities.append(
-                        {
-                            "key": cfg.get("key"),
-                            "display_name": cfg.get(
-                                "display_name", cfg.get("key").title()
-                            ),
-                            "default": default_value,
-                            "options": options_formatted,
-                            "order": cfg.get("order", 999),
-                            "files": cfg.get("files", []),
-                        }
-                    )
+                entities.append(
+                    {
+                        "key": key,
+                        "display_name": cfg.get(
+                            "display_name", str(app_config.verbose_name)
+                        ),
+                        "default": default_value,
+                        "options": [
+                            {"value": opt, "label": self.format_option_label(opt)}
+                            for opt in options_raw
+                        ],
+                        "order": cfg.get("order", 999),
+                        "files": cfg.get("files", []),
+                    }
+                )
 
-        entities.sort(key=lambda x: x["order"])
-        return entities
+        return sorted(entities, key=lambda x: x["order"])
 
     def get(self, request, *args, **kwargs):
         """Display configuration page"""
@@ -149,56 +147,43 @@ class LoadDemoDatabase(View):
     """
 
     def get_data_files(self):
-        """
-        Collect all demo data files from apps that define `demo_data_files`.
-        Each file is a tuple: (order, relative_path)
-        Returns a list of absolute file paths sorted by order.
-        """
-        data_files_with_order = []
+        data_files = []
 
         for app_config in apps.get_app_configs():
-            if hasattr(app_config, "demo_data_files"):
-                app_path = Path(app_config.path)
-                for order, relative_file in app_config.demo_data_files:
-                    file_path = app_path / relative_file
-                    if file_path.exists():
-                        data_files_with_order.append((order, str(file_path)))
+            demo_data = getattr(app_config, "demo_data", None)
+            if not demo_data:
+                continue
 
-        data_files_with_order.sort(key=lambda x: x[0])
+            app_path = Path(app_config.path)
 
-        return [f for _, f in data_files_with_order]
+            for order, relative_file in demo_data.get("files", []):
+                file_path = app_path / relative_file
+                if file_path.exists():
+                    data_files.append((order, str(file_path)))
+
+        return [fpath for _, fpath in sorted(data_files, key=lambda x: x[0])]
 
     def get_file_limit_key(self, filename):
-        """
-        Get the configuration key for a file by checking app configs.
-        Returns the key if file is configurable, None otherwise.
-        """
-        file_path = Path(filename)
-        file_name = file_path.name
+        filename = Path(filename).name
 
         for app_config in apps.get_app_configs():
-            if hasattr(app_config, "demo_data_files"):
-                app_path = Path(app_config.path)
+            demo_data = getattr(app_config, "demo_data", None)
+            if not demo_data:
+                continue
 
-                for order, relative_file in app_config.demo_data_files:
-                    full_path = str(app_path / relative_file)
+            app_path = Path(app_config.path)
+            configs = demo_data if isinstance(demo_data, list) else [demo_data]
 
-                    if full_path == filename:
-                        if hasattr(app_config, "demo_data_config"):
-                            config = app_config.demo_data_config
+            for cfg in configs:
+                # Build list of filenames only once
+                cfg_files = [Path(f[1]).name for f in cfg.get("files", [])]
 
-                            configs = config if isinstance(config, list) else [config]
-
-                            if len(configs) == 1 and not configs[0].get("files"):
-                                return configs[0].get("key")
-
-                            for cfg in configs:
-                                files = cfg.get("files", [])
-
-                                if files:
-                                    if file_name in files or relative_file in files:
-                                        return cfg.get("key")
-                        return None
+                if filename in cfg_files:
+                    return cfg.get(
+                        "key",
+                        str(app_config.verbose_name).lower().replace(" ", "_")
+                        + "_count",
+                    )
 
         return None
 

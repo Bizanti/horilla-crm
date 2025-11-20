@@ -12,6 +12,14 @@ class OpportunitiesConfig(AppConfig):
     name = "horilla_crm.opportunities"
     verbose_name = _("Opportunities")
 
+    demo_data = {
+        "files": [
+            (8, "load_data/opportunity_stage.json"),
+            (9, "load_data/opportunity.json"),
+        ],
+        "order": 3,
+    }
+
     def get_api_paths(self):
         """
         Return API path configurations for this app.
@@ -27,17 +35,6 @@ class OpportunitiesConfig(AppConfig):
                 "namespace": "horilla_crm_opportunities",
             }
         ]
-
-    demo_data_files = [
-        (8, "load_data/opportunity_stage.json"),
-        (9, "load_data/opportunity.json"),
-    ]
-
-    demo_data_config = {
-        "key": "opportunities_count",
-        "display_name": _("Opportunities"),
-        "order": 3,
-    }
 
     def ready(self):
         from django.urls import include, path

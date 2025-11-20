@@ -11,13 +11,11 @@ class AccountsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_crm.accounts"
     verbose_name = _("Accounts")
-    demo_data_files = [
-        (10, "load_data/account.json"),
-    ]
 
-    demo_data_config = {
-        "key": "accounts_count",
-        "display_name": _("Accounts"),
+    demo_data = {
+        "files": [
+            (10, "load_data/account.json"),
+        ],
         "order": 5,
     }
 

@@ -11,13 +11,11 @@ class ContactsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_crm.contacts"
     verbose_name = _("Contacts")
-    demo_data_files = [
-        (11, "load_data/contact.json"),
-    ]
 
-    demo_data_config = {
-        "key": "contacts_count",
-        "display_name": _("Contacts"),
+    demo_data = {
+        "files": [
+            (11, "load_data/contact.json"),
+        ],
         "order": 6,
     }
 

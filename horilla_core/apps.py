@@ -16,13 +16,13 @@ class CoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_core"
     verbose_name = _("Core System")
-    demo_data_files = [
-        (1, "load_data/company.json"),
-        (2, "load_data/role.json"),
-        (3, "load_data/users.json"),
-    ]
-
-    demo_data_config = {
+    demo_data = {
+        "files": [
+            (1, "load_data/company.json"),
+            (2, "load_data/role.json"),
+            (3, "load_data/users.json"),
+        ],
+        # Optional fields (key & display_name will be auto-generated if not provided)
         "key": "users_count",
         "display_name": _("Users"),
         "order": 1,

@@ -11,13 +11,11 @@ class CampaignsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_crm.campaigns"
     verbose_name = _("Campaigns")
-    demo_data_files = [
-        (6, "load_data/campaign.json"),
-    ]
 
-    demo_data_config = {
-        "key": "campaigns_count",
-        "display_name": _("Campaigns"),
+    demo_data = {
+        "files": [
+            (6, "load_data/campaign.json"),
+        ],
         "order": 4,
     }
 
