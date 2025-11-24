@@ -22,6 +22,7 @@ from . import team_role as team_role_views
 from . import user_holidays as user_holidays_views
 from . import user_login_history as user_login_history_views
 from . import users as user_views
+from . import version_info as version_info_views
 from . import views
 
 app_name = "horilla_core"
@@ -858,5 +859,11 @@ urlpatterns = [
         "schedule-export-delete/<int:pk>/",
         export_data_views.ScheduleExportDeleteView.as_view(),
         name="schedule_export_delete",
+    ),
+    # Version  info urls
+    path(
+        "version-info-view/",
+        version_info_views.VersionInfotemplateView.as_view(),
+        name="version_info_view",
     ),
 ]

@@ -80,7 +80,8 @@ class ShortKeyListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("horilla_keys:short_key_list")
     main_url = reverse_lazy("horilla_keys:short_key_view")
     table_width = False
-    bulk_select_option = False
+    bulk_update_option = False
+    bulk_export_option = False
     store_ordered_ids = True
     table_height_as_class = "h-[500px]"
     list_column_visibility = False

@@ -143,6 +143,7 @@ TEMPLATES = [
                 "horilla.context_processors.unread_notifications",
                 "horilla.context_processors.menu_context_processor",
                 "horilla.context_processors.currency_context",
+                "horilla.context_processors.collect_all_versions",
             ],
         },
     },

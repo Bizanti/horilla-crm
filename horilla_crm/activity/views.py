@@ -5,6 +5,7 @@ This file contains the view functions or classes that handle HTTP
 requests and responses for the CRM application.
 """
 
+import datetime
 from urllib.parse import urlencode
 
 from django.apps import apps
@@ -15,6 +16,7 @@ from django.db import models
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property  # type: ignore
 from django.utils.translation import gettext_lazy as _
@@ -1962,6 +1964,7 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
             model_name = self.request.GET.get("model_name")
             all_day = self.request.GET.get("is_all_day")
             toggle_is_all_day = self.request.GET.get("toggle_is_all_day")
+            date_str = self.request.GET.get("date")
 
             if is_create:
                 initial["activity_type"] = "event"
@@ -1977,6 +1980,26 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
                 initial["is_all_day"] = all_days
             elif hasattr(self, "object") and self.object:
                 initial["is_all_day"] = self.object.is_all_day
+
+            if is_create and date_str:
+                try:
+                    clicked_datetime = datetime.datetime.fromisoformat(date_str)
+                    clicked_date = clicked_datetime.date()
+
+                    if clicked_datetime.time() == datetime.time.min:
+                        clicked_time = datetime.time(9, 0)
+                    else:
+                        clicked_time = clicked_datetime.time()
+
+                    start_datetime = timezone.make_aware(
+                        datetime.datetime.combine(clicked_date, clicked_time)
+                    )
+                    end_datetime = start_datetime + datetime.timedelta(hours=1)
+
+                    initial["start_datetime"] = start_datetime
+                    initial["end_datetime"] = end_datetime
+                except (ValueError, TypeError):
+                    pass
 
             if object_id and model_name:
                 initial["object_id"] = object_id

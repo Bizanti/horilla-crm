@@ -223,7 +223,7 @@ class DataManagementSettings:
 
     title = _("Data Mangement")
     icon = "/assets/icons/data.svg"
-    order = 7
+    order = -11
     items = [
         {
             "label": _("Import Data"),
@@ -252,4 +252,24 @@ class DataManagementSettings:
             "hx-select-oob": "#settings-sidebar",
             "perm": "horilla_core.view_recyclebin",
         },
+    ]
+
+
+@settings_menu.register
+class AboutSystemSettings:
+    """Settings menu entries for the data management."""
+
+    title = _("About System")
+    icon = "/assets/icons/about-system.svg"
+    order = -10
+    items = [
+        {
+            "label": _("Version Info"),
+            "url": reverse_lazy("horilla_core:version_info_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#version-info-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "horilla_core.view_recyclebin",
+        }
     ]

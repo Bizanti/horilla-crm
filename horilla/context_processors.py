@@ -11,7 +11,7 @@ from importlib import import_module
 from django.conf import settings
 from django.utils.translation import get_language
 
-from horilla.__version__ import __version__ as horilla_version
+from horilla import __version__ as horilla_version
 from horilla.menu.floating_menu import get_floating_menu
 from horilla.menu.main_section_menu import get_main_section_menu
 from horilla.menu.my_settings_menu import get_my_settings_menu
@@ -22,29 +22,49 @@ from horilla_notifications.models import Notification
 
 
 def get_module_version_info(module_name):
-    """Return (display_name, version) for the given module if available."""
+    """Return module version info as a dict: {name, version, description}."""
     try:
         mod = import_module(f"{module_name}.__version__")
-        display_name = getattr(mod, "__module_name__", module_name)
-        version = getattr(mod, "__version__", "Unknown")
-        return display_name, version
+
+        return {
+            "name": getattr(mod, "__module_name__", module_name),
+            "version": getattr(mod, "__version__", "Unknown"),
+            "description": getattr(mod, "__description__", ""),
+            "icon": getattr(mod, "__icon__", ""),
+        }
+
     except ModuleNotFoundError:
-        return None, None
+        return None
 
 
 def collect_all_versions(request):
     """Collect version info for all top-level Horilla modules."""
-    versions = {"Horilla": horilla_version.__version__}
+
+    versions = [
+        {
+            "name": horilla_version.__module_name__,
+            "version": horilla_version.__version__,
+            "description": horilla_version.__description__,
+            "icon": getattr(horilla_version, "__icon__", ""),
+        }
+    ]
+
     seen = set()
 
     for app in settings.INSTALLED_APPS:
         top_level = app.split(".")[0]
+
         if top_level not in seen:
-            display_name, version = get_module_version_info(top_level)
-            if version:
-                versions[display_name] = version
+            info = get_module_version_info(top_level)
+
+            if info:
+                versions.append(info)
+
             seen.add(top_level)
-    return {"HORILLA_VERSIONS": versions}
+
+    return {
+        "HORILLA_VERSIONS": versions,
+    }
 
 
 def company_list(request):
