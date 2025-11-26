@@ -83,13 +83,13 @@ MONTH_CHOICES = [
 ]
 
 DAY_CHOICES = [
-    ("sunday", _("Sunday")),
-    ("monday", _("Monday")),
-    ("tuesday", _("Tuesday")),
-    ("wednesday", _("Wednesday")),
-    ("thursday", _("Thursday")),
-    ("friday", _("Friday")),
-    ("saturday", _("Saturday")),
+    ("sun", "Sunday"),
+    ("mon", "Monday"),
+    ("tue", "Tuesday"),
+    ("wed", "Wednesday"),
+    ("thu", "Thursday"),
+    ("fri", "Friday"),
+    ("sat", "Saturday"),
 ]
 
 OPERATOR_CHOICES = [

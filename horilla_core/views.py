@@ -239,8 +239,18 @@ class LogoutView(View):
         response = HttpResponse()
         response.content = """
             <script>
+                // Save theme before clearing localStorage
+                const theme = localStorage.getItem('theme');
+
+                // Clear everything
                 localStorage.clear();
+
+                // Restore theme if it existed
+                if (theme !== null) {
+                    localStorage.setItem('theme', theme);
+                }
             </script>
+
             <meta http-equiv="refresh" content="0;url=/login">
         """
         return response
@@ -256,45 +266,74 @@ class ConmpanyInformationTabView(LoginRequiredMixin, HorillaTabView):
 
     @cached_property
     def tabs(self):
+        tabs = []
+
+        # Company Details Tab
         if self.request.user.has_perm("horilla_core.view_company"):
-            tabs = [
+            tabs.append(
                 {
                     "title": _("Details"),
                     "url": reverse_lazy("horilla_core:company_details_tab"),
                     "target": "company-information-view-content",
                     "id": "company-information-view",
-                },
+                }
+            )
+
+        # Fiscal Year Tab
+        if self.request.user.has_perm("horilla_core.view_fiscalyear"):
+            tabs.append(
                 {
                     "title": _("Fiscal Year"),
                     "url": reverse_lazy("horilla_core:company_fiscal_year_tab"),
                     "target": "fiscal-year-view-content",
                     "id": "fiscal-year-view",
-                },
+                }
+            )
+
+        # Business Hours Tab
+        if self.request.user.has_perm("horilla_core.view_businesshour"):
+            tabs.append(
                 {
-                    "title": _("Business Hours "),
+                    "title": _("Business Hours"),
                     "url": reverse_lazy("horilla_core:business_hour_view"),
                     "target": "business-hour-content",
                     "id": "business-hour-view",
-                },
+                }
+            )
+
+        # Holidays Tab
+        if self.request.user.has_perm("horilla_core.view_holiday"):
+            tabs.append(
                 {
-                    "title": _("Holidays "),
+                    "title": _("Holidays"),
                     "url": reverse_lazy("horilla_core:holiday_view"),
                     "target": "holidays-view-content",
                     "id": "holidays-view",
-                },
+                }
+            )
+
+        # Currencies Tab
+        if self.request.user.has_perm("horilla_core.view_multiplecurrency"):
+            tabs.append(
                 {
                     "title": _("Currencies"),
                     "url": reverse_lazy("horilla_core:multiple_currency"),
                     "target": "currency-view-content",
                     "id": "currency-view",
-                },
+                }
+            )
+
+        # Recycle Bin Policy Tab
+        if self.request.user.has_perm("horilla_core.view_recyclebinpolicy"):
+            tabs.append(
                 {
                     "title": _("Recycle Bin Policy"),
                     "url": reverse_lazy("horilla_core:recycle_bin_policy_view"),
                     "target": "recycle-view-content",
                     "id": "recycle-view",
-                },
-            ]
+                }
+            )
+
         return tabs
 
 
@@ -551,9 +590,6 @@ class HolidayDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("horilla_core.add_holiday"), name="dispatch"
-)
 class HolidayFormView(LoginRequiredMixin, HorillaSingleFormView):
     model = Holiday
     form_class = HolidayForm
@@ -609,21 +645,6 @@ class HolidayFormView(LoginRequiredMixin, HorillaSingleFormView):
         initial.update(self.request.GET.dict())
 
         return initial
-
-    def get(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        if pk:
-            try:
-                self.model.objects.get(pk=pk)
-            except self.model.DoesNotExist:
-                messages.error(request, "The requested data does not exist.")
-                return HttpResponse("<script>$('reloadButton').click();</script>")
-        if self.request.user.pk != self.kwargs.get(
-            "pk"
-        ) and not self.request.user.has_perm("horilla_core.add_horillauser"):
-            return render(self.request, "error/403.html")
-
-        return super().get(request, *args, **kwargs)
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
@@ -764,6 +785,10 @@ class CompanyMultipleCurrency(LoginRequiredMixin, TemplateView):
             cmp = company
         else:
             cmp = request.user.company
+
+        if not request.user.has_perm("horilla_core.change_company"):
+            return render(request, "error/403.html")
+
         cmp.activate_multiple_currencies = not cmp.activate_multiple_currencies
         cmp.save()
         context = self.get_context_data(**kwargs)
@@ -868,9 +893,6 @@ class BusinessHourListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("horilla_core.add_businesshour"), name="dispatch"
-)
 class BusinessHourFormView(LoginRequiredMixin, HorillaSingleFormView):
     model = BusinessHour
     form_class = BusinessHourForm
@@ -910,17 +932,6 @@ class BusinessHourFormView(LoginRequiredMixin, HorillaSingleFormView):
 
         initial.update(self.request.GET.dict())
         return initial
-
-    def get(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        if pk:
-            try:
-                self.model.objects.get(pk=pk)
-            except self.model.DoesNotExist:
-                messages.error(request, "The requested data does not exist.")
-                return HttpResponse("<script>$('reloadButton').click();</script>")
-
-        return super().get(request, *args, **kwargs)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -1018,18 +1029,6 @@ class GetCountrySubdivisionsView(LoginRequiredMixin, View):
                 )
 
         return HttpResponse(options)
-
-
-# def get_country_subdivisions(request):
-#     country_code = request.GET.get("country")
-#     options = '<option value="">Select State</option>'
-
-#     if country_code:
-#         subdivisions = pycountry.subdivisions.get(country_code=country_code.upper())
-#         for subdivision in subdivisions:
-#             options += f'<option value="{subdivision.code}">{subdivision.name}</option>'
-
-#     return HttpResponse(options)
 
 
 class RolesView(LoginRequiredMixin, TemplateView):
