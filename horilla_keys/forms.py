@@ -135,3 +135,12 @@ class ShortcutKeyForm(HorillaModelForm):
         if command in ["option", "alt"]:
             return "alt"
         return command
+
+    def clean(self):
+        cleaned = super().clean()
+
+        for field in ["user", "company"]:
+            if field in self.errors:
+                self.add_error(None, self.errors[field])
+                del self.errors[field]
+        return cleaned
