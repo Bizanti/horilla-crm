@@ -5,6 +5,7 @@ Calls, Events, and general Activity creation.
 
 from django import forms
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from django.forms import ValidationError
 from django.urls import reverse_lazy
 
@@ -433,13 +434,59 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         content_type = cleaned_data.get("content_type")
         object_id = cleaned_data.get("object_id")
 
-        # Validate object_id against content_type
+        # Validate object_id against content_type with owner filtration
         if content_type and object_id:
             try:
                 model_class = content_type.model_class()
-                model_class.objects.get(id=object_id)
-            except model_class.DoesNotExist:
-                raise ValidationError({"object_id": "Selected object does not exist."})
+
+                # Get the object
+                try:
+                    obj = model_class.objects.get(id=object_id)
+                except model_class.DoesNotExist:
+                    raise ValidationError(
+                        {"object_id": "Selected object does not exist."}
+                    )
+
+                # Apply owner filtration validation
+                if self.request and self.request.user:
+                    from django.contrib.auth import get_user_model
+
+                    User = get_user_model()
+                    user = self.request.user
+
+                    # Get fresh filtered queryset
+                    queryset = model_class.objects.all()
+
+                    if model_class is User:
+                        allowed_user_ids = self._get_allowed_user_ids(user)
+                        queryset = queryset.filter(id__in=allowed_user_ids)
+                    elif (
+                        hasattr(model_class, "OWNER_FIELDS")
+                        and model_class.OWNER_FIELDS
+                    ):
+                        allowed_user_ids = self._get_allowed_user_ids(user)
+                        if allowed_user_ids:
+                            query = Q()
+                            for owner_field in model_class.OWNER_FIELDS:
+                                query |= Q(
+                                    **{f"{owner_field}__id__in": allowed_user_ids}
+                                )
+                            queryset = queryset.filter(query)
+                        else:
+                            queryset = queryset.none()
+
+                    # Check if the selected object exists in the filtered queryset
+                    if not queryset.filter(id=object_id).exists():
+                        raise ValidationError(
+                            {
+                                "object_id": "Select a valid choice. That choice is not one of the available choices."
+                            }
+                        )
+
+            except ValidationError:
+                raise
+            except Exception as e:
+                raise ValidationError({"object_id": "Invalid object selection."})
 
         # Existing date/time validation
         if not is_all_day and start_datetime and end_datetime:
@@ -457,3 +504,35 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                     }
                 )
         return cleaned_data
+
+    def _get_allowed_user_ids(self, user):
+        """Get list of allowed user IDs (self + subordinates)"""
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+
+        if not user or not user.is_authenticated:
+            return []
+
+        if user.is_superuser:
+            return list(User.objects.values_list("id", flat=True))
+
+        user_role = getattr(user, "role", None)
+        if not user_role:
+            return [user.id]
+
+        def get_subordinate_roles(role):
+            sub_roles = role.subroles.all()
+            all_sub_roles = []
+            for sub_role in sub_roles:
+                all_sub_roles.append(sub_role)
+                all_sub_roles.extend(get_subordinate_roles(sub_role))
+            return all_sub_roles
+
+        subordinate_roles = get_subordinate_roles(user_role)
+        subordinate_users = User.objects.filter(role__in=subordinate_roles).distinct()
+
+        allowed_user_ids = [user.id] + list(
+            subordinate_users.values_list("id", flat=True)
+        )
+        return allowed_user_ids
