@@ -55,7 +55,7 @@ class AddRole(LoginRequiredMixin, HorillaSingleFormView):
                 self.model.objects.get(pk=pk)
             except self.model.DoesNotExist:
                 messages.error(request, "The requested role does not exist.")
-                return HttpResponse("<script>$('reloadButton').click();</script>")
+                return HttpResponse("<script>$('#reloadButton').click();</script>")
 
         return super().get(request, *args, **kwargs)
 

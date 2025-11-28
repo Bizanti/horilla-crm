@@ -3060,6 +3060,53 @@ class HorillaDetailView(DetailView):
                     pass
         return normalized_body
 
+    def check_update_permission(self):
+        """
+        Check if the current user has permission to update the pipeline field.
+        Returns True if user has permission, False otherwise.
+        """
+        user = self.request.user
+        current_obj = self.get_object()
+        model_name = self.model._meta.model_name
+        app_label = self.model._meta.app_label
+
+        # Superuser always has permission
+        if user.is_superuser:
+            return True
+
+        # Check if user is the owner
+        is_owner = False
+        owner_fields = getattr(self.model, "OWNER_FIELDS", [])
+
+        for owner_field in owner_fields:
+            try:
+                field_value = getattr(current_obj, owner_field, None)
+                if field_value:
+                    # Handle ManyToMany fields
+                    if hasattr(field_value, "all"):
+                        if user in field_value.all():
+                            is_owner = True
+                            break
+                    # Handle ForeignKey fields
+                    elif field_value == user:
+                        is_owner = True
+                        break
+            except Exception:
+                continue
+
+        # Check change_own permission if user is owner
+        if is_owner:
+            change_own_perm = f"{app_label}.change_own_{model_name}"
+            if user.has_perm(change_own_perm):
+                return True
+
+        # Check regular change permission
+        change_perm = f"{app_label}.change_{model_name}"
+        if user.has_perm(change_perm):
+            return True
+
+        return False
+
     def get_pipeline_choices(self):
         """
         Generate pipeline data for the specified pipeline_field.
@@ -3145,6 +3192,7 @@ class HorillaDetailView(DetailView):
         field_permissions = get_field_permissions_for_model(
             self.request.user, self.model
         )
+        context["can_update"] = self.check_update_permission()
         context["field_permissions"] = field_permissions
         if hasattr(self, "final_stage_action"):
             final_stage = self.final_stage_action
@@ -3427,6 +3475,55 @@ class HorillaDetailView(DetailView):
             return HttpResponse(status=400)
 
         try:
+            # Permission check
+            user = request.user
+            model_name = self.model._meta.model_name
+            app_label = self.model._meta.app_label
+
+            # Check if user is the owner
+            is_owner = False
+            owner_fields = getattr(self.model, "OWNER_FIELDS", [])
+
+            for owner_field in owner_fields:
+                try:
+                    field_value = getattr(self.object, owner_field, None)
+                    if field_value:
+                        # Handle ManyToMany fields
+                        if hasattr(field_value, "all"):
+                            if user in field_value.all():
+                                is_owner = True
+                                break
+                        # Handle ForeignKey fields
+                        elif field_value == user:
+                            is_owner = True
+                            break
+                except Exception:
+                    continue
+
+            # Check permissions
+            has_permission = False
+
+            if user.is_superuser:
+                has_permission = True
+            elif is_owner:
+                # Check if user has change_own permission
+                change_own_perm = f"{app_label}.change_own_{model_name}"
+                if user.has_perm(change_own_perm):
+                    has_permission = True
+
+            # Check regular change permission if not owner or doesn't have change_own
+            if not has_permission:
+                change_perm = f"{app_label}.change_{model_name}"
+                if user.has_perm(change_perm):
+                    has_permission = True
+
+            if not has_permission:
+                messages.error(
+                    self.request, _("You don't have permission to update this record.")
+                )
+                return HttpResponse("<script>$('#reloadButton').click();</script>")
+
+            # Proceed with pipeline update
             field = self.model._meta.get_field(self.pipeline_field)
             if hasattr(field, "choices") and field.choices:
                 # Validate for choice fields
@@ -3438,7 +3535,6 @@ class HorillaDetailView(DetailView):
                 related_model = field.related_model
                 try:
                     related_obj = related_model.objects.get(pk=pipeline_value)
-
                     setattr(self.object, self.pipeline_field, related_obj)
                 except Exception as e:
                     logger.error(e)
@@ -3509,6 +3605,7 @@ class HorillaDetailTabView(HorillaTabView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pipeline_field = self.request.GET.get("pipeline_field")
+        user = self.request.user
         self.tabs = []
         if self.object_id:
             if "details" in self.urls:
@@ -3547,7 +3644,12 @@ class HorillaDetailTabView(HorillaTabView):
                     }
                 )
 
-            if "notes_attachments" in self.urls:
+            if "notes_attachments" in self.urls and (
+                user.has_perm("horilla_core.view_horillaattachment")
+                or user.has_perm("horilla_core.view_own_horillaattachment")
+                or user.is_superuser
+            ):
+
                 self.tabs.append(
                     {
                         "title": _("Notes & Attachments"),
@@ -3643,7 +3745,7 @@ class HorillaDetailSectionView(DetailView):
             self.request.user, self.model
         )
         context["field_permissions"] = field_permissions
-
+        context["can_update"] = HorillaDetailView.check_update_permission(self)
         pipeline_field = self.request.GET.get("pipeline_field")
         if pipeline_field:
             context["pipeline_field"] = pipeline_field
@@ -3665,9 +3767,6 @@ class HorillaActivitySectionView(DetailView):
         except Exception as e:
             messages.error(self.request, e)
             return HttpResponse(headers={"HX-Refresh": "true"})
-            # return HttpResponse(
-            #     "<script>$('#reloadButton').click();</script>"
-            # )
         return super().dispatch(request, *args, **kwargs)
 
     def add_task_button(self):
@@ -4300,6 +4399,15 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        [
+            "horilla_core.view_horillaattachment",
+            "horilla_core.view_own_horillaattachment",
+        ]
+    ),
+    name="dispatch",
+)
 class HorillaNotesAttachementSectionView(DetailView):
 
     template_name = "notes_attachments.html"
@@ -4317,37 +4425,55 @@ class HorillaNotesAttachementSectionView(DetailView):
             (instance._meta.get_field("created_at").verbose_name, "created_at"),
         ]
 
-    @cached_property
-    def actions(self):
+    def get_actions(self):
+        """
+        Return actions based on user permissions.
+        """
+        user = self.request.user
+        actions = []
 
-        return [
-            {
-                "action": "View",
-                "src": "assets/icons/eye1.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+        if (
+            user.is_superuser
+            or user.has_perm("horilla_core.view_own_horillaattachment")
+            or user.has_perm("horilla_core.view_horillaattachment")
+        ):
+            actions.append(
+                {
+                    "action": "View",
+                    "src": "assets/icons/eye1.svg",
+                    "img_class": "w-4 h-4",
+                    "attrs": """
                             hx-get="{get_detail_view_url}"
                             hx-target="#contentModalBox"
                             hx-swap="innerHTML"
                             onclick="openContentModal()"
                             """,
-            },
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+                }
+            )
+
+        if self.check_change_attachment_permission():
+            actions.append(
+                {
+                    "action": "Edit",
+                    "src": "assets/icons/edit.svg",
+                    "img_class": "w-4 h-4",
+                    "attrs": """
                             hx-get="{get_edit_url}"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             hx-on:click="openModal();"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+                }
+            )
+
+        # Delete action - check delete_horillaattachment permission
+        if user.is_superuser or user.has_perm("horilla_core.delete_horillaattachment"):
+            actions.append(
+                {
+                    "action": "Delete",
+                    "src": "assets/icons/a4.svg",
+                    "img_class": "w-4 h-4",
+                    "attrs": """
             hx-post="{get_delete_url}"
             hx-target="#deleteModeBox"
             hx-swap="innerHTML"
@@ -4355,8 +4481,95 @@ class HorillaNotesAttachementSectionView(DetailView):
             hx-vals='{{"check_dependencies": "true"}}'
             onclick="openDeleteModeModal()"
         """,
-            },
-        ]
+                }
+            )
+
+        return actions
+
+    def check_change_attachment_permission(self):
+        """
+        Check if user has permission to edit attachments.
+        Checks change_horillaattachment permission or change_own if user is owner.
+
+        Returns:
+            bool: True if user has permission, False otherwise
+        """
+        user = self.request.user
+
+        # Superuser always has permission
+        if user.is_superuser:
+            return True
+
+        # Check if user has change permission on HorillaAttachment
+        if user.has_perm("horilla_core.change_horillaattachment"):
+            return True
+
+        if user.has_perm("horilla_core.change_own_horillaattachment"):
+            return True
+
+        return False
+
+    def check_attachment_add_permission(self):
+        """
+        Check if user has permission to add attachments.
+        Requires:
+        1. Add permission on HorillaAttachment model
+        2. Add or Change permission on the related object (or change_own if owner)
+
+        Returns:
+            bool: True if user has permission, False otherwise
+        """
+        user = self.request.user
+
+        # Superuser always has permission
+        if user.is_superuser:
+            return True
+
+        # Check if user has add permission on HorillaAttachment
+        if not user.has_perm("horilla_core.add_horillaattachment"):
+            return False
+
+        # Get the related object
+        related_object = self.get_object()
+        related_model = related_object.__class__
+        model_name = related_model._meta.model_name
+        app_label = related_model._meta.app_label
+
+        # Check if user is the owner of the related object
+        is_owner = False
+        owner_fields = getattr(related_model, "OWNER_FIELDS", [])
+
+        for owner_field in owner_fields:
+            try:
+                field_value = getattr(related_object, owner_field, None)
+                if field_value:
+                    # Handle ManyToMany fields
+                    if hasattr(field_value, "all"):
+                        if user in field_value.all():
+                            is_owner = True
+                            break
+                    # Handle ForeignKey fields
+                    elif field_value == user:
+                        is_owner = True
+                        break
+            except Exception:
+                continue
+
+        # Check appropriate permission on related object
+        if is_owner:
+            # Owner needs change_own permission
+            change_own_perm = f"{app_label}.change_own_{model_name}"
+            if user.has_perm(change_own_perm):
+                return True
+
+        # Check regular add or change permission on related object
+        add_perm = f"{app_label}.add_{model_name}"
+        change_perm = f"{app_label}.change_{model_name}"
+
+        if user.has_perm(add_perm) or user.has_perm(change_perm):
+            return True
+
+        return False
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -4381,27 +4594,53 @@ class HorillaNotesAttachementSectionView(DetailView):
         list_view.view_id = f"attachments_{content_type.model}_{object_id}"
         list_view.bulk_select_option = False
         list_view.list_column_visibility = False
-        list_view.actions = self.actions
+        list_view.actions = self.get_actions()
         list_view.table_height = False
         list_view.table_height_as_class = "h-[calc(_100vh_-_500px_)]"
         list_view.table_width = False
         context = list_view.get_context_data(object_list=queryset)
         context.update(super().get_context_data())
+
+        # Add permission flag to context
+        context["can_add_attachment"] = self.check_attachment_add_permission()
+
         return render(request, self.template_name, context)
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        [
+            "horilla_core.view_horillaattachment",
+            "horilla_core.view_own_horillaattachment",
+        ]
+    ),
+    name="dispatch",
+)
 class HorillaNotesAttachementDetailView(DetailView):
 
     template_name = "notes_attachments_detail.html"
     context_object_name = "obj"
     model = HorillaAttachment
 
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Http404:
+            messages.error(self.request, "The requested attachment does not exist.")
+            return HttpResponse(
+                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeContentModal();</script>"
+            )
+
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
 
 @method_decorator(htmx_required, name="dispatch")
 class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
     template_name = "forms/notes_attachment_form.html"
     form_class = HorillaAttachmentForm
+    model = HorillaAttachment
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -4427,6 +4666,118 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
         obj = self.get_object()
         return form_class(instance=obj, **self.get_form_kwargs())
 
+    def check_related_object_permission(self, related_object, permission_type="add"):
+        """
+        Check if user has permission to add/change notes on the related object.
+
+        Args:
+            related_object: The object to which the attachment is related
+            permission_type: 'add' or 'change'
+
+        Returns:
+            bool: True if user has permission, False otherwise
+        """
+        user = self.request.user
+        if user.is_superuser:
+            return True
+
+        related_model = related_object.__class__
+        model_name = related_model._meta.model_name
+        app_label = related_model._meta.app_label
+
+        is_owner = False
+        owner_fields = getattr(related_model, "OWNER_FIELDS", [])
+
+        for owner_field in owner_fields:
+            try:
+                field_value = getattr(related_object, owner_field, None)
+                if field_value:
+                    if hasattr(field_value, "all"):
+                        if user in field_value.all():
+                            is_owner = True
+                            break
+                    # Handle ForeignKey fields
+                    elif field_value == user:
+                        is_owner = True
+                        break
+            except Exception:
+                continue
+
+        if is_owner:
+            change_own_perm = f"{app_label}.change_own_{model_name}"
+            if user.has_perm(change_own_perm):
+                return True
+
+        if permission_type == "add":
+            add_perm = f"{app_label}.add_{model_name}"
+            if user.has_perm(add_perm):
+                return True
+
+        change_perm = f"{app_label}.change_{model_name}"
+        if user.has_perm(change_perm):
+            return True
+
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check permissions before processing the request."""
+        # For edit mode, check if attachment exists and user has permission
+        pk = kwargs.get("pk")
+        if pk:
+            try:
+                attachment = self.model.objects.get(pk=pk)
+                related_object = attachment.related_object
+
+                if related_object:
+                    if not self.check_related_object_permission(
+                        related_object, "change"
+                    ):
+                        messages.error(
+                            request,
+                            _("You don't have permission to edit this attachment."),
+                        )
+                        return HttpResponse(
+                            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+                        )
+            except self.model.DoesNotExist:
+                messages.error(request, _("The requested attachment does not exist."))
+                return HttpResponse(
+                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+                )
+
+        # For create mode, check permission on the related object
+        else:
+            model_name = request.GET.get("model_name")
+            object_id = request.GET.get("object_id")
+
+            if model_name and object_id:
+                try:
+                    content_type = ContentType.objects.get(model=model_name.lower())
+                    related_model = content_type.model_class()
+                    related_object = related_model.objects.get(pk=object_id)
+
+                    if not self.check_related_object_permission(related_object, "add"):
+                        messages.error(
+                            request,
+                            _(
+                                "You don't have permission to add attachments to this record."
+                            ),
+                        )
+                        return HttpResponse(
+                            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+                        )
+                except (
+                    ContentType.DoesNotExist,
+                    related_model.DoesNotExist,
+                    ValueError,
+                ):
+                    messages.error(request, _("Invalid related object."))
+                    return HttpResponse(
+                        "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+                    )
+
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         model_name = self.request.GET.get("model_name")
         pk = self.kwargs.get("pk")
@@ -4445,6 +4796,19 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
         return HttpResponse(
             "<script>$('#tab-notes-attachments').click();closeModal();</script>"
         )
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk:
+            try:
+                self.model.objects.get(pk=pk)
+            except self.model.DoesNotExist:
+                messages.error(request, "The requested attachment does not exist.")
+                return HttpResponse(
+                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+                )
+
+        return super().get(request, *args, **kwargs)
 
 
 @method_decorator(htmx_required, name="dispatch")
