@@ -176,7 +176,8 @@ class TeamRoleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_teamrole"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_teamrole", modal=True),
+    name="dispatch",
 )
 class TeamRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = TeamRole

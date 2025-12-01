@@ -260,7 +260,8 @@ class ToggleOrderFieldView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("leads.delete_leadstatus"), name="dispatch"
+    permission_required_or_denied("leads.delete_leadstatus", modal=True),
+    name="dispatch",
 )
 class LeadStatusDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View to handle deletion of a LeadStatus instance."""

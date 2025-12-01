@@ -719,6 +719,7 @@ class OpportunityMembersDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
 
 
+@method_decorator(htmx_required, name="dispatch")
 class AddDefaultTeamView(LoginRequiredMixin, HorillaSingleFormView):
     """
     View to add default team members from an OpportunityTeam to an Opportunity
@@ -729,6 +730,7 @@ class AddDefaultTeamView(LoginRequiredMixin, HorillaSingleFormView):
     view_id = "add-default-team"
     full_width_fields = ["team"]
     modal_height = False
+    permission_required = ["opportunities.add_opportunityteammember"]
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

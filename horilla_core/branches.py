@@ -203,7 +203,8 @@ class BranchDetailView(LoginRequiredMixin, DetailView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_company"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_company", modal=True),
+    name="dispatch",
 )
 class BranchDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Company

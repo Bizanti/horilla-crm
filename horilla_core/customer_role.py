@@ -199,7 +199,8 @@ class CustomerRoleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_customerrole"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_customerrole", modal=True),
+    name="dispatch",
 )
 class CustomerRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = CustomerRole

@@ -217,7 +217,8 @@ class ScoringRuleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_scoringrule"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_scoringrule", modal=True),
+    name="dispatch",
 )
 class ScoringRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ScoringRule
@@ -480,7 +481,7 @@ class ScoringCriterionCreateUpdateView(HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_scoringcriterion"),
+    permission_required_or_denied("horilla_core.delete_scoringcriterion", modal=True),
     name="dispatch",
 )
 class ScoringCriteriaDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

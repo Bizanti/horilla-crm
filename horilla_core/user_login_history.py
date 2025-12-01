@@ -4,9 +4,11 @@ This view handles the methods for user login history view
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+from horilla_core.decorators import htmx_required
 from horilla_generics.views import HorillaListView, HorillaNavView, HorillaView
 
 
@@ -20,6 +22,7 @@ class UserLoginHistoryView(LoginRequiredMixin, HorillaView):
     list_url = reverse_lazy("horilla_core:user_login_history_list")
 
 
+@method_decorator(htmx_required, name="dispatch")
 class UserLoginHistoryNavbar(LoginRequiredMixin, HorillaNavView):
     """
     user Login history navbar
@@ -42,6 +45,7 @@ class UserLoginHistoryNavbar(LoginRequiredMixin, HorillaNavView):
     search_option = False
 
 
+@method_decorator(htmx_required, name="dispatch")
 class UserloginHistoryListView(LoginRequiredMixin, HorillaListView):
     """
     Login History list view of the user

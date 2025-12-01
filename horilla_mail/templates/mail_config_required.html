@@ -12,7 +12,7 @@
                 <img src="{% static 'assets/icons/close.svg' %}" alt="Close" />
             </button>
         </div>
-        
+
         <!-- Body -->
         <div class="px-6 py-8 text-center">
             <!-- Warning Icon -->
@@ -25,17 +25,17 @@
                     </svg>
                 </div>
             </div>
-            
+
             <!-- Title -->
             <h4 class="text-xl font-semibold text-gray-900 mb-3">
                 {% trans "Cannot send email" %}
             </h4>
-            
+
             <!-- Message -->
             <p class="text-gray-600 mb-8 leading-relaxed">
                 {% trans "Mail can only be sent after outgoing mail is configured." %}
             </p>
-            
+
             <!-- Action Button -->
             {% if request.user.is_superuser or perms.mail.add_horillamailconfiguration %}
                 <button

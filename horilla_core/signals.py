@@ -7,7 +7,6 @@ Features implemented in this module include:
 - Automatic fiscal year configuration when a company is created or updated.
 - Default currency initialization and handling of multi-currency configurations.
 - Custom permission creation during migrations (e.g., 'can_import', 'view_own').
-- Dynamic scoring mechanism for CRM entities such as leads, opportunities, accounts, and contacts.
 - Automatic recalculation of scores when scoring rules, criteria, or conditions change.
 - Helper utilities to dynamically discover models and build filter queries.
 

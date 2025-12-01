@@ -732,6 +732,7 @@ class UpdateTargetHelpTextView(View):
         return render(request, self.template_name, context)
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("forecast.change_forecasttarget"), name="dispatch"
 )
@@ -759,7 +760,8 @@ class UpdateForecastTarget(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("forecast.delete_forecasttarget"), name="dispatch"
+    permission_required_or_denied("forecast.delete_forecasttarget", modal=True),
+    name="dispatch",
 )
 class ForecastTargetDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View to delete a ForecastTarget and handle the post-delete response."""

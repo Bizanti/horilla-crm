@@ -578,7 +578,8 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_holiday"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_holiday", modal=True),
+    name="dispatch",
 )
 class HolidayDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Holiday
@@ -936,7 +937,8 @@ class BusinessHourFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_businesshour"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_businesshour", modal=True),
+    name="dispatch",
 )
 class BusinessHourDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = BusinessHour

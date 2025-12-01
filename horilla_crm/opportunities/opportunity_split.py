@@ -60,6 +60,7 @@ class OpportunitySplitNavbar(LoginRequiredMixin, HorillaNavView):
     search_option = False
 
 
+@method_decorator(htmx_required, name="dispatch")
 class OpportunitySplitListView(LoginRequiredMixin, HorillaListView):
     """
     opportunity List view

@@ -236,7 +236,8 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("campaigns.delete_campaign"), name="dispatch"
+    permission_required_or_denied("campaigns.delete_campaign", modal=True),
+    name="dispatch",
 )
 class CampaignDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
@@ -1187,7 +1188,8 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(
-    permission_required_or_denied("campaigns.delete_campaignmember"), name="dispatch"
+    permission_required_or_denied("campaigns.delete_campaignmember", modal=True),
+    name="dispatch",
 )
 class CampaignMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
@@ -1243,7 +1245,8 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(
-    permission_required_or_denied("campaigns.delete_campaignmember"), name="dispatch"
+    permission_required_or_denied("campaigns.delete_campaignmember", modal=True),
+    name="dispatch",
 )
 class CampaignContactMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """

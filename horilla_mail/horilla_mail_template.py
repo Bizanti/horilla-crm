@@ -47,6 +47,7 @@ class MailTemplateView(LoginRequiredMixin, HorillaView):
     list_url = reverse_lazy("horilla_mail:mail_template_list_view")
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(["horilla_mail.view_horillamailtemplate"]),
     name="dispatch",
@@ -79,6 +80,7 @@ class MailTemplateNavbar(LoginRequiredMixin, HorillaNavView):
             }
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(["horilla_mail.view_horillamailtemplate"]),
     name="dispatch",
@@ -423,7 +425,9 @@ class SaveAsMailTemplateView(LoginRequiredMixin, View):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["horilla_mail.delete_horillamailtemplate"]),
+    permission_required_or_denied(
+        "horilla_mail.delete_horillamailtemplate", modal=True
+    ),
     name="dispatch",
 )
 class MailTemplateDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

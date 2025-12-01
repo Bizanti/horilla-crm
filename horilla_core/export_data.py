@@ -677,7 +677,7 @@ class ScheduleExportListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.can_view_horilla_export"),
+    permission_required_or_denied("horilla_core.can_view_horilla_export", modal=True),
     name="dispatch",
 )
 class ScheduleExportDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

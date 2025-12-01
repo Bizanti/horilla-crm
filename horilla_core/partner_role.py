@@ -178,7 +178,8 @@ class PartnerRoleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_partnerrole"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_partnerrole", modal=True),
+    name="dispatch",
 )
 class PartnerRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = PartnerRole

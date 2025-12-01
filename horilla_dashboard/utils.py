@@ -30,7 +30,7 @@ class DefaultDashboardGenerator:
             self.models = self.get_models()
 
         except ImportError:
-            logger.warning("CRM models not found, using empty model list")
+            logger.warning("Horilla models not found, using empty model list")
             self.models = []
 
     def get_models(self):

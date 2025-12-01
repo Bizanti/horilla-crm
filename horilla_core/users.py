@@ -296,7 +296,8 @@ class UserFormView(LoginRequiredMixin, HorillaMultiStepFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_core.delete_horillauser"), name="dispatch"
+    permission_required_or_denied("horilla_core.delete_horillauser", modal=True),
+    name="dispatch",
 )
 class UserDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = HorillaUser

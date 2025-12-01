@@ -331,7 +331,9 @@ class MailServerTestEmailView(LoginRequiredMixin, FormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_mail.delete_horillamailconfiguration"),
+    permission_required_or_denied(
+        "horilla_mail.delete_horillamailconfiguration", modal=True
+    ),
     name="dispatch",
 )
 class MailServerDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

@@ -1952,6 +1952,7 @@ class SecondaryGroupingFieldChoicesView(View):
         return HttpResponse(select_html)
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("horilla_dashboard.add_dashboard"), name="dispatch"
 )
@@ -2129,6 +2130,7 @@ class ChartPreviewView(View):
             )
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
         ["horilla_dashboard.view_dashboard", "horilla_dashboard.view_own_dashboard"]
@@ -2828,7 +2830,8 @@ class DashboardComponentChartView(View):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_dashboard.delete_dashboard"), name="dispatch"
+    permission_required_or_denied("horilla_dashboard.delete_dashboard", modal=True),
+    name="dispatch",
 )
 class ComponentDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View to handle deletion of dashboard components."""
@@ -3018,7 +3021,8 @@ class DashboardCreateFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_dashboard.delete_dashboard"), name="dispatch"
+    permission_required_or_denied("horilla_dashboard.delete_dashboard", modal=True),
+    name="dispatch",
 )
 class DashboardDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View to handle deletion of horilla_dashboard."""
@@ -3351,7 +3355,9 @@ class FolderDetailListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("horilla_dashboard.delete_dashboardfolder"),
+    permission_required_or_denied(
+        "horilla_dashboard.delete_dashboardfolder", modal=True
+    ),
     name="dispatch",
 )
 class FolderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

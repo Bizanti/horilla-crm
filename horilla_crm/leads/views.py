@@ -255,22 +255,22 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
                 ]
             )
 
-            if self.request.user.has_perm("leads.delete_lead"):
-                actions.append(
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-4 h-4",
-                        "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
-                        """,
-                    }
-                )
+        if self.request.user.has_perm("leads.delete_lead"):
+            actions.append(
+                {
+                    "action": "Delete",
+                    "src": "assets/icons/a4.svg",
+                    "img_class": "w-4 h-4",
+                    "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+                }
+            )
 
         return actions
 
@@ -289,7 +289,9 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(permission_required_or_denied("leads.delete_lead"), name="dispatch")
+@method_decorator(
+    permission_required_or_denied("leads.delete_lead", modal=True), name="dispatch"
+)
 class LeadDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """Lead Delete View"""
 

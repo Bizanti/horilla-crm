@@ -169,7 +169,8 @@ class MailToLeadFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("leads.delete_emailtoleadconfig"), name="dispatch"
+    permission_required_or_denied("leads.delete_emailtoleadconfig", modal=True),
+    name="dispatch",
 )
 class EmailToLeadConfigDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = EmailToLeadConfig

@@ -224,7 +224,8 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
 
 # @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("contacts.delete_contact"), name="dispatch"
+    permission_required_or_denied("contacts.delete_contact", modal=True),
+    name="dispatch",
 )
 class ContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """Delete a contact"""
@@ -1287,7 +1288,9 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("contacts.delete_contactaccountrelationship"),
+    permission_required_or_denied(
+        "contacts.delete_contactaccountrelationship", modal=True
+    ),
     name="dispatch",
 )
 class RelatedContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

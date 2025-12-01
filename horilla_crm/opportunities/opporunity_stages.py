@@ -295,7 +295,7 @@ class OpportynityToggleOrderFieldView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("opportunities.delete_opportunitystage"),
+    permission_required_or_denied("opportunities.delete_opportunitystage", modal=True),
     name="dispatch",
 )
 class OpportunityStatusDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):

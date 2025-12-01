@@ -661,7 +661,8 @@ class TaskListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("activity.delete_activity"), name="dispatch"
+    permission_required_or_denied("activity.delete_activity", modal=True),
+    name="dispatch",
 )
 class ActivityDeleteView(HorillaSingleDeleteView):
     """

@@ -398,7 +398,8 @@ class ForecastTypeFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("forecast.delete_forecasttype"), name="dispatch"
+    permission_required_or_denied("forecast.delete_forecasttype", modal=True),
+    name="dispatch",
 )
 class ForecastTypeDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """Delete view for forecast types."""
