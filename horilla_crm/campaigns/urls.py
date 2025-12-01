@@ -27,6 +27,11 @@ urlpatterns = [
     ),
     path("campaign-create/", views.CampaignFormView.as_view(), name="campaign_create"),
     path(
+        "campaign-single-create/",
+        views.CampaignSingleFormView.as_view(),
+        name="campaign_single_create",
+    ),
+    path(
         "campaign-delete/<int:pk>/",
         views.CampaignDeleteView.as_view(),
         name="campaign_delete",
@@ -35,6 +40,11 @@ urlpatterns = [
         "campaign-edit/<int:pk>/",
         views.CampaignFormView.as_view(),
         name="campaign_edit",
+    ),
+    path(
+        "campaign-single-edit/<int:pk>/",
+        views.CampaignSingleFormView.as_view(),
+        name="campaign_single_edit",
     ),
     path(
         "campaign-change-owner/<int:pk>/",

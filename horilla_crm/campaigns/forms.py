@@ -48,6 +48,33 @@ class CampaignFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["updated_by"].required = False
 
 
+class CampaignSingleForm(HorillaModelForm):
+    """
+    Custom form for campaign to add HTMX attributes
+    Inherits from HorillaModelForm to preserve all existing behavior.
+    """
+
+    class Meta:
+        """Meta class for CampaignSingleForm"""
+
+        model = Campaign
+        fields = [
+            "campaign_owner",
+            "campaign_name",
+            "parent_campaign",
+            "campaign_type",
+            "status",
+            "start_date",
+            "end_date",
+            "expected_revenue",
+            "budget_cost",
+            "actual_cost",
+            "expected_response",
+            "number_sent",
+            "description",
+        ]
+
+
 class CampaignMemberForm(HorillaModelForm):
     """
     Campaign Member Form
