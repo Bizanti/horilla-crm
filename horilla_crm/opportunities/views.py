@@ -16,7 +16,7 @@ from horilla_core.decorators import (
 )
 from horilla_crm.contacts.models import ContactAccountRelationship
 from horilla_crm.opportunities.filters import OpportunityFilter
-from horilla_crm.opportunities.forms import OpportunityFormClass
+from horilla_crm.opportunities.forms import OpportunityFormClass, OpportunitySingleForm
 from horilla_crm.opportunities.models import (
     Opportunity,
     OpportunityContactRole,
@@ -318,9 +318,6 @@ class OpportunityKanbanView(LoginRequiredMixin, HorillaKanbanView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("opportunities.add_opportunity"), name="dispatch"
-)
 class OpportunityMultiStepFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     form_class = OpportunityFormClass
     model = Opportunity
@@ -329,6 +326,11 @@ class OpportunityMultiStepFormView(LoginRequiredMixin, HorillaMultiStepFormView)
     dynamic_create_fields = ["stage"]
     dynamic_create_field_mapping = {
         "stage": {"full_width_fields": ["description"]},
+    }
+
+    single_step_url_name = {
+        "create": "opportunities:opportunity_single_create",
+        "edit": "opportunities:opportunity_single_edit",
     }
 
     @cached_property
@@ -350,19 +352,31 @@ class OpportunityMultiStepFormView(LoginRequiredMixin, HorillaMultiStepFormView)
         initial["account"] = account_id
         return initial
 
-    def get(self, request, *args, **kwargs):
-        opportunity_id = self.kwargs.get("pk")
-        if request.user.has_perm(
-            "opportunities.change_opportunity"
-        ) or request.user.has_perm("opportunities.add_opportunity"):
-            return super().get(request, *args, **kwargs)
 
-        if opportunity_id:
-            opportunity = get_object_or_404(Opportunity, pk=opportunity_id)
-            if opportunity.owner == request.user:
-                return super().get(request, *args, **kwargs)
+@method_decorator(htmx_required, name="dispatch")
+class OpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+    """opportunity Create/Update Single Page View"""
 
-        return render(request, "error/403.html")
+    model = Opportunity
+    form_class = OpportunitySingleForm
+    full_width_fields = ["description"]
+    dynamic_create_fields = ["stage"]
+    dynamic_create_field_mapping = {
+        "stage": {"full_width_fields": ["description"]},
+    }
+
+    multi_step_url_name = {
+        "create": "opportunities:opportunity_create",
+        "edit": "opportunities:opportunity_edit",
+    }
+
+    @cached_property
+    def form_url(self):
+        """Form URL for lead"""
+        pk = self.kwargs.get("pk") or self.request.GET.get("id")
+        if pk:
+            return reverse_lazy("campaigns:campaign_single_edit", kwargs={"pk": pk})
+        return reverse_lazy("campaigns:campaign_single_create")
 
 
 @method_decorator(htmx_required, name="dispatch")

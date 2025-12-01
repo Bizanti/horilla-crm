@@ -317,7 +317,6 @@ class Opportunity(HorillaCoreModel):
         OpportunityStage,
         on_delete=models.PROTECT,
         verbose_name=_("Stage"),
-        help_text="Current opportunity stage",
     )
     probability = models.DecimalField(
         max_digits=5,

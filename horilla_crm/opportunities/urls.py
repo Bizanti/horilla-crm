@@ -32,6 +32,11 @@ urlpatterns = [
         name="opportunity_create",
     ),
     path(
+        "opportunity-single-create/",
+        views.OpportunitySingleFormView.as_view(),
+        name="opportunity_single_create",
+    ),
+    path(
         "related-contact-opportunity-create/",
         views.RelatedOpportunityFormView.as_view(),
         name="related_contact_opportunity_create",
@@ -40,6 +45,11 @@ urlpatterns = [
         "opportunity-edit/<int:pk>/",
         views.OpportunityMultiStepFormView.as_view(),
         name="opportunity_edit",
+    ),
+    path(
+        "opportunity-single-edit/<int:pk>/",
+        views.OpportunitySingleFormView.as_view(),
+        name="opportunity_single_edit",
     ),
     path(
         "opportunity-delete/<int:pk>/",

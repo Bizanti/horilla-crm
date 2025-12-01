@@ -66,6 +66,38 @@ class OpportunityFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["updated_by"].required = False
 
 
+class OpportunitySingleForm(HorillaModelForm):
+    """
+    Custom form for opportunity to add HTMX attributes
+    Inherits from HorillaModelForm to preserve all existing behavior.
+    """
+
+    class Meta:
+        """Meta class for OpportunitySingleForm"""
+
+        model = Opportunity
+        fields = [
+            "name",
+            "amount",
+            "quantity",
+            "close_date",
+            "stage",
+            "probability",
+            "account",
+            "tracking_number",
+            "next_step",
+            "primary_campaign_source",
+            "owner",
+            "opportunity_type",
+            "order_number",
+            "lead_source",
+            "delivery_installation_status",
+            "forecast_category",
+            "main_competitors",
+            "description",
+        ]
+
+
 class OpportunityStageForm(HorillaModelForm):
     """
     Custom form for LeadStatus to add HTMX attributes to is_final field.
