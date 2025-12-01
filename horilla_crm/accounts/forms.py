@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from horilla_core.mixins import OwnerQuerysetMixin
 from horilla_crm.accounts.models import Account
-from horilla_generics.forms import HorillaMultiStepForm
+from horilla_generics.forms import HorillaModelForm, HorillaMultiStepForm
 
 
 class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
@@ -66,6 +66,45 @@ class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["is_partner"].required = False
             if self.instance and self.instance.pk and "is_partner" not in self.initial:
                 self.initial["is_partner"] = self.instance.is_partner
+
+
+class AccountSingleForm(HorillaModelForm):
+    """
+    Custom form for Lead to add HTMX attributes
+    Inherits from HorillaModelForm to preserve all existing behavior.
+    """
+
+    class Meta:
+        """Meta class for LeadStatusForm"""
+
+        model = Account
+        fields = [
+            "account_owner",
+            "name",
+            "account_source",
+            "account_type",
+            "rating",
+            "phone",
+            "parent_account",
+            "fax",
+            "account_number",
+            "website",
+            "site",
+            "billing_city",
+            "billing_state",
+            "billing_district",
+            "billing_zip",
+            "shipping_city",
+            "shipping_state",
+            "shipping_district",
+            "shipping_zip",
+            "annual_revenue",
+            "is_partner",
+            "industry",
+            "number_of_employees",
+            "ownership",
+            "description",
+        ]
 
 
 class AddChildAccountForm(forms.Form):

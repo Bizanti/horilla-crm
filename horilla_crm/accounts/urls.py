@@ -29,6 +29,11 @@ urlpatterns = [
         name="account_create_form_view",
     ),
     path(
+        "account-single-create-form-view/",
+        views.AccountsSingleFormView.as_view(),
+        name="account_single_create_form_view",
+    ),
+    path(
         "account-delete-view/<int:pk>/",
         views.AccountDeleteView.as_view(),
         name="account_delete_view",
@@ -37,6 +42,11 @@ urlpatterns = [
         "account-edit-form-view/<int:pk>/",
         views.AccountFormView.as_view(),
         name="account_edit_form_view",
+    ),
+    path(
+        "account-single-edit-form-view/<int:pk>/",
+        views.AccountsSingleFormView.as_view(),
+        name="account_single_edit_form_view",
     ),
     path(
         "account-change-owner/<int:pk>/",

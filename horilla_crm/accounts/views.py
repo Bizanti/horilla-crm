@@ -34,7 +34,11 @@ from horilla_core.decorators import (
     permission_required_or_denied,
 )
 from horilla_crm.accounts.filters import AccountFilter
-from horilla_crm.accounts.forms import AccountFormClass, AddChildAccountForm
+from horilla_crm.accounts.forms import (
+    AccountFormClass,
+    AccountSingleForm,
+    AddChildAccountForm,
+)
 from horilla_crm.accounts.models import Account, PartnerAccountRelationship
 from horilla_crm.contacts.models import ContactAccountRelationship
 from horilla_generics.mixins import RecentlyViewedMixin
@@ -368,6 +372,11 @@ class AccountFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "4": "Description",
     }
 
+    single_step_url_name = {
+        "create": "accounts:account_single_create_form_view",
+        "edit": "accounts:account_single_edit_form_view",
+    }
+
     @cached_property
     def form_url(self):
         """Return the URL for the account form (edit if PK exists, else create)."""
@@ -376,24 +385,29 @@ class AccountFormView(LoginRequiredMixin, HorillaMultiStepFormView):
             return reverse_lazy("accounts:account_edit_form_view", kwargs={"pk": pk})
         return reverse_lazy("accounts:account_create_form_view")
 
-    def get(self, request, *args, **kwargs):
-        account_id = self.kwargs.get("pk")
-        if account_id:
-            try:
-                account = get_object_or_404(Account, pk=account_id)
-            except Exception as e:
-                messages.error(request, e)
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
 
-            if account.account_owner == request.user:
-                return super().get(request, *args, **kwargs)
+@method_decorator(htmx_required, name="dispatch")
+class AccountsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+    """Account Create/Update Single Page View"""
 
-        if request.user.has_perm("accounts.change_account") or request.user.has_perm(
-            "accounts.add_account"
-        ):
-            return super().get(request, *args, **kwargs)
+    model = Account
+    form_class = AccountSingleForm
+    full_width_fields = ["description"]
 
-        return render(request, "error/403.html")
+    multi_step_url_name = {
+        "create": "accounts:account_create_form_view",
+        "edit": "accounts:account_edit_form_view",
+    }
+
+    @cached_property
+    def form_url(self):
+        """Form URL for lead"""
+        pk = self.kwargs.get("pk") or self.request.GET.get("id")
+        if pk:
+            return reverse_lazy(
+                "accounts:account_single_edit_form_view", kwargs={"pk": pk}
+            )
+        return reverse_lazy("accounts:account_single_create_form_view")
 
 
 @method_decorator(htmx_required, name="dispatch")
