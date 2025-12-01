@@ -21,6 +21,7 @@ from horilla_core.decorators import (
     permission_required_or_denied,
 )
 from horilla_crm.accounts.models import Account
+from horilla_crm.campaigns.models import CampaignMember
 from horilla_crm.contacts.models import Contact, ContactAccountRelationship
 from horilla_crm.leads.filters import LeadFilter
 from horilla_crm.leads.forms import (  # type: ignore
@@ -746,6 +747,16 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
     @cached_property
     def related_list_config(self):
         """Related list config for lead"""
+
+        # Check if user has permission to view campaign members
+        can_view_members = self.request.user.has_perm(
+            "campaigns.view_campaignmember"
+        ) or self.request.user.has_perm("campaigns.view_own_campaignmember")
+
+        # If user doesn't have view permission, return empty config
+        if not can_view_members:
+            return {"custom_related_lists": {}}
+
         query_params = {}
         if "section" in self.request.GET:
             query_params["section"] = self.request.GET.get("section")
@@ -773,6 +784,81 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
                     }
                 }
             ]
+
+        # Check permission for adding CampaignMember
+        can_add_member = self.request.user.has_perm("campaigns.add_campaignmember")
+
+        # Check permission for editing - requires permissions for both Lead and CampaignMember
+        can_change_lead = self.request.user.has_perm(
+            "leads.change_lead"
+        ) or self.request.user.has_perm("leads.change_own_lead")
+        can_change_campaign_member = self.request.user.has_perm(
+            "campaigns.change_campaignmember"
+        ) or (
+            self.request.user.has_perm("campaigns.change_own_campaignmember")
+            and CampaignMember.user_has_owned_members(self.request.user)
+        )
+        can_change_member = can_change_lead and can_change_campaign_member
+
+        # Build config dictionary
+        config = {
+            "title": Lead._meta.get_field("lead_campaign_members")
+            .related_model._meta.get_field("campaign")
+            .related_model._meta.verbose_name_plural,
+            "columns": [
+                (
+                    Lead._meta.get_field("lead_campaign_members")
+                    .related_model._meta.get_field("campaign")
+                    .related_model._meta.get_field("campaign_name")
+                    .verbose_name,
+                    "campaign_name",
+                ),
+                (
+                    Lead._meta.get_field("lead_campaign_members")
+                    .related_model._meta.get_field("campaign")
+                    .related_model._meta.get_field("status")
+                    .verbose_name,
+                    "get_status_display",
+                ),
+                (
+                    Lead._meta.get_field("lead_campaign_members")
+                    .related_model._meta.get_field("campaign")
+                    .related_model._meta.get_field("start_date")
+                    .verbose_name,
+                    "start_date",
+                ),
+                (
+                    Lead._meta.get_field("lead_campaign_members")
+                    .related_model._meta.get_field("member_status")
+                    .verbose_name,
+                    "members__get_member_status_display",
+                ),
+            ],
+            "col_attrs": col_attrs,
+        }
+
+        # Only add edit action if user has permission
+        if can_change_member:
+            config["actions"] = [
+                {
+                    "action": "edit",
+                    "src": "/assets/icons/edit.svg",
+                    "img_class": "w-4 h-4",
+                    "attrs": """
+                        hx-get="{get_specific_member_edit_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="event.stopPropagation();openModal()"
+                        hx-indicator="#modalBox"
+                        """,
+                },
+            ]
+
+        # Only add "can_add" and "add_url" if user has permission
+        if can_add_member:
+            config["can_add"] = True
+            config["add_url"] = reverse_lazy("campaigns:add_to_campaign")
+
         return {
             "custom_related_lists": {
                 "campaigns": {
@@ -781,57 +867,7 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
                     "intermediate_model": "CampaignMember",
                     "intermediate_field": "members",
                     "related_field": "lead",
-                    "config": {
-                        "title": Lead._meta.get_field("lead_campaign_members")
-                        .related_model._meta.get_field("campaign")
-                        .related_model._meta.verbose_name_plural,
-                        "columns": [
-                            (
-                                Lead._meta.get_field("lead_campaign_members")
-                                .related_model._meta.get_field("campaign")
-                                .related_model._meta.get_field("campaign_name")
-                                .verbose_name,
-                                "campaign_name",
-                            ),
-                            (
-                                Lead._meta.get_field("lead_campaign_members")
-                                .related_model._meta.get_field("campaign")
-                                .related_model._meta.get_field("status")
-                                .verbose_name,
-                                "get_status_display",
-                            ),
-                            (
-                                Lead._meta.get_field("lead_campaign_members")
-                                .related_model._meta.get_field("campaign")
-                                .related_model._meta.get_field("start_date")
-                                .verbose_name,
-                                "start_date",
-                            ),
-                            (
-                                Lead._meta.get_field("lead_campaign_members")
-                                .related_model._meta.get_field("member_status")
-                                .verbose_name,
-                                "members__get_member_status_display",
-                            ),
-                        ],
-                        "can_add": True,
-                        "add_url": reverse_lazy("campaigns:add_to_campaign"),
-                        "actions": [
-                            {
-                                "action": "edit",
-                                "src": "/assets/icons/edit.svg",
-                                "img_class": "w-4 h-4",
-                                "attrs": """
-                                    hx-get="{get_specific_member_edit_url}"
-                                    hx-target="#modalBox"
-                                    hx-swap="innerHTML"
-                                    onclick="event.stopPropagation();openModal()"
-                                    hx-indicator="#modalBox"
-                                    """,
-                            },
-                        ],
-                        "col_attrs": col_attrs,
-                    },
+                    "config": config,
                 },
             },
         }

@@ -26,6 +26,7 @@ from horilla_crm.campaigns.filters import CampaignFilter
 from horilla_crm.campaigns.forms import (
     CampaignFormClass,
     CampaignMemberForm,
+    CampaignSingleForm,
     ChildCampaignForm,
 )
 from horilla_crm.campaigns.models import Campaign, CampaignMember
@@ -374,6 +375,11 @@ class CampaignFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": "Additional Information",
     }
 
+    single_step_url_name = {
+        "create": "campaigns:campaign_single_create",
+        "edit": "campaigns:campaign_single_edit",
+    }
+
     @cached_property
     def form_url(self):
         """
@@ -383,6 +389,28 @@ class CampaignFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         if pk:
             return reverse_lazy("campaigns:campaign_edit", kwargs={"pk": pk})
         return reverse_lazy("campaigns:campaign_create")
+
+
+@method_decorator(htmx_required, name="dispatch")
+class CampaignSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+    """campaign Create/Update Single Page View"""
+
+    model = Campaign
+    form_class = CampaignSingleForm
+    full_width_fields = ["description"]
+
+    multi_step_url_name = {
+        "create": "campaigns:campaign_create",
+        "edit": "campaigns:campaign_edit",
+    }
+
+    @cached_property
+    def form_url(self):
+        """Form URL for lead"""
+        pk = self.kwargs.get("pk") or self.request.GET.get("id")
+        if pk:
+            return reverse_lazy("campaigns:campaign_single_edit", kwargs={"pk": pk})
+        return reverse_lazy("campaigns:campaign_single_create")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -1068,22 +1096,25 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["lead"]
 
     def get(self, request, *args, **kwargs):
-
         lead_id = request.GET.get("id")
-        if request.user.has_perm("leads.change_lead") or request.user.has_perm(
-            "leads.add_lead"
-        ):
-            return super().get(request, *args, **kwargs)
+        pk = self.kwargs.get("pk")
+        lead = None
 
-        if lead_id:
-            lead = apps.get_model("leads", "Lead")
-
-            lead = get_object_or_404(lead, pk=lead_id)
-
-            if lead.lead_owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "error/403.html")
+        if pk:
+            campaign_member = get_object_or_404(CampaignMember, pk=pk)
+            lead = campaign_member.lead
+        elif lead_id:
+            Lead = apps.get_model("leads", "Lead")
+            lead = get_object_or_404(Lead, pk=lead_id)
+        is_owner = lead and lead.lead_owner == request.user
+        if pk:
+            if request.user.has_perm("leads.change_lead"):
+                pass
+            elif request.user.has_perm("leads.change_own_lead") and is_owner:
+                pass
+            else:
+                return render(request, "error/403.html", {"modal": True})
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         super().form_valid(form)
