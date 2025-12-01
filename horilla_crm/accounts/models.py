@@ -171,6 +171,14 @@ class Account(HorillaCoreModel):
         """
         return reverse_lazy("accounts:account_edit_form_view", kwargs={"pk": self.pk})
 
+    def get_duplicate_url(self):
+        """
+        This method to get edit url
+        """
+        return reverse_lazy(
+            "accounts:account_single_edit_form_view", kwargs={"pk": self.pk}
+        )
+
     def get_change_owner_url(self):
         """
         This method to get edit url

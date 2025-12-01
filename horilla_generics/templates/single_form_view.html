@@ -21,7 +21,7 @@
                     <img src="{% static 'assets/icons/close.svg' %}" alt="Close" />
                 </button>
             </div>
-            {% if multi_step_url %}
+            {% if multi_step_url and not duplicate_mode %}
                 <div class="pt-0 mb-2">
                     <ul class="flex gap-2 text-sm font-normal text-gray-500">
                         <li>

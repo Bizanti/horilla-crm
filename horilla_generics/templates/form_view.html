@@ -21,7 +21,7 @@
         <div class="p-4 pt-0 mb-2">
             <ul class="flex gap-2 text-sm font-normal text-gray-500">
                 <li>
-                    <a href="{{ form_url }}"
+                    <a
                        class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs text-white bg-primary-600"
                        hx-get="{{ form_url }}"
                        hx-target="#modalBox"
@@ -30,9 +30,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ single_step_url }}"
+                    <a
                        class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs bg-primary-200 text-primary-600"
-                       hx-get="{{ single_step_url }}"
+                       hx-get="{{ single_step_url }}?{{ request.GET.urlencode }}"
                        hx-target="#modalBox"
                        hx-swap="innerHTML">
                        {% trans "Single-Step Form" %}
