@@ -1,10 +1,10 @@
 {% load static %}
 {% load i18n %}
 {% load horilla_tags %}
-<div class="relative bg-white rounded-lg shadow-sm">
+<div id="{{ view_id|safe }}-multi-container" class="relative bg-white rounded-lg shadow-sm">
     <form method="post" hx-post="{{ form_url }}?{{ request.GET.urlencode }}" autocomplete="off"
-        hx-target="#modalBox"
-        hx-swap="innerHTML"
+        hx-target="#{{ view_id|safe }}-multi-container"
+        hx-swap="outerHTML"
         enctype="multipart/form-data"
         class="w-full">
         {% csrf_token %}

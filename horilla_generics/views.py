@@ -192,7 +192,7 @@ class HorillaNavView(TemplateView):
 
     @cached_property
     def actions(self):
-        """Actions for lead"""
+        """Actions"""
         view_perm = f"{self.model_app_label}.view_{self.model_name.lower()}"
         view_own_perm = f"{self.model_app_label}.view_own_{self.model_name.lower()}"
         can_import_perm = f"{self.model_app_label}.can_import_{self.model_name.lower()}"
@@ -3655,11 +3655,13 @@ class HorillaDetailTabView(HorillaTabView):
     view_id = "generic-details-tab-view"
     object_id = None
     urls = {}
-    tab_class = "h-[calc(_100vh_-_475px_)] overflow-hidden vbvbvb"
+    tab_class = "h-[calc(_100vh_-_475px_)] overflow-hidden"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pipeline_field = self.request.GET.get("pipeline_field")
+        if not pipeline_field:
+            self.tab_class = "h-[calc(_100vh_-_390px_)] overflow-hidden"
         user = self.request.user
         self.tabs = []
         if self.object_id:
@@ -4471,7 +4473,7 @@ class HorillaNotesAttachementSectionView(DetailView):
     @cached_property
     def columns(self):
         """
-        Define columns like in LeadListView
+        Define columns like in ListView
         """
         instance = HorillaAttachment()
         return [
@@ -4934,7 +4936,7 @@ class HorillaMultiStepFormView(FormView):
     check_object_permission = True
     permission_denied_template = "error/403.html"
     skip_permission_check = False
-
+    view_id = ""
     single_step_url_name = None
 
     def get_filtered_dynamic_create_fields(self):
@@ -5429,6 +5431,7 @@ class HorillaMultiStepFormView(FormView):
                     field.widget.attrs["fullwidth"] = True
 
         context["single_step_url"] = self.get_single_step_url()
+        context["view_id"] = self.view_id or f"{self.model._meta.model_name}-form-view"
         return context
 
     def form_valid(self, form):
@@ -5529,6 +5532,7 @@ class HorillaMultiStepFormView(FormView):
                             if form_data.get(f"{field.name}_cleared"):
                                 setattr(instance, field.name, None)
                     instance.save()
+                    self.object = instance
 
                     for field in self.model._meta.get_fields():
                         if (
@@ -5984,6 +5988,7 @@ class HorillaSingleFormView(FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+
         kwargs["full_width_fields"] = self.full_width_fields or []
         kwargs["dynamic_create_fields"] = self.get_filtered_dynamic_create_fields()
         kwargs["condition_fields"] = self.condition_fields or []
@@ -6006,7 +6011,13 @@ class HorillaSingleFormView(FormView):
                 ]:
                     field_value = getattr(self.object, field.name)
                     if field_value is not None:
-                        if field.get_internal_type() in ["CharField", "TextField"]:
+                        if field.get_internal_type() in [
+                            "CharField",
+                            "TextField",
+                        ] and not isinstance(
+                            field,
+                            (models.EmailField, models.URLField, models.SlugField),
+                        ):
                             initial[field.name] = f"{field_value} (Copy)"
                         else:
                             initial[field.name] = field_value
@@ -6215,7 +6226,6 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
             )
 
         custom_perms = self.get_permission_from_mapping()
-        print(custom_perms, 11111111111111111111111111111)
 
         if custom_perms:
             permissions = custom_perms
