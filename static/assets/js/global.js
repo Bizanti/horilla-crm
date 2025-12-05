@@ -1,4 +1,4 @@
-//Generic Reasign Delete Confirm Modal
+// Internationalization messages
 const horillaMessages = {
     confirm: gettext("Confirm"),
     close: gettext("Close"),
@@ -10,310 +10,67 @@ const horillaMessages = {
     confirmBulkDelete: gettext("Do you really want to delete all the selected records?"),
     confirmBulkArchive: gettext("Do you really want to archive all the selected records?"),
     confirmBulkUnArchive: gettext("Do you really want to unarchive all the selected records?"),
-}
+};
+
+// Generic Modal Manager
+const ModalManager = {
+    open(modalId, modalBoxId) {
+        const $modal = $(`#${modalId}`);
+        const $modalBox = $(`#${modalBoxId}`);
+
+        $modal.removeClass("hidden");
+        setTimeout(() => {
+            $modalBox.removeClass("opacity-0 scale-95").addClass("opacity-100 scale-100");
+        }, 10);
+    },
+
+    close(modalId, modalBoxId, clearContent = true) {
+        const $modal = $(`#${modalId}`);
+        const $modalBox = $(`#${modalBoxId}`);
+
+        if (clearContent) $modalBox.html("");
+        $modalBox.removeClass("opacity-100 scale-100").addClass("opacity-0 scale-95");
+
+        setTimeout(() => {
+            $modal.addClass("hidden");
+        }, 300);
+    }
+};
+
+// Modal functions using ModalManager
+function OpenDeleteConfirmModal() { ModalManager.open("deleteConfirmModal", "deleteConfirmModalBox"); }
+function CloseDeleteConfirmModal() { ModalManager.close("deleteConfirmModal", "deleteConfirmModalBox"); }
+function openDynamicModal() { ModalManager.open("dynamicCreateModal", "dynamicCreateModalBox"); }
+function closeDynamicModal() { ModalManager.close("dynamicCreateModal", "dynamicCreateModalBox"); }
+function openContentModal() { ModalManager.open("contentModal", "contentModalBox"); }
+function closeContentModal() { ModalManager.close("contentModal", "contentModalBox"); }
+function openCalendarPreviewModal() { ModalManager.open("calendarPreviewModal", "calendarPreviewModalBox"); }
+function closeCalendarPreviewModal() { ModalManager.close("calendarPreviewModal", "calendarPreviewModalBox"); }
+function openContentModalSecond() { ModalManager.open("contentModalSecond", "contentModalBoxSecond"); }
+function closeContentModalSecond() { ModalManager.close("contentModalSecond", "contentModalBoxSecond"); }
+function openDetailModal() { ModalManager.open("detailModal", "detailModalBox"); }
+function closeDetailModal() { ModalManager.close("detailModal", "detailModalBox"); }
+function openModal() { ModalManager.open("dbmodal", "modalBox"); }
+function closeModal() { ModalManager.close("dbmodal", "modalBox"); }
+function openhorillaModal() { ModalManager.open("horillaModal", "horillaModalBox"); }
+function closehorillaModal() { ModalManager.close("horillaModal", "horillaModalBox"); }
+function openFilterModal() { ModalManager.open("filtermodal", "filtermodalBox"); }
+function closeFilterModal() { ModalManager.close("filtermodal", "filtermodalBox"); }
+function openDeleteModal() { ModalManager.open("deletemodal", "deleteBox"); }
+function closeDeleteModal() { ModalManager.close("deletemodal", "deleteBox"); }
+function openDeleteModeModal() { ModalManager.open("deleteModeModal", "deleteModeBox"); }
+function closeDeleteModeModal() { ModalManager.close("deleteModeModal", "deleteModeBox"); }
+function openExport() { ModalManager.open("exportModal", "exportBox"); }
+function closeExport() { ModalManager.close("exportModal", "exportBox", false); }
 
-function OpenDeleteConfirmModal() {
-
-    const $deleteConfirmModal = $("#deleteConfirmModal");
-    const $deleteConfirmModalBox = $("#deleteConfirmModalBox");
-
-    $deleteConfirmModal.removeClass("hidden");
-    setTimeout(() => {
-        $deleteConfirmModalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-
-function CloseDeleteConfirmModal() {
-
-    const $deleteConfirmModal = $("#deleteConfirmModal");
-    const $deleteConfirmModalBox = $("#deleteConfirmModalBox");
-    $deleteConfirmModalBox.html("");
-    $deleteConfirmModalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-
-
-    setTimeout(() => {
-        $deleteConfirmModal.addClass("hidden");
-    }, 300);
-}
-
-// end
-
-function openDynamicModal() {
-
-    // Fresh selection each time instead of cached selectors
-    const $dynamicCreateModal = $("#dynamicCreateModal");
-    const $dynamicCreateModalBox = $("#dynamicCreateModalBox");
-
-    $dynamicCreateModal.removeClass("hidden");
-    setTimeout(() => {
-        $dynamicCreateModalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeDynamicModal() {
-    // Fresh selection each time
-    const $dynamicCreateModal = $("#dynamicCreateModal");
-    const $dynamicCreateModalBox = $("#dynamicCreateModalBox");
-    $dynamicCreateModalBox.html("");
-    $dynamicCreateModalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $dynamicCreateModal.addClass("hidden");
-    }, 300);
-}
-
-function openContentModal() {
-
-    // Fresh selection each time instead of cached selectors
-    const $ContentModal = $("#contentModal");
-    const $ContentModalBox = $("#contentModalBox");
-
-    $ContentModal.removeClass("hidden");
-    setTimeout(() => {
-        $ContentModalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeContentModal() {
-    // Fresh selection each time
-    const $ContentModal = $("#contentModal");
-    const $ContentModalBox = $("#contentModalBox");
-    $ContentModalBox.html("");
-    $ContentModalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $ContentModal.addClass("hidden");
-    }, 300);
-}
-
-
-function openCalendarPreviewModal() {
-
-    // Fresh selection each time instead of cached selectors
-    const $calendarPreviewModal = $("#calendarPreviewModal");
-    const $calendarPreviewModalBox = $("#calendarPreviewModalBox");
-
-    $calendarPreviewModal.removeClass("hidden");
-    setTimeout(() => {
-        $calendarPreviewModalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeCalendarPreviewModal() {
-    // Fresh selection each time
-    const $calendarPreviewModal = $("#calendarPreviewModal");
-    const $calendarPreviewModalBox = $("#calendarPreviewModalBox");
-    $calendarPreviewModal.html("");
-    $calendarPreviewModalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $calendarPreviewModal.addClass("hidden");
-    }, 300);
-}
-
-function openContentModalSecond() {
-
-    const $ContentModalSecond = $("#contentModalSecond");
-    const $ContentModalBoxSecond = $("#contentModalBoxSecond");
-
-    $ContentModalSecond.removeClass("hidden");
-    setTimeout(() => {
-        $ContentModalBoxSecond.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeContentModalSecond() {
-    // Fresh selection each time
-    const $ContentModalSecond = $("#contentModalSecond");
-    const $ContentModalBoxSecond = $("#contentModalBoxSecond");
-    $ContentModalBoxSecond.html("");
-    $ContentModalBoxSecond.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $ContentModalSecond.addClass("hidden");
-    }, 300);
-}
-
-
-//detail view modal
-
-function openDetailModal() {
-
-    // Fresh selection each time instead of cached selectors
-    const $detailModal = $("#detailModal");
-    const $detailModalBox = $("#detailModalBox");
-
-    $detailModal.removeClass("hidden");
-    setTimeout(() => {
-        $detailModalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeDetailModal() {
-    // Fresh selection each time
-    const $detailModal = $("#detailModal");
-    const $detailModalBox = $("#detailModalBox");
-    $detailModalBox.html("");
-    $detailModalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $detailModal.addClass("hidden");
-    }, 300);
-}
-
-
-function openModal() {
-
-    const $modal = $("#dbmodal");
-    const $modalBox = $("#modalBox");
-
-    $modal.removeClass("hidden");
-    setTimeout(() => {
-        $modalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-
-function closeModal() {
-
-    const $modal = $("#dbmodal");
-    const $modalBox = $("#modalBox");
-    $modalBox.html("");
-    $modalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-
-
-    setTimeout(() => {
-        $modal.addClass("hidden");
-    }, 300);
-}
-
-
-function openhorillaModal() {
-
-
-    const $modal = $("#horillaModal");
-    const $modalBox = $("#horillaModalBox");
-
-    $modal.removeClass("hidden");
-    setTimeout(() => {
-        $modalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-
-function closehorillaModal() {
-
-    const $modal = $("#horillaModal");
-    const $modalBox = $("#horillaModalBox");
-    $modalBox.html("");
-    $modalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-
-
-    setTimeout(() => {
-        $modal.addClass("hidden");
-    }, 300);
-}
-
-
-//FILTER MODAL
-
-function openFilterModal() {
-
-    const $filtermodal = $("#filtermodal");
-    const $filtermodalBox = $("#filtermodalBox");
-
-    $filtermodal.removeClass("hidden");
-    setTimeout(() => {
-        $filtermodalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-
-function closeFilterModal() {
-
-    const $filtermodal = $("#filtermodal");
-    const $filtermodalBox = $("#filtermodalBox");
-    $filtermodalBox.html("");
-    $filtermodalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $filtermodal.addClass("hidden");
-    }, 300);
-}
-
-//DELETE MODAL
-
-
-function openDeleteModal() {
-    const $deletemodal = $("#deletemodal");
-    const $deletemodalBox = $("#deleteBox");
-
-    $deletemodal.removeClass("hidden");
-    setTimeout(() => {
-        $deletemodalBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeDeleteModal() {
-    const $deletemodal = $("#deletemodal");
-    const $deletemodalBox = $("#deleteBox");
-    $deletemodalBox.html("");
-    $deletemodalBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $deletemodal.addClass("hidden");
-    }, 300);
-}
-
-//MODAL CLOSE ONLY CLOSE CURRENT MODAL
 function closeConfirm(button) {
     const modal = button.closest(".modal-wrapper");
     modal.classList.add("hidden");
 }
 
-
-
-function openDeleteModeModal() {
-    //DELETE MODE MODAL
-    const $deleteModeModal = $("#deleteModeModal");
-    const $deleteModeBox = $("#deleteModeBox");
-    $deleteModeModal.removeClass("hidden");
-    setTimeout(() => {
-        $deleteModeBox.removeClass("opacity-0 scale-95")
-            .addClass("opacity-100 scale-100");
-    }, 10);
-}
-
-function closeDeleteModeModal() {
-    //DELETE MODE MODAL
-    const $deleteModeModal = $("#deleteModeModal");
-    const $deleteModeBox = $("#deleteModeBox");
-    $deleteModeBox.html("");
-    $deleteModeBox.removeClass("opacity-100 scale-100")
-        .addClass("opacity-0 scale-95");
-    setTimeout(() => {
-        $deleteModeModal.addClass("hidden");
-    }, 300);
-}
-
 function toggleAccordion(button) {
     const content = button.nextElementSibling;
     const svg = button.querySelector("svg");
-
     content.classList.toggle("open");
     svg.classList.toggle("rotate-90");
 }
@@ -322,11 +79,10 @@ function isElementVisible(element) {
     const $targetSelector = $(element).attr("hx-target");
     const $targetEl = $($targetSelector);
     const isOpen = $targetEl.css("max-height") && $targetEl.css("max-height") !== "0px";
-
     return !isOpen;
 }
 
-
+// Bulk delete with validation
 function doBulkDeleteRequest(element) {
     const viewId = $(element).attr("id").replace("bulk-delete-btn-", "");
     const selectedIds = selectedRecordIds(viewId);
@@ -336,130 +92,85 @@ function doBulkDeleteRequest(element) {
     } else {
         const modalContent = `
             <div class="p-6 text-center">
-                <!-- Warning icon -->
                 <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M12 2a10 10 0 11-0 20 10 10 0 010-20z" />
                     </svg>
                 </div>
-
                 <h2 class="text-lg font-semibold text-gray-800 mb-2">No Rows Selected</h2>
-
-                <p class="text-sm text-gray-500 mb-6">
-                    Please select at least one record before attempting to delete.
-                </p>
-
-                <button id="closeDbModal"
-                    class="px-6 py-2.5 text-sm border-[1px] border-[solid] bg-secondary-600 rounded-[5px] text-white btn-with-icon border-[#e54f38] [transition:.3s]">
+                <p class="text-sm text-gray-500 mb-6">Please select at least one record before attempting to delete.</p>
+                <button id="closeDbModal" class="px-6 py-2.5 text-sm border-[1px] border-[solid] bg-secondary-600 rounded-[5px] text-white btn-with-icon border-[#e54f38] [transition:.3s]">
                     Close
                 </button>
             </div>
         `;
 
-        // Inject modal content and display
         $("#deleteModeBox").html(modalContent);
         $("#deleteModeModal").removeClass("hidden").addClass("flex");
 
-        // Animate modal appearance
         setTimeout(() => {
             $("#deleteModeBox").removeClass("opacity-0 scale-95").addClass("opacity-100 scale-100");
         }, 10);
 
-        // Close modal logic
         $("#closeDbModal").on("click", function () {
             closeDeleteModeModal();
         });
     }
 }
 
-
+// Select2 formatting
 function formatOption(option) {
-    if (!option.id) {
-        return option.text;
-    }
+    if (!option.id) return option.text;
+
     var imgSrc = $(option.element).data('img');
     if (imgSrc) {
-        return $(
-            '<span><img src="' + imgSrc + '" class="w-6 h-6 rounded-full inline-block mr-2" /> ' + option.text + '</span>'
-        );
+        return $('<span><img src="' + imgSrc + '" class="w-6 h-6 rounded-full inline-block mr-2" /> ' + option.text + '</span>');
     }
     return option.text;
 }
 
-var activeSidebarLink = () => {
-    let activeLinkId = "#" + localStorage.getItem("activeSidebarLinkId");
-    if (activeLinkId) {
-        $(activeLinkId).addClass("bg-primary-600 text-white").find("img").css("filter", "brightness(0) invert(1)");
-    }
-}
-// sidebar script start from here onwards
+// Sidebar Management
+const SidebarManager = {
+    ACTIVE_FILTER: "brightness(0) invert(1)",
+    INACTIVE_FILTER: "brightness(0) saturate(100%) invert(52%) sepia(0%) saturate(0%) hue-rotate(179deg) brightness(92%) contrast(85%)",
 
-$(document).ready(function () {
-    initializeSelect2Pagination();
-    safeInitializeSelect2();
-    showMessages();
-
-
-    const ACTIVE_FILTER = "brightness(0) invert(1)";
-    const INACTIVE_FILTER = "brightness(0) saturate(100%) invert(52%) sepia(0%) saturate(0%) hue-rotate(179deg) brightness(92%) contrast(85%)";
-    const $navLinks = $("nav a.nav-link");
-
-    // Correct sub-sidebar selector
-
-    // const $subSidebar = $("#sideMenu");
-    // if ($subSidebar.length === 0) {
-    //     console.warn("Sub-sidebar not found with selector '#sideMenu ul'. Check your HTML structure.");
-    // }
-
-    const APP_SECTION_MAPPING = window.APP_SECTION_MAPPING || {};
-
-    function getAppLabelFromUrl() {
+    getAppLabelFromUrl() {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part.length > 0);
         return pathParts[0] || 'horilla_core';
-    }
+    },
 
-    function getSectionFromAppLabel(appLabel) {
+    getSectionFromAppLabel(appLabel) {
+        const APP_SECTION_MAPPING = window.APP_SECTION_MAPPING || {};
         for (const [section, apps] of Object.entries(APP_SECTION_MAPPING)) {
             if (Array.isArray(apps) && apps.includes(appLabel)) {
                 return section;
             }
         }
         return 'home';
-    }
+    },
 
-    function getActiveSection() {
+    getActiveSection() {
         const urlParams = new URLSearchParams(window.location.search);
         const sectionFromUrl = urlParams.get('section');
 
-        if (sectionFromUrl) {
-            return sectionFromUrl;
-        }
+        if (sectionFromUrl) return sectionFromUrl;
 
-        const appLabel = getAppLabelFromUrl();
-        const sectionFromApp = getSectionFromAppLabel(appLabel);
+        const appLabel = this.getAppLabelFromUrl();
+        const sectionFromApp = this.getSectionFromAppLabel(appLabel);
 
         return sectionFromApp || localStorage.getItem("currentActiveSection") || 'home';
-    }
+    },
 
-    // function getActiveSection() {
-    //     const appLabel = getAppLabelFromUrl();
-    //     const sectionFromApp = getSectionFromAppLabel(appLabel);
-    //     const urlParams = new URLSearchParams(window.location.search);
-    //     const sectionFromUrl = urlParams.get('section');
-    //     const activeSection = sectionFromApp || sectionFromUrl || localStorage.getItem("currentActiveSection") || 'home';
-
-    //     return activeSection;
-    // }
-
-    function getSectionSpecificSubsectionId(sectionId) {
+    getSectionSpecificSubsectionId(sectionId) {
         return localStorage.getItem(`activeSidebarLinkId_${sectionId}`) || localStorage.getItem("activeSidebarLinkId");
-    }
+    },
 
-    function setActiveNavLink($link, sectionId) {
+    setActiveNavLink($link, sectionId) {
+        const $navLinks = $("nav a.nav-link");
         $navLinks.removeClass('active').find("img").css("filter", "");
-        $link.addClass('active').find("img").css("filter", ACTIVE_FILTER);
+        $link.addClass('active').find("img").css("filter", this.ACTIVE_FILTER);
         localStorage.setItem("activeNavLinkId", sectionId);
         localStorage.setItem("currentActiveSection", sectionId);
 
@@ -468,11 +179,11 @@ $(document).ready(function () {
             localStorage.removeItem("activeSidebarLinkId");
             localStorage.removeItem("activeSidebarLinkId_home");
         }
-    }
+    },
 
-    function setActiveSubsectionLink($link, sectionId) {
-        $("ul a.sidebar-link").removeClass("bg-primary-600 text-white").find("img").css("filter", INACTIVE_FILTER);
-        $link.addClass("bg-primary-600 text-white").find("img").css("filter", ACTIVE_FILTER);
+    setActiveSubsectionLink($link, sectionId) {
+        $("ul a.sidebar-link").removeClass("bg-primary-600 text-white").find("img").css("filter", this.INACTIVE_FILTER);
+        $link.addClass("bg-primary-600 text-white").find("img").css("filter", this.ACTIVE_FILTER);
 
         const linkId = $link.attr("id");
         if (linkId && sectionId) {
@@ -480,23 +191,20 @@ $(document).ready(function () {
             localStorage.setItem("activeSidebarLinkId", linkId);
             localStorage.setItem("sidebarClicked", "true");
         }
-    }
+    },
 
-    function activateFirstSubsectionItem(sectionId) {
+    activateFirstSubsectionItem(sectionId) {
         const $subsectionLinks = $("ul a.sidebar-link").filter(`[data-section="${sectionId}"]`);
         if (!$subsectionLinks.length) {
             const $allLinks = $("ul a.sidebar-link");
-            if ($allLinks.length) {
-            } else {
-                return;
-            }
+            if (!$allLinks.length) return;
         }
 
         let $activeLink = null;
         const sidebarClicked = localStorage.getItem("sidebarClicked") === "true";
-        const activeSubItemId = getSectionSpecificSubsectionId(sectionId);
+        const activeSubItemId = this.getSectionSpecificSubsectionId(sectionId);
         const lastActiveSection = localStorage.getItem("lastActiveSection");
-        const appLabel = getAppLabelFromUrl();
+        const appLabel = this.getAppLabelFromUrl();
 
         const isSectionSwitch = lastActiveSection && lastActiveSection !== sectionId;
 
@@ -514,172 +222,99 @@ $(document).ready(function () {
         } else {
             $activeLink = activeSubItemId ? $subsectionLinks.filter(`#${activeSubItemId}`) : $subsectionLinks.first();
 
-
             if (!$activeLink.length) {
                 $("#hiddenReloadSidebar").click();
                 console.warn("No sub-sidebar link found, triggering reload.");
-                return; // prevent continuing with null link
+                return;
             }
-
         }
 
         if ($activeLink && $activeLink.length) {
-            setActiveSubsectionLink($activeLink, sectionId);
+            this.setActiveSubsectionLink($activeLink, sectionId);
         } else {
             const $fallbackLink = $subsectionLinks.first() || $("ul a.sidebar-link").first();
             if ($fallbackLink.length) {
-                setActiveSubsectionLink($fallbackLink, sectionId);
+                this.setActiveSubsectionLink($fallbackLink, sectionId);
             }
         }
 
         localStorage.setItem("lastActiveSection", sectionId);
-    }
+    },
 
-    function initFromUrl() {
-        const currentSection = getActiveSection();
+    initFromUrl() {
+        const currentSection = this.getActiveSection();
+        const $navLinks = $("nav a.nav-link");
         const $sectionLink = $navLinks.filter(`#${currentSection}`);
+
         if ($sectionLink.length) {
-            setActiveNavLink($sectionLink, currentSection);
+            this.setActiveNavLink($sectionLink, currentSection);
         }
 
         const currentHref = window.location.href;
         localStorage.setItem('last-visited-url', currentHref);
 
+        this.activateFirstSubsectionItem(currentSection);
+    }
+};
 
-        activateFirstSubsectionItem(currentSection);
+// Sidebar collapse/expand
+function initSidebar() {
+    const sideMenu = document.getElementById("sideMenu");
+    const toggleBtn = document.getElementById("toggleSideMenu");
+    const arrowIcon = document.getElementById("arrowIcon");
+    const mainContent = document.getElementById("mainContent");
+    const kanbanView = document.getElementById("kanbanview");
+
+    if (!sideMenu || !toggleBtn || !arrowIcon || !mainContent) return;
+
+    let isCollapsed = false;
+
+    function collapseMenu() {
+        sideMenu.classList.add("w-0");
+        sideMenu.classList.remove("w-[230px]");
+        arrowIcon.classList.add("scale-x-[-1]");
+        mainContent.classList.remove("leftspace");
+
+        if (kanbanView) {
+            kanbanView.classList.add("w-full");
+            kanbanView.classList.remove("ml-[230px]");
+        }
+        isCollapsed = true;
     }
 
-    document.body.addEventListener("htmx:afterSwap", function () {
-        const currentSection = getActiveSection();
-        const $sectionLink = $navLinks.filter(`#${currentSection}`);
-        if ($sectionLink.length) {
-            setActiveNavLink($sectionLink, currentSection);
-        }
-        activateFirstSubsectionItem(currentSection);
-    });
+    function expandMenu() {
+        sideMenu.classList.remove("w-0");
+        sideMenu.classList.add("w-[230px]");
+        arrowIcon.classList.remove("scale-x-[-1]");
+        mainContent.classList.add("leftspace");
 
-    var activeSidebarLink = () => {
-        let activeLinkId = "#" + localStorage.getItem("activeSidebarLinkId");
-        if (activeLinkId) {
-            $(activeLinkId).addClass("bg-primary-600 text-white").find("img").css("filter", "brightness(0) invert(1)");
+        if (kanbanView) {
+            kanbanView.classList.remove("w-full");
         }
+        isCollapsed = false;
     }
 
-    initFromUrl();
+    toggleBtn.onclick = () => {
+        isCollapsed ? expandMenu() : collapseMenu();
+    };
 
-    $("nav").on("click", "a.nav-link", function () {
-        const $clickedLink = $(this);
-        const clickedSection = $clickedLink.attr("id");
-        const currentActiveSection = getActiveSection();
+    function adjustSidebar() {
+        window.innerWidth < 992 ? collapseMenu() : expandMenu();
+    }
 
-        if (currentActiveSection) {
-            localStorage.setItem("lastActiveSection", currentActiveSection);
-        }
+    adjustSidebar();
+    window.onresize = adjustSidebar;
+}
 
-        const isClickingSameSection = currentActiveSection === clickedSection;
-
-        setActiveNavLink($clickedLink, clickedSection);
-
-        if (isClickingSameSection) {
-            localStorage.setItem("sidebarClicked", "false");
-            localStorage.setItem("lastActiveSection", "temp_reset");
-        }
+// Section visibility
+function showDiv(idToShow) {
+    const divs = document.querySelectorAll('div[id^="sec"]');
+    divs.forEach((div) => {
+        div.style.display = div.id === idToShow ? "block" : "none";
     });
+}
 
-    $("body")
-        .on("click", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            const currentSection = getActiveSection();
-            setActiveSubsectionLink($link, currentSection);
-            localStorage.setItem('last-visited-url', window.location.href);
-        })
-        .on("mouseenter", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            if (!$link.hasClass("bg-primary-600")) {
-                $link.find("img").css("filter", ACTIVE_FILTER);
-            }
-        })
-        .on("mouseleave", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            if (!$link.hasClass("bg-primary-600")) {
-                $link.find("img").css("filter", INACTIVE_FILTER);
-            }
-        });
-
-    const $tableContainer = $("#tableContainer");
-    $tableContainer.on("scroll", function () {
-        const scrollTop = $tableContainer.scrollTop();
-        const scrollHeight = $tableContainer[0].scrollHeight;
-        const clientHeight = $tableContainer[0].clientHeight;
-        const threshold = 100;
-
-        if (scrollHeight - scrollTop - clientHeight < threshold) {
-            const $sentinel = $tableContainer.find("tr.htmx-sentinel");
-            if ($sentinel.length && !$sentinel.hasClass("htmx-request")) {
-                htmx.trigger($sentinel[0], "htmx:trigger");
-            }
-        }
-    });
-
-    activeSidebarLink();
-
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const hiddenReloadSidebar = document.getElementById("hiddenReloadSidebar");
-
-        if (hiddenReloadSidebar) {
-            hiddenReloadSidebar.addEventListener("click", function () {
-                const appLabel = this.getAttribute("data-app-label");
-                const section = getSectionFromAppLabel(appLabel);
-
-                if (!section) {
-                    console.warn("No section found for app label:", appLabel);
-                    return;
-                }
-
-                const reloadUrl = `${window.location.pathname}?section=${section}`;
-
-                // Let hx-swap-oob handle the swap
-                htmx.ajax("GET", reloadUrl)
-                    .then(() => {
-                        activateFirstSubsectionItem(section);
-                    })
-                    .catch((err) => {
-                        console.error(
-                            "Failed to reload sub-sidebar for section:",
-                            section,
-                            err
-                        );
-                    });
-            });
-        }
-    });
-
-
-
-    document.body.addEventListener("htmx:afterSwap", function () {
-        const currentSection = getActiveSection();
-        const $sectionLink = $navLinks.filter(`#${currentSection}`);
-        if ($sectionLink.length) {
-            setActiveNavLink($sectionLink, currentSection);
-        }
-
-        activateFirstSubsectionItem(currentSection);
-    });
-    document.body.addEventListener("htmx:afterSettle", function () {
-        const currentSection = getActiveSection();
-        const $sectionLink = $navLinks.filter(`#${currentSection}`);
-        if ($sectionLink.length) {
-            setActiveNavLink($sectionLink, currentSection);
-        }
-
-        activateFirstSubsectionItem(currentSection);
-    });
-
-});
-
-// Sidebar script end here
-
+// Table Management
 const tableData = new Map();
 
 function getCurrentViewId(element) {
@@ -693,7 +328,6 @@ function initializeRecordIds(recordIds, viewId) {
         return;
     }
 
-    // Initialize table-specific data
     tableData.set(viewId, {
         allRecordIds: recordIds && Array.isArray(recordIds) && recordIds.length ? recordIds.map(String) : [],
         selectedRecordIds: [],
@@ -731,11 +365,9 @@ function selectAll(checked, viewId) {
     table.selectedRecordIds = checked ? [...table.allRecordIds] : [];
     sessionStorage.setItem(`selectedRecordIds_${viewId}`, JSON.stringify(table.selectedRecordIds));
 
-    const $tableContainer = $(`#table-container-${viewId}`)
-
+    const $tableContainer = $(`#table-container-${viewId}`);
     $tableContainer.find("input[data-role='row-select']").prop("checked", checked);
     $tableContainer.find("input[data-role='select-all']").prop("checked", checked);
-
 
     updateActionButtonsVisibility(viewId);
 }
@@ -750,15 +382,12 @@ function clearSelections(viewId) {
     sessionStorage.removeItem(`selectedRecordIds_${viewId}`);
 
     const $tableContainer = $(`#table-container-${viewId}`);
-
     $tableContainer.find("input[data-role='row-select']").prop("checked", false);
     $tableContainer.find("input[data-role='select-all']").prop("checked", false);
-
 
     updateActionButtonsVisibility(viewId);
 }
 
-// Debounce utility
 function debounce(func, wait) {
     let timeout;
     return function (...args) {
@@ -767,7 +396,6 @@ function debounce(func, wait) {
     };
 }
 
-// Fixed debounced version of updateActionButtonsVisibility with correct selectors
 const updateActionButtonsVisibility = debounce(function (viewId) {
     if (!viewId) return;
     const table = tableData.get(viewId);
@@ -776,7 +404,6 @@ const updateActionButtonsVisibility = debounce(function (viewId) {
     const totalSelectedCount = table.selectedRecordIds.length;
     const hasSelections = totalSelectedCount > 0;
 
-    // Use the correct selectors with view ID suffix
     $(`#export-all-btn-${viewId}, #bulk-update-btn-${viewId}, #unselect-all-btn-${viewId}, #bulk-delete-btn-${viewId}, [id^="bulk-action-"][id$="-${viewId}"],#total-selected-count-${viewId}`)
         .toggle(hasSelections);
 
@@ -836,9 +463,7 @@ function reorderTableRows(viewId, $rowsToAdd = []) {
     $tbody.empty();
     selectedRows.forEach(($row) => $tbody.append($row));
     unselectedRows.forEach(($row) => $tbody.append($row));
-    if (sentinelRow) {
-        $tbody.append(sentinelRow);
-    }
+    if (sentinelRow) $tbody.append(sentinelRow);
 }
 
 function processInfiniteScrollRows(viewId, $newRows) {
@@ -861,95 +486,12 @@ function processNewRecords(viewId) {
     updateActionButtonsVisibility(viewId);
 }
 
-// Helper function to get selected record IDs (used by HTMX)
 function selectedRecordIds(viewId) {
     const table = tableData.get(viewId);
     return table ? table.selectedRecordIds : [];
 }
 
-// Initialize all tables on document ready
-$(document).ready(function () {
-    $("[id^='table-container-']").each(function () {
-        const $tableContainer = $(this);
-        const viewId = $tableContainer.data("view-id");
-        const recordIds = JSON.parse($tableContainer.attr("data-record-ids") || "[]");
-        initializeRecordIds(recordIds, viewId);
-    });
-
-    // Checkbox change event for individual rows
-    $(document).on("change", "input[data-role='row-select']", function () {
-        const viewId = getCurrentViewId(this);
-        const table = tableData.get(viewId);
-        if (!table) return;
-
-        const id = $(this).val();
-        if ($(this).prop("checked")) {
-            if (!table.selectedRecordIds.includes(id)) {
-                table.selectedRecordIds.push(id);
-            }
-        } else {
-            table.selectedRecordIds = table.selectedRecordIds.filter((selectedId) => selectedId !== id);
-            table.allSelected = false;
-        }
-
-        sessionStorage.setItem(`selectedRecordIds_${viewId}`, JSON.stringify(table.selectedRecordIds));
-        updateCheckboxStates(viewId);
-        updateActionButtonsVisibility(viewId);
-        // reorderTableRows(viewId); // Add this to reorder rows when individual checkboxes change
-    });
-
-    // Select all checkbox event
-    $(document).on("change", "input[data-role='select-all']", function () {
-        const viewId = getCurrentViewId(this);
-        selectAll($(this).prop("checked"), viewId);
-        reorderTableRows(viewId);
-    });
-
-    $(document).on("htmx:afterSwap", function (event) {
-        const $target = $(event.target);
-
-        let $dataContainer = null;
-        let viewId = null;
-
-        if ($target.is("[id^='data-container-']")) {
-            $dataContainer = $target;
-            viewId = $dataContainer.attr("id").replace("data-container-", "");
-        }
-        else {
-            $dataContainer = $target.find("[id^='data-container-']");
-            if ($dataContainer.length) {
-                viewId = $dataContainer.attr("id").replace("data-container-", "");
-            }
-        }
-
-        if ($dataContainer && $dataContainer.length && viewId) {
-            const isInfiniteScroll = event.detail.elt.classList.contains("htmx-sentinel");
-            if (isInfiniteScroll) {
-                const $newRows = $(event.detail.xhr.response).filter("tr");
-                processInfiniteScrollRows(viewId, $newRows);
-            } else {
-                const $tableContainer = $(`#table-container-${viewId}`);
-                const recordIds = JSON.parse($tableContainer.attr("data-record-ids") || "[]");
-                initializeRecordIds(recordIds, viewId);
-                processNewRecords(viewId);
-            }
-        }
-
-        if (event.detail.target.id === "filtermodalBox") {
-            $('#filtermodal').removeClass("hidden");
-            $('#filtermodalBox').removeClass("opacity-0 scale-95").addClass("opacity-100 scale-100");
-        }
-    });
-
-});
-
-function closeFilterModal() {
-    $('#filtermodal').addClass("hidden");
-    $('#filtermodalBox').addClass("opacity-0 scale-95").removeClass("opacity-100 scale-100");
-}
-
-// export functionality
-
+// Export functionality
 function exportSelected(viewId) {
     const table = tableData.get(viewId);
     const $tableContainer = $(`#table-container-${viewId}`);
@@ -968,70 +510,7 @@ function exportSelected(viewId) {
     $("#exportRecordIds").val(JSON.stringify(selectedIds));
 }
 
-function openExport() {
-    const modal = document.getElementById("exportModal");
-    const modalBox = document.getElementById("exportBox");
-
-    modal.classList.remove("hidden");
-    setTimeout(() => {
-        modalBox.classList.remove("opacity-0", "scale-95");
-        modalBox.classList.add("opacity-100", "scale-100");
-    }, 10);
-}
-
-function closeExport() {
-    const modal = document.getElementById("exportModal");
-    const modalBox = document.getElementById("exportBox");
-
-    modalBox.classList.remove("opacity-100", "scale-100");
-    modalBox.classList.add("opacity-0", "scale-95");
-    setTimeout(() => {
-        modal.classList.add("hidden");
-    }, 300);
-}
-
-$("#exportForm").on("submit", function (e) {
-    const selectedColumns = $("input[name='export_columns']:checked").map(function () {
-        return $(this).val();
-    }).get();
-
-    const exportFormat = $("#exportFormat").val();
-    if (!exportFormat) {
-        alert("Please select an export format");
-        e.preventDefault();
-        return;
-    }
-});
-
-
-$(document).on('htmx:afterSwap', function (event) {
-    if (window.Dropdown) {
-        $('[data-dropdown-toggle]').each(function () {
-            var $toggle = $(this);
-            var targetId = $toggle.attr('data-dropdown-toggle');
-            var $target = $('#' + targetId);
-
-            if (!$target.data('flowbiteInitialized')) {
-                new Dropdown($target[0], $toggle[0], {
-                    placement: $toggle.attr('data-dropdown-placement') || 'bottom'
-                });
-                $target.data('flowbiteInitialized', true);
-            }
-        });
-    }
-});
-
-
-$(document).on("click", "[id^='clear-select-btn-']", function () {
-    const viewId = getCurrentViewId(this);
-    clearSelections(viewId);
-});
-
-updateActionButtonsVisibility();
-
-
-
-
+// Kanban drag and drop
 let draggedColumn = null;
 
 function drag(ev) {
@@ -1041,23 +520,18 @@ function drag(ev) {
 function allowDrop(ev) {
     ev.preventDefault();
     const target = ev.target.closest(".kanban-block");
-    if (target) {
-        target.classList.add("highlight");
-    }
+    if (target) target.classList.add("highlight");
 }
+
 function drop(ev) {
     ev.preventDefault();
 
-    if (!ev.dataTransfer) {
-        return;
-    }
+    if (!ev.dataTransfer) return;
 
     const data = ev.dataTransfer.getData("text");
     const target = ev.target.closest(".kanban-block");
 
-    if (!target) {
-        return;
-    }
+    if (!target) return;
 
     target.classList.remove("highlight");
 
@@ -1067,9 +541,7 @@ function drop(ev) {
         const kanbanView = document.getElementById("kanbanview");
         const allowColumnReorder = kanbanView.dataset.allowColumnReorder === "true";
 
-        if (!allowColumnReorder) {
-            return;
-        }
+        if (!allowColumnReorder) return;
 
         const columnKey = data.replace("column-", "");
         const draggedColumn = document.querySelector(`.kanban-block[data-column-key="${columnKey}"]`);
@@ -1095,8 +567,6 @@ function drop(ev) {
             const csrfToken = kanbanView.dataset.csrfToken;
             const className = kanbanView.dataset.className;
 
-
-
             const newColumnOrder = Array.from(document.querySelectorAll(".kanban-block")).map(
                 (col) => col.dataset.columnKey
             );
@@ -1105,9 +575,7 @@ function drop(ev) {
                 column_order: JSON.stringify(newColumnOrder),
                 app_label: appLabel,
                 model_name: modelName,
-
                 class_name: className,
-
             };
 
             currentQuery.forEach((value, key) => {
@@ -1128,7 +596,7 @@ function drop(ev) {
                     "X-CSRFToken": csrfToken,
                 },
                 values: postValues,
-            })
+            });
         }
     } else {
         const draggedElement = document.getElementById(data);
@@ -1150,7 +618,6 @@ function drop(ev) {
                 app_label: appLabel,
                 model_name: modelName,
                 class_name: className,
-
             };
 
             currentQuery.forEach((value, key) => {
@@ -1202,46 +669,7 @@ function columnDragEnd(e) {
     }
 }
 
-$(document).ready(function () {
-    $(".kanban-block").each(function () {
-        const block = $(this);
-
-        block.on("dragover", function (e) {
-            if (draggedColumn) {
-                e.preventDefault();
-            }
-        });
-
-        block.on("dragenter", function (e) {
-            if (draggedColumn && block[0] !== draggedColumn[0]) {
-                block.addClass("swap-highlight");
-            }
-        });
-
-        block.on("dragleave", function (e) {
-            block.removeClass("swap-highlight");
-        });
-
-        block.on("drop", function (e) {
-            if (!draggedColumn || draggedColumn[0] === block[0]) return;
-
-            block.removeClass("swap-highlight");
-
-            const parent = block.parent();
-            const allBlocks = parent.children();
-            const draggedIndex = allBlocks.index(draggedColumn);
-            const targetIndex = allBlocks.index(block);
-
-            if (draggedIndex < targetIndex) {
-                draggedColumn.insertAfter(block);
-            } else {
-                draggedColumn.insertBefore(block);
-            }
-        });
-    });
-});
-
-
+// Confirmation dialogs
 function hxConfirm(element, messageText, hint) {
     const isCheckbox = element.type === 'checkbox';
     const wasChecked = isCheckbox ? element.checked : null;
@@ -1269,18 +697,10 @@ function hxConfirm(element, messageText, hint) {
         cancelButtonText: horillaMessages.cancel,
         reverseButtons: true,
         showClass: {
-            popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-            `
+            popup: `animate__animated animate__fadeInUp animate__faster`
         },
         hideClass: {
-            popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-            `
+            popup: `animate__animated animate__fadeOutDown animate__faster`
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -1305,18 +725,10 @@ function hxConfirmForm(element, messageText) {
         cancelButtonText: horillaMessages.cancel,
         reverseButtons: true,
         showClass: {
-            popup: `
-  animate__animated
-  animate__fadeInUp
-  animate__faster
-  `
+            popup: `animate__animated animate__fadeInUp animate__faster`
         },
         hideClass: {
-            popup: `
-  animate__animated
-  animate__fadeOutDown
-  animate__faster
-  `
+            popup: `animate__animated animate__fadeOutDown animate__faster`
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -1352,15 +764,46 @@ function showMessages() {
     });
 }
 
+function isElementChecked(element) {
+    let message = element.getAttribute('data-message');
+    if (element.checked)
+        Swal.fire({
+            html: message,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: horillaMessages.confirm,
+            cancelButtonText: horillaMessages.cancel,
+            reverseButtons: true,
+            showClass: {
+                popup: `animate__animated animate__fadeInUp animate__faster`
+            },
+            hideClass: {
+                popup: `animate__animated animate__fadeOutDown animate__faster`
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                return true;
+            }
+            element.checked = false;
+            return false;
+        });
+}
 
+// Select2 Pagination
 function initializeSelect2Pagination() {
     const select2Elements = $('.select2-pagination:not(.select2-hidden-accessible)');
-    if (select2Elements.length === 0) {
-        return;
-    }
+    if (select2Elements.length === 0) return;
 
     select2Elements.each(function (index) {
         const $this = $(this);
+
+        // Prevent duplicate initialization
+        if ($this.data('select2-initialized')) {
+            return;
+        }
+
         const url = $this.data('url');
         const placeholder = $this.data('placeholder') || 'Select an option...';
         const initialData = $this.data('initial');
@@ -1372,7 +815,6 @@ function initializeSelect2Pagination() {
         const isMultiple = $this.prop('multiple');
         const elementId = $this.attr('id') || `select2_${fieldName}_${Math.random().toString(36).substr(2, 9)}`;
 
-        // Store HTMX attributes
         const htmxAttrs = {
             'hx-get': $this.attr('hx-get'),
             'hx-target': $this.attr('hx-target'),
@@ -1399,7 +841,6 @@ function initializeSelect2Pagination() {
                         let dependencyValue = undefined;
                         if (dependencyField) {
                             const $dependentField = $(`#id_${dependencyField}`);
-
                             dependencyValue = $dependentField.length ? $dependentField.val() : undefined;
                         }
 
@@ -1431,6 +872,9 @@ function initializeSelect2Pagination() {
                 dropdownParent: $this.closest('.modal-content').length ? $this.closest('.modal-content') : $('body'),
             });
 
+            // Mark as initialized
+            $this.data('select2-initialized', true);
+
             Object.keys(htmxAttrs).forEach((attr) => {
                 if (htmxAttrs[attr]) {
                     $this.attr(attr, htmxAttrs[attr]);
@@ -1441,6 +885,8 @@ function initializeSelect2Pagination() {
                 htmx.process($this[0]);
             }
 
+            // Remove any existing handlers before binding
+            $this.off('select2:select select2:unselect');
             $this.on('select2:select select2:unselect', function (e) {
                 $(this).trigger('change');
                 if (htmxAttrs['hx-get'] && typeof htmx !== 'undefined') {
@@ -1458,16 +904,12 @@ function initializeSelect2Pagination() {
 }
 
 function loadInitialData($element, url, initialData, fieldName, isMultiple) {
-
-
-    // Handle different data types for initialData
     let ids = [];
 
     if (initialData === null || initialData === undefined || initialData === '') {
         return;
     }
 
-    // Convert initialData to array of IDs
     if (typeof initialData === 'string') {
         ids = isMultiple ? initialData.split(',').filter(id => id.trim()) : [initialData.trim()];
     } else if (typeof initialData === 'number') {
@@ -1475,7 +917,6 @@ function loadInitialData($element, url, initialData, fieldName, isMultiple) {
     } else if (Array.isArray(initialData)) {
         ids = initialData.map(id => id.toString()).filter(id => id.trim());
     } else if (typeof initialData === 'object') {
-        // Handle case where initialData might be an object with id property
         if (initialData.id) {
             ids = [initialData.id.toString()];
         } else {
@@ -1485,13 +926,9 @@ function loadInitialData($element, url, initialData, fieldName, isMultiple) {
         return;
     }
 
-    // Filter out empty IDs
     ids = ids.filter(id => id && id.trim() !== '');
 
-    if (ids.length === 0) {
-        return;
-    }
-
+    if (ids.length === 0) return;
 
     $.ajax({
         url: url,
@@ -1501,40 +938,30 @@ function loadInitialData($element, url, initialData, fieldName, isMultiple) {
             field_name: fieldName
         },
         success: function (data) {
+            if (!data.results || data.results.length === 0) return;
 
-            if (!data.results || data.results.length === 0) {
-                return;
-            }
-
-            // Clear existing options (except empty option for single select)
             if (!isMultiple) {
                 $element.find('option:not([value=""])').remove();
             } else {
                 $element.empty();
             }
 
-            // Add options and set values
             data.results.forEach(function (item) {
                 const option = new Option(item.text, item.id, true, true);
                 $element.append(option);
             });
 
-            // Trigger change to update Select2
             $element.trigger('change');
-
         },
-
     });
 }
 
-// Function to safely initialize Select2 with retries
 function safeInitializeSelect2() {
     const elementsToInitialize = $('.select2-pagination:not(.select2-hidden-accessible)');
 
     if (elementsToInitialize.length > 0) {
         initializeSelect2Pagination();
 
-        // Check if any elements still need initialization after a short delay
         setTimeout(function () {
             const stillNeedInit = $('.select2-pagination:not(.select2-hidden-accessible)');
             if (stillNeedInit.length > 0) {
@@ -1544,67 +971,383 @@ function safeInitializeSelect2() {
     }
 }
 
-// Initialize when DOM is ready
-
-// Initialize after window load (in case some elements load later)
-$(window).on('load', function () {
-    safeInitializeSelect2();
-});
-
-// Manual trigger function for external use
 window.reinitializeSelect2 = function () {
     safeInitializeSelect2();
 };
 
-
-function isElementChecked(element) {
-    let message = element.getAttribute('data-message');
-    if (element.checked)
-        Swal.fire({
-            html: message,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: horillaMessages.confirm,
-            cancelButtonText: horillaMessages.cancel,
-            reverseButtons: true,
-            showClass: {
-                popup: `
-    animate__animated
-    animate__fadeInUp
-    animate__faster
-    `
-            },
-            hideClass: {
-                popup: `
-    animate__animated
-    animate__fadeOutDown
-    animate__faster
-    `
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                return true
-            }
-            element.checked = false
-            return false
-        });
-}
-
+// Document Ready
 $(document).ready(function () {
+    // Initialize components
+    initializeSelect2Pagination();
+    safeInitializeSelect2();
+    showMessages();
+
+    // Initialize sidebar
+    SidebarManager.initFromUrl();
+
+    // Initialize all tables
+    $("[id^='table-container-']").each(function () {
+        const $tableContainer = $(this);
+        const viewId = $tableContainer.data("view-id");
+        const recordIds = JSON.parse($tableContainer.attr("data-record-ids") || "[]");
+        initializeRecordIds(recordIds, viewId);
+    });
+
+    // Select2 Basic Initialization
+    $('.js-example-basic-single:not(.select2-hidden-accessible)').select2({
+        templateResult: formatOption,
+        templateSelection: formatOption,
+    });
+
+    $('.js-example-basic-multiple:not(.select2-hidden-accessible)').each(function() {
+        $(this).select2({
+            placeholder: $(this).data('placeholder') || 'Select options...',
+            allowClear: true
+        });
+    });
+
+    // Custom Select Dropdown
+    document.querySelectorAll(".custom-select").forEach((select) => {
+        const selected = select.querySelector(".selected");
+        const dropdown = select.querySelector(".dropdown");
+        const options = select.querySelectorAll(".option");
+        const span = selected.querySelector("span");
+
+        selected.addEventListener("click", () => {
+            dropdown.classList.toggle("opacity-0");
+            dropdown.classList.toggle("scale-y-95");
+            dropdown.classList.toggle("pointer-events-none");
+        });
+
+        options.forEach((option) => {
+            option.addEventListener("click", (e) => {
+                e.preventDefault();
+                span.textContent = option.textContent;
+                dropdown.classList.add("opacity-0", "scale-y-95", "pointer-events-none");
+            });
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!select.contains(e.target)) {
+                dropdown.classList.add("opacity-0", "scale-y-95", "pointer-events-none");
+            }
+        });
+    });
+
+    // Event Listeners
+    $(".filtermenu").on("click", function () {
+        $("#filterpanel").toggleClass("hidden visible");
+    });
+
+    $(".closebtn").on("click", function () {
+        $("#filterpanel").removeClass("visible").addClass("hidden");
+    });
+
+    $("#tableBtn").on("click", function () {
+        $("[id^='tableview']").removeClass("hidden");
+        $("#kanbanview").addClass("hidden");
+    });
+
+    $("#kanbanBtn").on("click", function () {
+        $("#kanbanview").removeClass("hidden");
+        $("[id^='tableview']").addClass("hidden");
+    });
+
     $("select").on("select2:select", function (e) {
         $(this).closest("select")[0].dispatchEvent(new Event("change"));
     });
+
+    // Kanban drag handlers
+    $(".kanban-block").each(function () {
+        const block = $(this);
+
+        block.on("dragover", function (e) {
+            if (draggedColumn) e.preventDefault();
+        });
+
+        block.on("dragenter", function (e) {
+            if (draggedColumn && block[0] !== draggedColumn[0]) {
+                block.addClass("swap-highlight");
+            }
+        });
+
+        block.on("dragleave", function (e) {
+            block.removeClass("swap-highlight");
+        });
+
+        block.on("drop", function (e) {
+            if (!draggedColumn || draggedColumn[0] === block[0]) return;
+
+            block.removeClass("swap-highlight");
+
+            const parent = block.parent();
+            const allBlocks = parent.children();
+            const draggedIndex = allBlocks.index(draggedColumn);
+            const targetIndex = allBlocks.index(block);
+
+            if (draggedIndex < targetIndex) {
+                draggedColumn.insertAfter(block);
+            } else {
+                draggedColumn.insertBefore(block);
+            }
+        });
+    });
+
+    const $navLinks = $("nav a.nav-link");
+
+    $("nav").on("click", "a.nav-link", function () {
+        const $clickedLink = $(this);
+        const clickedSection = $clickedLink.attr("id");
+        const currentActiveSection = SidebarManager.getActiveSection();
+
+        if (currentActiveSection) {
+            localStorage.setItem("lastActiveSection", currentActiveSection);
+        }
+
+        const isClickingSameSection = currentActiveSection === clickedSection;
+
+        SidebarManager.setActiveNavLink($clickedLink, clickedSection);
+
+        if (isClickingSameSection) {
+            localStorage.setItem("sidebarClicked", "false");
+            localStorage.setItem("lastActiveSection", "temp_reset");
+        }
+    });
+
+    $("body")
+        .on("click", "ul a.sidebar-link", function () {
+            const $link = $(this);
+            const currentSection = SidebarManager.getActiveSection();
+            SidebarManager.setActiveSubsectionLink($link, currentSection);
+            localStorage.setItem('last-visited-url', window.location.href);
+        })
+        .on("mouseenter", "ul a.sidebar-link", function () {
+            const $link = $(this);
+            if (!$link.hasClass("bg-primary-600")) {
+                $link.find("img").css("filter", SidebarManager.ACTIVE_FILTER);
+            }
+        })
+        .on("mouseleave", "ul a.sidebar-link", function () {
+            const $link = $(this);
+            if (!$link.hasClass("bg-primary-600")) {
+                $link.find("img").css("filter", SidebarManager.INACTIVE_FILTER);
+            }
+        });
+
+    const $tableContainer = $("#tableContainer");
+    $tableContainer.on("scroll", function () {
+        const scrollTop = $tableContainer.scrollTop();
+        const scrollHeight = $tableContainer[0].scrollHeight;
+        const clientHeight = $tableContainer[0].clientHeight;
+        const threshold = 100;
+
+        if (scrollHeight - scrollTop - clientHeight < threshold) {
+            const $sentinel = $tableContainer.find("tr.htmx-sentinel");
+            if ($sentinel.length && !$sentinel.hasClass("htmx-request")) {
+                htmx.trigger($sentinel[0], "htmx:trigger");
+            }
+        }
+    });
+
+    const hiddenReloadSidebar = document.getElementById("hiddenReloadSidebar");
+
+    if (hiddenReloadSidebar) {
+        hiddenReloadSidebar.addEventListener("click", function () {
+            const appLabel = this.getAttribute("data-app-label");
+            const section = SidebarManager.getSectionFromAppLabel(appLabel);
+
+            if (!section) {
+                console.warn("No section found for app label:", appLabel);
+                return;
+            }
+
+            const reloadUrl = `${window.location.pathname}?section=${section}`;
+
+            htmx.ajax("GET", reloadUrl)
+                .then(() => {
+                    SidebarManager.activateFirstSubsectionItem(section);
+                })
+                .catch((err) => {
+                    console.error("Failed to reload sub-sidebar for section:", section, err);
+                });
+        });
+    }
 });
 
-// $(document).on("htmx:afterSettle", function () {
-//     initializeSelect2Pagination();
-//     alert();
-//     $("select").on("select2:select", function (e) {
-//         $(this).closest("select")[0].dispatchEvent(new Event("change"));
-//     });
-// });
+// Window load event
+$(window).on('load', function () {
+    safeInitializeSelect2();
+});
+
+window.onload = () => showDiv("sec1");
+
+// Event Delegation
+$(document).on("change", "input[data-role='row-select']", function () {
+    const viewId = getCurrentViewId(this);
+    const table = tableData.get(viewId);
+    if (!table) return;
+
+    const id = $(this).val();
+    if ($(this).prop("checked")) {
+        if (!table.selectedRecordIds.includes(id)) {
+            table.selectedRecordIds.push(id);
+        }
+    } else {
+        table.selectedRecordIds = table.selectedRecordIds.filter((selectedId) => selectedId !== id);
+        table.allSelected = false;
+    }
+
+    sessionStorage.setItem(`selectedRecordIds_${viewId}`, JSON.stringify(table.selectedRecordIds));
+    updateCheckboxStates(viewId);
+    updateActionButtonsVisibility(viewId);
+});
+
+$(document).on("change", "input[data-role='select-all']", function () {
+    const viewId = getCurrentViewId(this);
+    selectAll($(this).prop("checked"), viewId);
+    reorderTableRows(viewId);
+});
+
+$(document).on("click", "[id^='clear-select-btn-']", function () {
+    const viewId = getCurrentViewId(this);
+    clearSelections(viewId);
+});
+
+$("#exportForm").on("submit", function (e) {
+    const selectedColumns = $("input[name='export_columns']:checked").map(function () {
+        return $(this).val();
+    }).get();
+
+    const exportFormat = $("#exportFormat").val();
+    if (!exportFormat) {
+        alert("Please select an export format");
+        e.preventDefault();
+        return;
+    }
+});
+
+// HTMX Events
+document.addEventListener("DOMContentLoaded", initSidebar);
+document.body.addEventListener("htmx:afterSwap", initSidebar);
+document.body.addEventListener("htmx:afterOnLoad", initSidebar);
+
+// Flowbite Initialization on HTMX Load
+htmx.onLoad(function(content) {
+    initFlowbite();
+});
+
+document.body.addEventListener("htmx:afterSwap", function () {
+    const currentSection = SidebarManager.getActiveSection();
+    const $navLinks = $("nav a.nav-link");
+    const $sectionLink = $navLinks.filter(`#${currentSection}`);
+    if ($sectionLink.length) {
+        SidebarManager.setActiveNavLink($sectionLink, currentSection);
+    }
+    SidebarManager.activateFirstSubsectionItem(currentSection);
+
+    // Settings Content Script Reload
+    if (event.detail && event.detail.target && event.detail.target.id === 'settings-content') {
+        const scripts = event.detail.target.querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.textContent = script.textContent;
+            document.body.appendChild(newScript);
+            script.remove();
+        });
+    }
+});
+
+document.body.addEventListener("htmx:afterSettle", function (event) {
+    const currentSection = SidebarManager.getActiveSection();
+    const $navLinks = $("nav a.nav-link");
+    const $sectionLink = $navLinks.filter(`#${currentSection}`);
+    if ($sectionLink.length) {
+        SidebarManager.setActiveNavLink($sectionLink, currentSection);
+    }
+    SidebarManager.activateFirstSubsectionItem(currentSection);
+
+    // Reinitialize Select2 after HTMX content loads
+    var target = $(event.target);
+
+    target.find(".js-example-basic-single").each(function() {
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $(this).select2("destroy");
+            $(this).removeData('select2-initialized');
+        }
+    });
+
+    target.find(".js-example-basic-single:not(.select2-hidden-accessible)").select2({
+        templateResult: formatOption,
+        templateSelection: formatOption,
+        width: "100%"
+    });
+
+    initializeSelect2Pagination();
+
+    setTimeout(function() {
+        showMessages();
+    }, 200);
+
+    $('.js-example-basic-multiple').each(function() {
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            return; // Already initialized
+        }
+        $(this).select2({
+            placeholder: $(this).data('placeholder') || 'Select options...',
+            allowClear: true
+        });
+    });
+});
+
+$(document).on("htmx:afterSwap", function (event) {
+    const $target = $(event.target);
+
+    let $dataContainer = null;
+    let viewId = null;
+
+    if ($target.is("[id^='data-container-']")) {
+        $dataContainer = $target;
+        viewId = $dataContainer.attr("id").replace("data-container-", "");
+    } else {
+        $dataContainer = $target.find("[id^='data-container-']");
+        if ($dataContainer.length) {
+            viewId = $dataContainer.attr("id").replace("data-container-", "");
+        }
+    }
+
+    if ($dataContainer && $dataContainer.length && viewId) {
+        const isInfiniteScroll = event.detail.elt.classList.contains("htmx-sentinel");
+        if (isInfiniteScroll) {
+            const $newRows = $(event.detail.xhr.response).filter("tr");
+            processInfiniteScrollRows(viewId, $newRows);
+        } else {
+            const $tableContainer = $(`#table-container-${viewId}`);
+            const recordIds = JSON.parse($tableContainer.attr("data-record-ids") || "[]");
+            initializeRecordIds(recordIds, viewId);
+            processNewRecords(viewId);
+        }
+    }
+
+    if (event.detail.target.id === "filtermodalBox") {
+        $('#filtermodal').removeClass("hidden");
+        $('#filtermodalBox').removeClass("opacity-0 scale-95").addClass("opacity-100 scale-100");
+    }
+
+    if (window.Dropdown) {
+        $('[data-dropdown-toggle]').each(function () {
+            var $toggle = $(this);
+            var targetId = $toggle.attr('data-dropdown-toggle');
+            var $target = $('#' + targetId);
+
+            if (!$target.data('flowbiteInitialized')) {
+                new Dropdown($target[0], $toggle[0], {
+                    placement: $toggle.attr('data-dropdown-placement') || 'bottom'
+                });
+                $target.data('flowbiteInitialized', true);
+            }
+        });
+    }
+});
 
 $(document).on("htmx:afterSettle", function (e) {
     let elt = e.detail.elt;
@@ -1618,10 +1361,10 @@ $(document).on("htmx:afterSettle", function (e) {
     }
 });
 
-
+// Keyboard events
 $(document).on('keydown', function (e) {
     if (e.key === "Escape" || e.keyCode === 27) {
-        var visibleModals = $('.fixed.inset-0.flex').filter(function() {
+        var visibleModals = $('.fixed.inset-0.flex').filter(function () {
             return !$(this).hasClass('hidden');
         });
 
@@ -1630,7 +1373,7 @@ $(document).on('keydown', function (e) {
 
             topmostModal.find('.opacity-100, .scale-100').removeClass('opacity-100 scale-100').addClass('opacity-0 scale-95');
 
-            setTimeout(function() {
+            setTimeout(function () {
                 topmostModal.addClass('hidden');
                 topmostModal.find('.modal-box').empty();
             }, 200);
@@ -1638,8 +1381,9 @@ $(document).on('keydown', function (e) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(e) {
+// Dropdown functionality
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
         const wrapper = e.target.closest('.dropdown-wrapper');
 
         if (wrapper) {
@@ -1669,7 +1413,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-    document.body.addEventListener('htmx:afterRequest', function(e) {
+
+    document.body.addEventListener('htmx:afterRequest', function (e) {
         const wrapper = e.target.closest('.dropdown-wrapper');
         if (wrapper && wrapper.classList.contains('active')) {
             wrapper.classList.remove('active');
