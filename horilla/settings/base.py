@@ -375,9 +375,12 @@ AUDITLOG_EXCLUDE_TRACKING_MODELS = (
 )
 
 
-DB_INIT_PASSWORD = env(
-    "DB_INIT_PASSWORD", default="d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d"
-)
+try:
+    from .password_utils import get_init_password
+
+    DB_INIT_PASSWORD = get_init_password()
+except ImportError as e:
+    pass
 
 
 ALLOWED_LANGUAGES = [
