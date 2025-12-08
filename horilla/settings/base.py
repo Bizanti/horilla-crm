@@ -389,3 +389,5 @@ ALLOWED_LANGUAGES = [
     ("de", "German", "german.jpeg"),
     ("fr", "French", "france.webp"),
 ]
+
+AUDITLOG_LOGENTRY_MODEL = "auditlog.LogEntry"

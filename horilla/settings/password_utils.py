@@ -22,10 +22,7 @@ def get_project_root():
 
     manage_py = project_root / "manage.py"
     if not manage_py.exists():
-        # If manage.py not found, print warning but continue
-        print(f"⚠️  Warning: manage.py not found at {manage_py}")
-        print(f"⚠️  Current file location: {current_file}")
-        print(f"⚠️  Detected project root: {project_root}")
+        print(f"Warning: manage.py not found at {manage_py}")
 
     return project_root
 
