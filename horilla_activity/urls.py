@@ -1,13 +1,13 @@
 """
-Defines URL patterns for the Activity app, mapping various activity-related views 
+Defines URL patterns for the Activity app, mapping various activity-related views
 such as list, detail, create, update, delete, and Kanban views to their respective endpoints.
 """
 
-
 from django.urls import path
+
 from . import views
 
-app_name = "horilla_activity" 
+app_name = "horilla_activity"
 
 urlpatterns = [
     path("activity-view/", views.ActivityView.as_view(), name="activity_view"),

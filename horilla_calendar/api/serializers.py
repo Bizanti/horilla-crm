@@ -1,8 +1,10 @@
 """
 Serializers for Horilla Calendar models
 """
+
 from rest_framework import serializers
-from horilla_calendar.models import UserCalendarPreference, UserAvailability
+
+from horilla_calendar.models import UserAvailability, UserCalendarPreference
 from horilla_core.api.serializers import HorillaUserSerializer
 
 

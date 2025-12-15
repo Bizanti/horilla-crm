@@ -4,12 +4,13 @@ Calls, Events, and general Activity creation.
 """
 
 from django import forms
-from django.urls import reverse_lazy
-from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from horilla_core.mixins import OwnerQuerysetMixin
+from django.forms import ValidationError
+from django.urls import reverse_lazy
+
 from horilla_activity.models import Activity
+from horilla_core.mixins import OwnerQuerysetMixin
 from horilla_generics.forms import HorillaModelForm
 
 
@@ -20,6 +21,7 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         """
         Meta class for MeetingsForm
         """
+
         model = Activity
         fields = [
             "object_id",
@@ -108,10 +110,12 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
 
 class LogCallForm(OwnerQuerysetMixin, HorillaModelForm):
     """Form for filtering log calls"""
+
     class Meta:
         """
         Meta class for LogCallForm
         """
+
         model = Activity
         fields = [
             "object_id",
@@ -177,6 +181,7 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         """
         Meta class for EventForm
         """
+
         model = Activity
         fields = [
             "object_id",
@@ -268,10 +273,12 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
     """
     Activity creation and update form
     """
+
     class Meta:
         """
         meta class for ActivityCreateForm
         """
+
         model = Activity
         fields = "__all__"
         exclude = [
@@ -431,41 +438,51 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         if content_type and object_id:
             try:
                 model_class = content_type.model_class()
-                
+
                 # Get the object
                 try:
                     obj = model_class.objects.get(id=object_id)
                 except model_class.DoesNotExist:
-                    raise ValidationError({"object_id": "Selected object does not exist."})
-                
+                    raise ValidationError(
+                        {"object_id": "Selected object does not exist."}
+                    )
+
                 # Apply owner filtration validation
                 if self.request and self.request.user:
                     from django.contrib.auth import get_user_model
+
                     User = get_user_model()
                     user = self.request.user
-                    
+
                     # Get fresh filtered queryset
                     queryset = model_class.objects.all()
-                    
+
                     if model_class is User:
                         allowed_user_ids = self._get_allowed_user_ids(user)
                         queryset = queryset.filter(id__in=allowed_user_ids)
-                    elif hasattr(model_class, "OWNER_FIELDS") and model_class.OWNER_FIELDS:
+                    elif (
+                        hasattr(model_class, "OWNER_FIELDS")
+                        and model_class.OWNER_FIELDS
+                    ):
                         allowed_user_ids = self._get_allowed_user_ids(user)
                         if allowed_user_ids:
                             query = Q()
                             for owner_field in model_class.OWNER_FIELDS:
-                                query |= Q(**{f"{owner_field}__id__in": allowed_user_ids})
+                                query |= Q(
+                                    **{f"{owner_field}__id__in": allowed_user_ids}
+                                )
                             queryset = queryset.filter(query)
                         else:
                             queryset = queryset.none()
-                    
+
                     # Check if the selected object exists in the filtered queryset
                     if not queryset.filter(id=object_id).exists():
-                        raise ValidationError({
-                            "object_id": "Select a valid choice. That choice is not one of the available choices."
-                        })
-                        
+                        raise ValidationError(
+                            {
+                                "object_id": "Select a valid choice. That choice is not one of the available choices."
+                            }
+                        )
+
             except ValidationError:
                 raise
             except Exception as e:
@@ -491,8 +508,9 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
         from django.contrib.auth import get_user_model
+
         User = get_user_model()
-        
+
         if not user or not user.is_authenticated:
             return []
 
@@ -514,5 +532,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         subordinate_roles = get_subordinate_roles(user_role)
         subordinate_users = User.objects.filter(role__in=subordinate_roles).distinct()
 
-        allowed_user_ids = [user.id] + list(subordinate_users.values_list("id", flat=True))
+        allowed_user_ids = [user.id] + list(
+            subordinate_users.values_list("id", flat=True)
+        )
         return allowed_user_ids

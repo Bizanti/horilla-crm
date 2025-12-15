@@ -6,20 +6,23 @@ These models represent the structure of the data and include any
 relationships, constraints, and behaviors.
 """
 
-from django.urls import reverse_lazy
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
 from horilla.registry.feature import feature_enabled
 from horilla_core.models import HorillaCoreModel
 
-@feature_enabled(global_search=True,dashboard_component=True)
+
+@feature_enabled(global_search=True, dashboard_component=True)
 class Activity(HorillaCoreModel):
     """
     Model representing various types of activities such as events, meetings, tasks, and log calls.
     """
+
     ACTIVITY_TYPES = [
         ("event", _("Event")),
         ("meeting", _("Meeting")),
@@ -42,7 +45,7 @@ class Activity(HorillaCoreModel):
 
     # Common fields from GeneralActivity
     subject = models.CharField(max_length=100, verbose_name=_("Subject"))
-    description = models.TextField(blank=True,null=True, verbose_name=_("Description"))
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     activity_type = models.CharField(
         max_length=20, choices=ACTIVITY_TYPES, verbose_name=_("Activity Type")
     )
@@ -54,7 +57,7 @@ class Activity(HorillaCoreModel):
         blank=True,
         verbose_name=_("Related Content Type"),
     )
-    
+
     object_id = models.PositiveIntegerField(
         null=True, blank=True, verbose_name=_("Related Object ID")
     )
@@ -143,11 +146,11 @@ class Activity(HorillaCoreModel):
 
     OWNER_FIELDS = ["owner", "assigned_to"]
 
-
     class Meta:
         """
         Meta class for Activity model
         """
+
         verbose_name = _("Activity")
         verbose_name_plural = _("Activities")
         indexes = [
@@ -193,7 +196,9 @@ class Activity(HorillaCoreModel):
         """
         Return the URL for editing the activity using the generic activity edit form.
         """
-        return reverse_lazy("horilla_activity:activity_edit_form", kwargs={"pk": self.pk})
+        return reverse_lazy(
+            "horilla_activity:activity_edit_form", kwargs={"pk": self.pk}
+        )
 
     def get_delete_url(self):
         """

@@ -1,9 +1,10 @@
 """ "URL configuration for the  app."""
 
 from django.urls import path
+
 from . import views
 
-app_name = "horilla_calendar"  
+app_name = "horilla_calendar"
 
 urlpatterns = [
     # Define your URL patterns here

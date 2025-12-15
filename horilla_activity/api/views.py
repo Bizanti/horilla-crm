@@ -4,38 +4,34 @@ API views for horilla_activity models
 This module mirrors horilla_core and accounts API patterns including search, filtering,
 bulk update, bulk delete, permissions, and documentation, adapted for activity-specific logic.
 """
-from django.utils import timezone
-from django.db import models
+
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import viewsets, permissions, status
+from django.db import models
+from django.utils import timezone
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
-from horilla_activity.models import Activity
-from horilla_activity.api.serializers import ActivitySerializer
-from horilla_core.api.permissions import IsCompanyMember
-from horilla_core.api.mixins import SearchFilterMixin, BulkOperationsMixin
-from horilla_core.api.docs import (
-    SEARCH_FILTER_DOCS,
-    BULK_UPDATE_DOCS,
-    BULK_DELETE_DOCS,
-)
 from horilla_activity.api.docs import (
-    ACTIVITY_LIST_DOCS,
-    ACTIVITY_DETAIL_DOCS,
-    ACTIVITY_CREATE_DOCS,
-    ACTIVITY_BY_RELATED_DOCS,
-    ACTIVITY_BY_OWNER_DOCS,
     ACTIVITY_BY_ASSIGNED_DOCS,
+    ACTIVITY_BY_OWNER_DOCS,
     ACTIVITY_BY_PARTICIPANT_DOCS,
+    ACTIVITY_BY_RELATED_DOCS,
     ACTIVITY_BY_TYPE_DOCS,
     ACTIVITY_COMPLETED_DOCS,
+    ACTIVITY_CREATE_DOCS,
+    ACTIVITY_DETAIL_DOCS,
+    ACTIVITY_LIST_DOCS,
     ACTIVITY_PENDING_DOCS,
     ACTIVITY_UPCOMING_DOCS,
 )
-
+from horilla_activity.api.serializers import ActivitySerializer
+from horilla_activity.models import Activity
+from horilla_core.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
+from horilla_core.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla_core.api.permissions import IsCompanyMember
 
 # Define common Swagger parameters and bodies consistent with horilla_core/accounts
 search_param = openapi.Parameter(
@@ -51,12 +47,8 @@ bulk_update_body = openapi.Schema(
         "ids": openapi.Schema(
             type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER)
         ),
-        "filters": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
-        "data": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
+        "filters": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
+        "data": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
     },
     required=["data"],
 )
@@ -67,9 +59,7 @@ bulk_delete_body = openapi.Schema(
         "ids": openapi.Schema(
             type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER)
         ),
-        "filters": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
+        "filters": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
     },
 )
 
@@ -130,13 +120,17 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         """Create a new activity"""
         return super().create(request, *args, **kwargs)
 
-    @swagger_auto_schema(request_body=bulk_update_body, operation_description=BULK_UPDATE_DOCS)
+    @swagger_auto_schema(
+        request_body=bulk_update_body, operation_description=BULK_UPDATE_DOCS
+    )
     @action(detail=False, methods=["post"])
     def bulk_update(self, request):
         """Update multiple activities in a single request"""
         return super().bulk_update(request)
 
-    @swagger_auto_schema(request_body=bulk_delete_body, operation_description=BULK_DELETE_DOCS)
+    @swagger_auto_schema(
+        request_body=bulk_delete_body, operation_description=BULK_DELETE_DOCS
+    )
     @action(detail=False, methods=["post"])
     def bulk_delete(self, request):
         """Delete multiple activities in a single request"""
@@ -205,7 +199,9 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
                 {"error": "user_id parameter is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        queryset = self.filter_queryset(self.get_queryset().filter(assigned_to__id=user_id))
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(assigned_to__id=user_id)
+        )
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -223,7 +219,9 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
                 {"error": "user_id parameter is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        queryset = self.filter_queryset(self.get_queryset().filter(participants__id=user_id))
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(participants__id=user_id)
+        )
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -241,7 +239,9 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
                 {"error": "type parameter is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        queryset = self.filter_queryset(self.get_queryset().filter(activity_type=activity_type))
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(activity_type=activity_type)
+        )
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -262,7 +262,7 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         return Response(serializer.data)
 
     @swagger_auto_schema(operation_description=ACTIVITY_PENDING_DOCS)
-    @action(detail=False, methods=["get"]) 
+    @action(detail=False, methods=["get"])
     def pending(self, request):
         """Get activities marked as pending"""
         queryset = self.filter_queryset(self.get_queryset().filter(status="pending"))
@@ -274,7 +274,7 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         return Response(serializer.data)
 
     @swagger_auto_schema(operation_description=ACTIVITY_UPCOMING_DOCS)
-    @action(detail=False, methods=["get"]) 
+    @action(detail=False, methods=["get"])
     def upcoming(self, request):
         """Get upcoming activities based on start or due date"""
         now = timezone.now()

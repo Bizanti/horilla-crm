@@ -7,48 +7,46 @@ requests and responses for the CRM application.
 
 import datetime
 from urllib.parse import urlencode
-from django.http import HttpResponse, Http404
-from django.shortcuts import get_object_or_404, render
-from django.utils.functional import cached_property  # type: ignore
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
+
+from django.apps import apps
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.utils.decorators import method_decorator
-from django.apps import apps
-from django.views.generic import DetailView
 from django.db import models
-from django.contrib import messages
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property  # type: ignore
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import DetailView
+
 from horilla_activity.filters import ActivityFilter
 from horilla_activity.forms import EventForm
-from horilla_mail.models import HorillaMail
-from horilla_generics.mixins import RecentlyViewedMixin
-from horilla_generics.views import (
-    HorillaNotesAttachementSectionView,
-    HorillaSingleDeleteView,
-    HorillaKanbanView,
-    HorillaDetailSectionView,
-    HorillaHistorySectionView,
-    HorillaDetailView,
-    HorillaListView,
-    HorillaNavView,
-    HorillaDetailTabView,
-    HorillaView,
-    HorillaSingleFormView,
-)
-from horilla_utils.middlewares import _thread_local
 from horilla_core.decorators import (
     htmx_required,
     permission_required,
     permission_required_or_denied,
 )
-from .forms import (
-    ActivityCreateForm,
-    EventForm,
-    LogCallForm,
-    MeetingsForm,
+from horilla_generics.mixins import RecentlyViewedMixin
+from horilla_generics.views import (
+    HorillaDetailSectionView,
+    HorillaDetailTabView,
+    HorillaDetailView,
+    HorillaHistorySectionView,
+    HorillaKanbanView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaNotesAttachementSectionView,
+    HorillaSingleDeleteView,
+    HorillaSingleFormView,
+    HorillaView,
 )
+from horilla_mail.models import HorillaMail
+from horilla_utils.middlewares import _thread_local
+
+from .forms import ActivityCreateForm, EventForm, LogCallForm, MeetingsForm
 from .models import Activity
 
 
@@ -116,7 +114,6 @@ class HorillaActivitySectionView(DetailView):
         return context
 
 
-
 class ActivityView(LoginRequiredMixin, HorillaView):
     """
     Render the activity page.
@@ -129,7 +126,9 @@ class ActivityView(LoginRequiredMixin, HorillaView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required(["horilla_activity.view_activity", "horilla_activity.view_own_activity"]),
+    permission_required(
+        ["horilla_activity.view_activity", "horilla_activity.view_own_activity"]
+    ),
     name="dispatch",
 )
 class ActivityNavbar(LoginRequiredMixin, HorillaNavView):
@@ -231,9 +230,9 @@ class AllActivityListView(LoginRequiredMixin, HorillaListView):
                 "own_permission": "horilla_activity.change_own_activity",
                 "owner_field": ["owner", "assigned_to"],
                 "attrs": """
-                            hx-get="{get_activity_edit_url}?new=true" 
+                            hx-get="{get_activity_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
             },
@@ -243,9 +242,9 @@ class AllActivityListView(LoginRequiredMixin, HorillaListView):
                 "img_class": "w-4 h-4",
                 "permission": "horilla_activity.delete_activity",
                 "attrs": """
-                            hx-post="{get_delete_url}" 
+                            hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="click"
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
@@ -273,7 +272,6 @@ class AcivityKanbanView(LoginRequiredMixin, HorillaKanbanView):
     search_url = reverse_lazy("horilla_activity:activity_list_view")
     main_url = reverse_lazy("horilla_activity:activity_view")
     group_by_field = "status"
-    
 
     actions = AllActivityListView.actions
 
@@ -550,34 +548,34 @@ class TaskListView(LoginRequiredMixin, HorillaListView):
         Actions are shown globally (for all rows) but backend views enforce ownership/perms.
         """
         actions = [
-             {
-                        "action": "Edit",
-                        "src": "assets/icons/edit.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.change_activity",
-                        "own_permission": "horilla_activity.change_own_activity",
-                        "owner_field": ["owner", "assigned_to"],
-                                "attrs": """
-                            hx-get="{get_edit_url}?new=true" 
+            {
+                "action": "Edit",
+                "src": "assets/icons/edit.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.change_activity",
+                "own_permission": "horilla_activity.change_own_activity",
+                "owner_field": ["owner", "assigned_to"],
+                "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-                    },
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.delete_activity",
-                        "attrs": """
-                            hx-post="{get_delete_url}" 
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.delete_activity",
+                "attrs": """
+                            hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="click"
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
                         """,
-                    }
+            },
         ]
 
         return actions
@@ -687,7 +685,8 @@ class MeetingListView(HorillaListView):
         Return the search URL for the call list view.
         """
         return reverse_lazy(
-            "horilla_activity:meeting_list", kwargs={"object_id": self.kwargs["object_id"]}
+            "horilla_activity:meeting_list",
+            kwargs={"object_id": self.kwargs["object_id"]},
         )
 
     def get_main_url(self):
@@ -695,7 +694,8 @@ class MeetingListView(HorillaListView):
         Return the main URL for the call list view.
         """
         return reverse_lazy(
-            "horilla_activity:meeting_list", kwargs={"object_id": self.kwargs["object_id"]}
+            "horilla_activity:meeting_list",
+            kwargs={"object_id": self.kwargs["object_id"]},
         )
 
     @property
@@ -719,35 +719,34 @@ class MeetingListView(HorillaListView):
         Actions are shown globally (for all rows) but backend views enforce ownership/perms.
         """
         actions = [
-                    {
-                        "action": "Edit",
-                        "src": "assets/icons/edit.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.change_activity",
-                        "own_permission": "horilla_activity.change_own_activity",
-                        "owner_field": ["owner", "assigned_to"],
-                        "attrs": """
-                            hx-get="{get_edit_url}?new=true" 
+            {
+                "action": "Edit",
+                "src": "assets/icons/edit.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.change_activity",
+                "own_permission": "horilla_activity.change_own_activity",
+                "owner_field": ["owner", "assigned_to"],
+                "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-                    },
-        
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.delete_activity",
-                        "attrs": """
-                            hx-post="{get_delete_url}" 
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.delete_activity",
+                "attrs": """
+                            hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="click"
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
                         """,
-                    }
+            },
         ]
 
         return actions
@@ -854,34 +853,34 @@ class CallListView(HorillaListView):
         Actions are shown globally (for all rows) but backend views enforce ownership/perms.
         """
         actions = [
-                    {
-                        "action": "Edit",
-                        "src": "assets/icons/edit.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.change_activity",
-                        "own_permission": "horilla_activity.change_own_activity",
-                        "owner_field": ["owner", "assigned_to"],
-                        "attrs": """
-                            hx-get="{get_edit_url}?new=true" 
+            {
+                "action": "Edit",
+                "src": "assets/icons/edit.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.change_activity",
+                "own_permission": "horilla_activity.change_own_activity",
+                "owner_field": ["owner", "assigned_to"],
+                "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-                    },
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.delete_activity",
-                        "attrs": """
-                            hx-post="{get_delete_url}" 
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.delete_activity",
+                "attrs": """
+                            hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="click"
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
                         """,
-                    }
+            },
         ]
 
         return actions
@@ -956,7 +955,8 @@ class EmailListView(HorillaListView):
         Return the search URL for the email list view.
         """
         return reverse_lazy(
-            "horilla_activity:email_list", kwargs={"object_id": self.kwargs["object_id"]}
+            "horilla_activity:email_list",
+            kwargs={"object_id": self.kwargs["object_id"]},
         )
 
     @property
@@ -973,9 +973,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/email_black.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                            hx-get="{get_edit_url}" 
+                            hx-get="{get_edit_url}"
                             hx-target="#horillaModalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openhorillaModal()"
                             """,
             },
@@ -984,9 +984,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/a4.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                        hx-post="{get_delete_url}?view=draft" 
+                        hx-post="{get_delete_url}?view=draft"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         hx-vals='{{"check_dependencies": "false"}}'
                         onclick="openModal()"
@@ -999,9 +999,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/cancel.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                        hx-get="{get_edit_url}?cancel=true" 
+                        hx-get="{get_edit_url}?cancel=true"
                         hx-target="#horillaModalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         onclick="openhorillaModal()"
                     """,
@@ -1011,9 +1011,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/clock.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                        hx-get="{get_reschedule_url}" 
+                        hx-get="{get_reschedule_url}"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         onclick="openModal()"
                     """,
@@ -1023,9 +1023,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/a4.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                        hx-post="{get_delete_url}?view=scheduled" 
+                        hx-post="{get_delete_url}?view=scheduled"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         hx-vals='{{"check_dependencies": "false"}}'
                         onclick="openModal()"
@@ -1038,9 +1038,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/eye1.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                            hx-get="{get_view_url}" 
+                            hx-get="{get_view_url}"
                             hx-target="#contentModalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openContentModal()"
                             """,
             },
@@ -1049,9 +1049,9 @@ class EmailListView(HorillaListView):
                 "src": "assets/icons/a4.svg",
                 "img_class": "w-4 h-4",
                 "attrs": """
-                hx-post="{get_delete_url}?view=sent" 
+                hx-post="{get_delete_url}?view=sent"
                 hx-target="#modalBox"
-                hx-swap="innerHTML" 
+                hx-swap="innerHTML"
                 hx-trigger="click"
                 hx-vals='{{"check_dependencies": "false"}}'
                 onclick="openModal()"
@@ -1142,7 +1142,8 @@ class EventListView(HorillaListView):
         Return the search URL for the event list view.
         """
         return reverse_lazy(
-            "horilla_activity:event_list", kwargs={"object_id": self.kwargs["object_id"]}
+            "horilla_activity:event_list",
+            kwargs={"object_id": self.kwargs["object_id"]},
         )
 
     @property
@@ -1159,35 +1160,34 @@ class EventListView(HorillaListView):
         Actions are shown globally (for all rows) but backend views enforce ownership/perms.
         """
         actions = [
-                    {
-                        "action": "Edit",
-                        "src": "assets/icons/edit.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.change_activity",
-                        "own_permission": "horilla_activity.change_own_activity",
-                        "owner_field": ["owner", "assigned_to"],
-                        "attrs": """
-                            hx-get="{get_edit_url}?new=true" 
+            {
+                "action": "Edit",
+                "src": "assets/icons/edit.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.change_activity",
+                "own_permission": "horilla_activity.change_own_activity",
+                "owner_field": ["owner", "assigned_to"],
+                "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-                    },
-             
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-4 h-4",
-                        "permission": "horilla_activity.delete_activity",
-                        "attrs": """
-                            hx-post="{get_delete_url}" 
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "horilla_activity.delete_activity",
+                "attrs": """
+                            hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="click"
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
                         """,
-                    }
+            },
         ]
 
         return actions
@@ -1326,7 +1326,9 @@ class TaskCreateForm(LoginRequiredMixin, HorillaSingleFormView):
         if pk:
             if not self.model.objects.filter(
                 owner_id=self.request.user, pk=pk
-            ).first() and not self.request.user.has_perm("horilla_activity.change_activity"):
+            ).first() and not self.request.user.has_perm(
+                "horilla_activity.change_activity"
+            ):
                 return super().get(request, *args, **kwargs)
         return render(request, "error/403.html")
 
@@ -1383,7 +1385,9 @@ class MeetingsCreateForm(LoginRequiredMixin, HorillaSingleFormView):
         """
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
-            return reverse_lazy("horilla_activity:meeting_update_form", kwargs={"pk": pk})
+            return reverse_lazy(
+                "horilla_activity:meeting_update_form", kwargs={"pk": pk}
+            )
         return reverse_lazy("horilla_activity:meeting_create_form")
 
     def get_initial(self):
@@ -1479,7 +1483,9 @@ class MeetingsCreateForm(LoginRequiredMixin, HorillaSingleFormView):
         if pk:
             if not self.model.objects.filter(
                 owner_id=self.request.user, pk=pk
-            ).first() and not self.request.user.has_perm("horilla_activity.change_activity"):
+            ).first() and not self.request.user.has_perm(
+                "horilla_activity.change_activity"
+            ):
                 return super().get(request, *args, **kwargs)
         return render(request, "error/403.html")
 
@@ -1622,7 +1628,9 @@ class CallCreateForm(LoginRequiredMixin, HorillaSingleFormView):
         if pk:
             if not self.model.objects.filter(
                 owner_id=self.request.user, pk=pk
-            ).first() and not self.request.user.has_perm("horilla_activity.change_activity"):
+            ).first() and not self.request.user.has_perm(
+                "horilla_activity.change_activity"
+            ):
                 return super().get(request, *args, **kwargs)
         return render(request, "error/403.html")
 
@@ -1736,7 +1744,9 @@ class EventCreateForm(LoginRequiredMixin, HorillaSingleFormView):
         if pk:
             if not self.model.objects.filter(
                 owner_id=self.request.user, pk=pk
-            ).first() and not self.request.user.has_perm("horilla_activity.change_activity"):
+            ).first() and not self.request.user.has_perm(
+                "horilla_activity.change_activity"
+            ):
                 return super().get(request, *args, **kwargs)
         return render(request, "error/403.html")
 
@@ -2034,16 +2044,18 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
 
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
-            return reverse_lazy("horilla_activity:activity_edit_form", kwargs={"pk": pk})
+            return reverse_lazy(
+                "horilla_activity:activity_edit_form", kwargs={"pk": pk}
+            )
         return reverse_lazy("horilla_activity:activity_create_form")
 
     def get(self, request, *args, **kwargs):
 
         pk = self.kwargs.get("pk")
 
-        if request.user.has_perm("horilla_activity.change_activity") or request.user.has_perm(
-            "horilla_activity.add_activity"
-        ):
+        if request.user.has_perm(
+            "horilla_activity.change_activity"
+        ) or request.user.has_perm("horilla_activity.add_activity"):
             return super().get(request, *args, **kwargs)
         if pk:
             if (
@@ -2067,5 +2079,3 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
                 "<script>$('#reloadMainContent').click();closeModal();</script>"
             )
         return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
-
-

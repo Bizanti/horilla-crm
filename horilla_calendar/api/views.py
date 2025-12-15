@@ -4,35 +4,31 @@ API views for Horilla Calendar models
 This module mirrors horilla_core/accounts API patterns including search, filtering,
 bulk update, bulk delete, permissions, and documentation.
 """
+
 from django.utils import timezone
-from rest_framework import viewsets, permissions, status
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
-from horilla_calendar.models import UserCalendarPreference, UserAvailability
-from horilla_calendar.api.serializers import (
-    UserCalendarPreferenceSerializer,
-    UserAvailabilitySerializer,
-)
-from horilla_core.api.permissions import IsCompanyMember
-from horilla_core.api.mixins import SearchFilterMixin, BulkOperationsMixin
-from horilla_core.api.docs import (
-    SEARCH_FILTER_DOCS,
-    BULK_UPDATE_DOCS,
-    BULK_DELETE_DOCS,
-)
 from horilla_calendar.api.docs import (
-    USER_CALENDAR_PREFERENCE_LIST_DOCS,
-    USER_CALENDAR_PREFERENCE_DETAIL_DOCS,
-    USER_CALENDAR_PREFERENCE_CREATE_DOCS,
-    USER_AVAILABILITY_LIST_DOCS,
-    USER_AVAILABILITY_DETAIL_DOCS,
     USER_AVAILABILITY_CREATE_DOCS,
     USER_AVAILABILITY_CURRENT_DOCS,
+    USER_AVAILABILITY_DETAIL_DOCS,
+    USER_AVAILABILITY_LIST_DOCS,
+    USER_CALENDAR_PREFERENCE_CREATE_DOCS,
+    USER_CALENDAR_PREFERENCE_DETAIL_DOCS,
+    USER_CALENDAR_PREFERENCE_LIST_DOCS,
 )
-
+from horilla_calendar.api.serializers import (
+    UserAvailabilitySerializer,
+    UserCalendarPreferenceSerializer,
+)
+from horilla_calendar.models import UserAvailability, UserCalendarPreference
+from horilla_core.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
+from horilla_core.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla_core.api.permissions import IsCompanyMember
 
 # Common Swagger parameter for search
 search_param = openapi.Parameter(
@@ -48,12 +44,8 @@ bulk_update_body = openapi.Schema(
         "ids": openapi.Schema(
             type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER)
         ),
-        "filters": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
-        "data": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
+        "filters": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
+        "data": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
     },
     required=["data"],
 )
@@ -64,9 +56,7 @@ bulk_delete_body = openapi.Schema(
         "ids": openapi.Schema(
             type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER)
         ),
-        "filters": openapi.Schema(
-            type=openapi.TYPE_OBJECT, additional_properties=True
-        ),
+        "filters": openapi.Schema(type=openapi.TYPE_OBJECT, additional_properties=True),
     },
 )
 
@@ -199,7 +189,9 @@ class UserAvailabilityViewSet(
         """Get current unavailability periods, optionally filtered by user_id"""
         user_id = request.query_params.get("user_id")
         now = timezone.now()
-        queryset = self.get_queryset().filter(from_datetime__lte=now, to_datetime__gte=now)
+        queryset = self.get_queryset().filter(
+            from_datetime__lte=now, to_datetime__gte=now
+        )
         if user_id:
             queryset = queryset.filter(user_id=user_id)
         queryset = self.filter_queryset(queryset)

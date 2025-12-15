@@ -1,10 +1,11 @@
 """Models for user calendar preferences and availability in Horilla """
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 from horilla_core.models import HorillaCoreModel
 
 
