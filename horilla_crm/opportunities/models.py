@@ -18,7 +18,6 @@ from horilla_core.models import (
     Company,
     CustomerRole,
     HorillaCoreModel,
-    HorillaUser,
     MultipleCurrency,
 )
 from horilla_crm.accounts.models import Account
@@ -345,7 +344,7 @@ class Opportunity(HorillaCoreModel):
         related_name="opportunities",
     )
     owner = models.ForeignKey(
-        HorillaUser,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         verbose_name=_("Owner"),
         help_text="Opportunity Owner",
@@ -415,6 +414,14 @@ class Opportunity(HorillaCoreModel):
         This method to get edit url
         """
         return reverse_lazy("opportunities:opportunity_edit", kwargs={"pk": self.pk})
+
+    def get_duplicate_url(self):
+        """
+        This method to get edit url
+        """
+        return reverse_lazy(
+            "opportunities:opportunity_single_edit", kwargs={"pk": self.pk}
+        )
 
     def get_delete_url(self):
         """
@@ -530,8 +537,8 @@ class OpportunityContactRole(HorillaCoreModel):
     class Meta:
         """Meta options for OpportunityContactRole model."""
 
-        verbose_name = "Opportunity Contact Role"
-        verbose_name_plural = "Opportunity Contact Roles"
+        verbose_name = _("Opportunity Contact Role")
+        verbose_name_plural = _("Opportunity Contact Roles")
         unique_together = ("contact", "opportunity")
 
     def __str__(self):
@@ -564,7 +571,7 @@ class OpportunityTeam(HorillaCoreModel):
     team_name = models.CharField(max_length=255, verbose_name=_("Team Name"))
     description = models.TextField(blank=True, verbose_name=_("Description"))
     owner = models.ForeignKey(
-        HorillaUser,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="owner",
         verbose_name=_("Owner"),
@@ -625,7 +632,7 @@ class OpportunityTeamMember(HorillaCoreModel):
         max_length=255, choices=TEAM_ROLE_CHOICES, verbose_name=_("Member Role")
     )
     user = models.ForeignKey(
-        HorillaUser,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="opportunty_team_users",
         verbose_name=_("Team Members"),
@@ -671,7 +678,7 @@ class DefaultOpportunityMember(HorillaCoreModel):
     )
 
     user = models.ForeignKey(
-        HorillaUser,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="default_opportunity_memberships",
         verbose_name=_("Team Member"),
@@ -945,6 +952,10 @@ class OpportunitySplit(HorillaCoreModel):
             "Calculated split amount based on percentage and opportunity amount."
         ),
     )
+
+    class Meta:
+        verbose_name = _("Opportunity Split")
+        verbose_name_plural = _("Opportunity Splits")
 
     def actions(self):
         """

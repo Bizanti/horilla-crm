@@ -7,6 +7,7 @@ from django.db import models
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+from horilla.auth.models import User
 from horilla_core.mixins import OwnerQuerysetMixin
 from horilla_crm.opportunities.models import (
     DefaultOpportunityMember,
@@ -153,11 +154,8 @@ class OpportunityTeamForm(HorillaModelForm):
         condition_field_choices = {}
 
         try:
-            # Get choices for user field (ForeignKey)
-            from .models import HorillaUser  # Import here to avoid circular imports
-
             user_choices = [("", "---------")]
-            users = HorillaUser.objects.all()[:100]  # Limit for performance
+            users = User.objects.all()[:100]  # Limit for performance
             user_choices.extend([(user.pk, str(user)) for user in users])
             condition_field_choices["user"] = user_choices
 
@@ -343,12 +341,8 @@ class OpportunityTeamForm(HorillaModelForm):
                     if value:
                         if field_name == "user":
                             try:
-                                from .models import (  # Import here to avoid circular imports
-                                    HorillaUser,
-                                )
-
-                                value = HorillaUser.objects.get(pk=value)
-                            except (HorillaUser.DoesNotExist, ValueError):
+                                value = User.objects.get(pk=value)
+                            except (User.DoesNotExist, ValueError):
                                 self.add_error(
                                     None, f"Invalid user selected for row {row_id}"
                                 )

@@ -14,7 +14,7 @@ from django.dispatch import Signal, receiver
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_core.signals import company_created, company_currency_changed
 from horilla_crm.leads.models import (
     Lead,
@@ -81,7 +81,7 @@ def update_crm_on_currency_change(sender, **kwargs):
         Lead.objects.bulk_update(leads_to_update, ["annual_revenue"], batch_size=1000)
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_leads_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/leads/leads-view/", "key": "E", "command": "alt"},

@@ -8,8 +8,8 @@ from django.apps import apps
 from django.db import models
 from django.urls import reverse, reverse_lazy
 
+from horilla.auth.models import User
 from horilla_core.mixins import OwnerQuerysetMixin
-from horilla_core.models import HorillaUser
 from horilla_crm.accounts.models import Account
 from horilla_crm.contacts.models import Contact
 from horilla_crm.opportunities.models import Opportunity
@@ -264,7 +264,7 @@ class LeadConversionForm(forms.Form):
 
     # Owner field
     owner = forms.ModelChoiceField(
-        queryset=HorillaUser.objects.all(),
+        queryset=User.objects.all(),
         required=True,
         empty_label="Select Owner",
         widget=forms.Select(

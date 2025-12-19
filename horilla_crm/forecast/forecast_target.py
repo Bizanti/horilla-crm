@@ -16,12 +16,13 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
+from horilla.auth.models import User
 from horilla_core.decorators import (
     htmx_required,
     permission_required,
     permission_required_or_denied,
 )
-from horilla_core.models import HorillaUser, Period, Role
+from horilla_core.models import Period, Role
 from horilla_crm.forecast.filters import ForecastTargetFilter
 from horilla_crm.forecast.forms import ForecastTargetForm
 from horilla_crm.forecast.models import ForecastTarget, ForecastType
@@ -306,7 +307,7 @@ class ForecastTargetFormView(HorillaSingleFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["users"] = HorillaUser.objects.all()
+        context["users"] = User.objects.all()
         context["roles"] = Role.objects.all()
         context["period_choices"] = [(p.id, p.name) for p in Period.objects.all()]
         context["forecast_type_choices"] = [
@@ -357,12 +358,12 @@ class ForecastTargetFormView(HorillaSingleFormView):
         # Filter users based on role and is_role_based
         is_role_based = request.GET.get("is_role_based", "off") == "on"
         role_id = request.GET.get("role")
-        users = HorillaUser.objects.all()
+        users = User.objects.all()
         if is_role_based:
             if role_id:
                 users = users.filter(role_id=role_id)
             else:
-                users = HorillaUser.objects.none()
+                users = User.objects.none()
 
         context = {
             "form": form,
@@ -463,7 +464,7 @@ class ForecastTargetFormView(HorillaSingleFormView):
 
             combination = (assigned_to_id, period_id, forcasts_type_id)
             if combination in combinations_to_create:
-                assigned_user = HorillaUser.objects.get(id=assigned_to_id)
+                assigned_user = User.objects.get(id=assigned_to_id)
                 form.add_error(
                     None,
                     f"Duplicate entry found for user '{assigned_user}' with the same period and forecast type.",
@@ -477,7 +478,7 @@ class ForecastTargetFormView(HorillaSingleFormView):
             ).first()
 
             if existing_target:
-                assigned_user = HorillaUser.objects.get(id=assigned_to_id)
+                assigned_user = User.objects.get(id=assigned_to_id)
                 form.add_error(
                     None,
                     f"Forecast target already exists for user '{assigned_user}' with the selected period and forecast type.",
@@ -489,7 +490,7 @@ class ForecastTargetFormView(HorillaSingleFormView):
             # Create ForecastTarget instance
             instance = ForecastTarget(
                 role=role if is_role_based else None,
-                assigned_to=HorillaUser.objects.get(id=assigned_to_id),
+                assigned_to=User.objects.get(id=assigned_to_id),
                 period=period,
                 target_amount=target_amount,
                 forcasts_type=forcasts_type,
@@ -523,12 +524,12 @@ class ToggleRoleBasedView(View):
         is_period_same = request.POST.get("is_period_same", "off") == "on"
         is_target_same = request.POST.get("is_target_same", "off") == "on"
         is_forecast_type_same = request.POST.get("is_forecast_type_same", "off") == "on"
-        users = HorillaUser.objects.all()
+        users = User.objects.all()
         if is_role_based:
             if role_id:
                 users = users.filter(role_id=role_id)
             else:
-                users = HorillaUser.objects.none()
+                users = User.objects.none()
         form = ForecastTargetForm(request.POST)
 
         condition_fields = ["assigned_to"]
@@ -618,12 +619,12 @@ class ToggleConditionFieldsView(View):
         if not is_target_same:
             condition_fields.append("target_amount")
 
-        users = HorillaUser.objects.all()
+        users = User.objects.all()
         if is_role_based:
             if role_id:
                 users = users.filter(role_id=role_id)
             else:
-                users = HorillaUser.objects.none()
+                users = User.objects.none()
 
         # Extract condition data
         possible_condition_fields = [

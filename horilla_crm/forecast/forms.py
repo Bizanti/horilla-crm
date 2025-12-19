@@ -11,7 +11,7 @@ from django.db import models
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_crm.opportunities.models import Opportunity
 from horilla_generics.forms import HorillaModelForm
 
@@ -185,7 +185,7 @@ class ForecastTargetForm(HorillaModelForm):
                 "role", "Role is required when role-based assignment is selected."
             )
         if is_role_based and assigned_to and role:
-            if not HorillaUser.objects.filter(id=assigned_to.id, role=role).exists():
+            if not User.objects.filter(id=assigned_to.id, role=role).exists():
                 self.add_error(
                     "assigned_to", "Selected user does not belong to the selected role."
                 )

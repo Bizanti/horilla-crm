@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_core.signals import company_currency_changed
 from horilla_crm.leads.signals import lead_stage_created
 from horilla_crm.opportunities.models import (
@@ -112,7 +112,7 @@ def update_crm_on_currency_change(sender, **kwargs):
         )
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_opportunity_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/opportunities/opportunities-view/", "key": "O", "command": "alt"},

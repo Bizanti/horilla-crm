@@ -5,11 +5,11 @@ Signals for the horilla_keys app
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_keys.models import ShortcutKey
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_all_default_shortcuts(sender, instance, created, **kwargs):
     """
     Create all default shortcut keys for a newly created user

@@ -5,7 +5,8 @@ import logging
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from horilla_core.models import HorillaUser, Period
+from horilla.auth.models import User
+from horilla_core.models import Period
 from horilla_core.signals import company_currency_changed
 from horilla_crm.forecast.models import Forecast, ForecastType
 from horilla_crm.forecast.utils import ForecastCalculator
@@ -302,7 +303,7 @@ def update_forecast_on_opportunity_delete(sender, instance, **kwargs):
         logging.error("Error updating forecast on opportunity delete: %s", e)
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_forecast_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/forecast/forecast-view/", "key": "F", "command": "alt"},

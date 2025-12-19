@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import Country, CountryField
 from django_summernote.widgets import SummernoteInplaceWidget
 
+from horilla.auth.models import User
 from horilla_core.models import HorillaAttachment, KanbanGroupBy, ListColumnVisibility
 from horilla_utils.middlewares import _thread_local
 
@@ -395,7 +396,9 @@ class HorillaMultiStepForm(forms.ModelForm):
                         field_label = (
                             field.label or field_name.replace("_", " ").title()
                         )
-                        widget_attrs["placeholder"] = f"Upload {field_label}"
+                        widget_attrs["placeholder"] = _("Upload %(field)s") % {
+                            "field": field_label
+                        }
 
                 elif isinstance(model_field, models.DateField) and not isinstance(
                     model_field, models.DateTimeField
@@ -435,7 +438,9 @@ class HorillaMultiStepForm(forms.ModelForm):
                         field_label = (
                             field.label or field_name.replace("_", " ").title()
                         )
-                        widget_attrs["placeholder"] = f"Enter {field_label}"
+                        widget_attrs["placeholder"] = _("Enter %(field)s") % {
+                            "field": field_label
+                        }
 
                 elif isinstance(model_field, models.BooleanField):
                     field.widget = forms.CheckboxInput()
@@ -446,12 +451,16 @@ class HorillaMultiStepForm(forms.ModelForm):
                         field_label = (
                             field.label or field_name.replace("_", " ").title()
                         )
-                        widget_attrs["placeholder"] = f"Enter {field_label}"
+                        widget_attrs["placeholder"] = _("Enter %(field)s") % {
+                            "field": field_label
+                        }
             else:
                 # If no model field found, use generic placeholder
                 if not field.widget.attrs.get("placeholder"):
                     field_label = field.label or field_name.replace("_", " ").title()
-                    widget_attrs["placeholder"] = f"Enter {field_label}"
+                    widget_attrs["placeholder"] = _("Enter %(field)s") % {
+                        "field": field_label
+                    }
 
             # Apply widget-specific classes and attributes
             if isinstance(field.widget, forms.Select):
@@ -519,7 +528,8 @@ class HorillaMultiStepForm(forms.ModelForm):
                     f"horilla_generics:model_select2",
                     kwargs={"app_label": app_label, "model_name": model_name},
                 ),
-                "data-placeholder": f"Select {model_field.verbose_name.title()}",
+                "data-placeholder": _("Select %(field)s")
+                % {"field": model_field.verbose_name.title()},
                 "multiple": "multiple",
                 "data-initial": (
                     ",".join(map(str, initial_value)) if initial_value else ""
@@ -572,7 +582,8 @@ class HorillaMultiStepForm(forms.ModelForm):
                     f"horilla_generics:model_select2",
                     kwargs={"app_label": app_label, "model_name": model_name},
                 ),
-                "data-placeholder": f"Select {model_field.verbose_name.title()}",
+                "data-placeholder": _("Select %(field)s")
+                % {"field": model_field.verbose_name.title()},
                 "data-initial": str(initial_value) if initial_value else "",
                 "data-field-name": field_name,  # Add unique identifier
                 "id": f"id_{field_name}",
@@ -778,7 +789,7 @@ class HorillaModelForm(forms.ModelForm):
             if not isinstance(field.widget, forms.CheckboxInput):
                 existing_placeholder = existing_attrs.get("placeholder", "")
                 default_placeholder = (
-                    f"Enter {field.label}"
+                    _("Enter %(field)s") % {"field": field.label}
                     if not isinstance(field.widget, forms.Select)
                     else ""
                 )
@@ -903,7 +914,8 @@ class HorillaModelForm(forms.ModelForm):
                                         "model_name": model_name,
                                     },
                                 ),
-                                "data-placeholder": f"Select {model_field.verbose_name.title()}",
+                                "data-placeholder": _("Select %(field)s")
+                                % {"field": model_field.verbose_name.title()},
                                 "multiple": "multiple",
                                 "data-initial": (
                                     ",".join(
@@ -982,7 +994,8 @@ class HorillaModelForm(forms.ModelForm):
                                         "model_name": model_name,
                                     },
                                 ),
-                                "data-placeholder": f"Select {model_field.verbose_name.title()}",
+                                "data-placeholder": _("Select %(field)s")
+                                % {"field": model_field.verbose_name.title()},
                                 "data-initial": (
                                     str(submitted_value or initial_value)
                                     if (submitted_value or initial_value)
@@ -1013,7 +1026,8 @@ class HorillaModelForm(forms.ModelForm):
                 field.widget.attrs.update(
                     {
                         "rows": 4,
-                        "placeholder": "Enter description here...",
+                        "placeholder": _("Enter %(field)s here...")
+                        % {"field": field.label},
                     }
                 )
 
@@ -1032,7 +1046,8 @@ class HorillaModelForm(forms.ModelForm):
                         widget=forms.Select(
                             attrs={
                                 "class": "js-example-basic-single headselect",
-                                "data-placeholder": f'Select {field_name.replace("_", " ").title()}',
+                                "data-placeholder": _("Select %(field)s")
+                                % {"field": field_name.replace("_", " ").title()},
                                 "id": f"id_{field_name}",
                             }
                         ),
@@ -1069,7 +1084,8 @@ class HorillaModelForm(forms.ModelForm):
                                         "model_name": model_name,
                                     },
                                 ),
-                                "data-placeholder": f"Select {model_field.verbose_name.title()}",
+                                "data-placeholder": _("Select %(field)s")
+                                % {"field": model_field.verbose_name.title()},
                                 "data-field-name": field_name,
                                 "id": f"id_{field_name}",
                                 "data-form-class": f"{self.__module__}.{self.__class__.__name__}",
@@ -1085,7 +1101,8 @@ class HorillaModelForm(forms.ModelForm):
                         widget=forms.TextInput(
                             attrs={
                                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                                "placeholder": f'Enter {field_name.replace("_", " ").title()}',
+                                "placeholder": _("Enter %(field)s")
+                                % {"field": field_name.replace("_", " ").title()},
                                 "id": f"id_{field_name}",
                             }
                         ),
@@ -1098,7 +1115,8 @@ class HorillaModelForm(forms.ModelForm):
                         widget=forms.NumberInput(
                             attrs={
                                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                                "placeholder": f'Enter {field_name.replace("_", " ").title()}',
+                                "placeholder": _("Enter %(field)s")
+                                % {"field": field_name.replace("_", " ").title()},
                                 "id": f"id_{field_name}",
                             }
                         ),
@@ -1123,7 +1141,8 @@ class HorillaModelForm(forms.ModelForm):
                         widget=forms.TextInput(
                             attrs={
                                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                                "placeholder": f'Enter {field_name.replace("_", " ").title()}',
+                                "placeholder": _("Enter %(field)s")
+                                % {"field": field_name.replace("_", " ").title()},
                                 "id": f"id_{field_name}",
                             }
                         ),
@@ -1263,9 +1282,7 @@ class HorillaModelForm(forms.ModelForm):
             return None
 
         try:
-            from django.contrib.auth import get_user_model
 
-            User = get_user_model()
             user = self.request.user
 
             # Start with all objects
@@ -1293,9 +1310,6 @@ class HorillaModelForm(forms.ModelForm):
 
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
 
         if not user or not user.is_authenticated:
             return []

@@ -16,6 +16,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, FormView, TemplateView
 
+from horilla.auth.models import User
 from horilla.exceptions import HorillaHttp404
 from horilla_core.decorators import htmx_required, permission_required_or_denied
 
@@ -67,7 +68,6 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
                     "field_type": field.get_internal_type(),
                 }
                 lead_fields.append(field_info)
-        User = get_user_model()
         context["lead_fields"] = lead_fields
         context["lead_owners"] = User.objects.filter(is_active=True)
         return context

@@ -4,7 +4,7 @@ from django.apps import apps
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_crm.accounts.models import Account
 from horilla_crm.contacts.models import Contact, ContactAccountRelationship
 from horilla_keys.models import ShortcutKey
@@ -14,7 +14,7 @@ _thread_locals = threading.local()
 # Define your contacts signals here
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_contact_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/contacts/contacts-view/", "key": "N", "command": "alt"},

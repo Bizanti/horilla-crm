@@ -12,6 +12,7 @@ import logging
 from celery import shared_task
 from django.utils import timezone
 
+from horilla.auth.models import User
 from horilla_utils.middlewares import _thread_local
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,6 @@ def send_scheduled_mail_task(self, mail_id):
     from horilla_mail.models import HorillaMail
     from horilla_mail.services import HorillaMailManager
 
-    User = get_user_model()
     logger.info("Processing scheduled mail %s", mail_id)
 
     try:
@@ -205,12 +205,9 @@ def send_mail_async(mail_id, context=None):
     """
     General purpose async task to send any mail immediately using HorillaMailManager
     """
-    from django.contrib.auth import get_user_model
 
     from horilla_mail.models import HorillaMail
     from horilla_mail.services import HorillaMailManager
-
-    User = get_user_model()
 
     try:
         mail = HorillaMail.objects.get(pk=mail_id)

@@ -30,7 +30,7 @@ from django.utils.encoding import force_str
 from django.views import View
 from django.views.generic import FormView
 
-from horilla import settings
+from horilla.auth.models import User
 from horilla.exceptions import HorillaHttp404
 from horilla_core.decorators import htmx_required
 from horilla_core.models import KanbanGroupBy, ListColumnVisibility, PinnedView
@@ -1162,9 +1162,8 @@ class HorillaSelect2DataView(LoginRequiredMixin, View):
             queryset = model.objects.all()
 
         # owner filtration
-        user_model = get_user_model()
 
-        if model is user_model:
+        if model is User:
             queryset = self._apply_owner_filter(request.user, queryset)
         elif hasattr(model, "OWNER_FIELDS") and model.OWNER_FIELDS:
             allowed_user_ids = self._get_allowed_user_ids(request.user)
@@ -1268,7 +1267,6 @@ class HorillaSelect2DataView(LoginRequiredMixin, View):
         """
         Get list of allowed user IDs (self + subordinates) for filtering.
         """
-        User = get_user_model()
         if not user or not user.is_authenticated:
             return []
 

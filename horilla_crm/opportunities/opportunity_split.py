@@ -10,12 +10,12 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, View
 
+from horilla.auth.models import User
 from horilla_core.decorators import (
     htmx_required,
     permission_required,
     permission_required_or_denied,
 )
-from horilla_core.models import HorillaUser
 from horilla_crm.opportunities.models import (
     Opportunity,
     OpportunitySettings,
@@ -175,9 +175,7 @@ class OpportunitySplitTypeActiveToggleView(LoginRequiredMixin, View):
             split_type = OpportunitySplitType.objects.get(pk=kwargs["pk"])
             user = request.user
 
-            if user.is_superuser or user.has_perm(
-                "opportunity.change_opportunitysplittype"
-            ):
+            if user.has_perm("opportunity.change_opportunitysplittype"):
                 # Toggle is_active
                 split_type.is_active = not getattr(split_type, "is_active", False)
                 split_type.save()
@@ -358,9 +356,6 @@ class OpportunitySplitTabContentView(LoginRequiredMixin, TemplateView):
         Returns:
             QuerySet of User objects
         """
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
 
         team_selling_enabled = OpportunitySettings.is_team_selling_enabled(
             self.request.active_company
@@ -444,7 +439,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, View):
 
                 splits_with_amounts.append(
                     {
-                        "user": HorillaUser.objects.filter(id=user_id).first(),
+                        "user": User.objects.filter(id=user_id).first(),
                         "user_id": user_id,
                         "split_percentage": percentage,
                         "split_amount": amount,
@@ -463,7 +458,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, View):
                 "opportunity": opportunity,
                 "split_type": split_type,
                 "existing_splits": splits_with_amounts,
-                "users": HorillaUser.objects.filter(company=company, is_active=True),
+                "users": User.objects.filter(company=company, is_active=True),
                 "error": validation_result["error"],
                 "total_percentage": total_percentage,
                 "total_amount": total_amount,
@@ -537,9 +532,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, View):
                 opportunity=opportunity, user_id=user_id
             ).exists():
                 try:
-                    user = HorillaUser.objects.get(
-                        id=user_id, company=company, is_active=True
-                    )
+                    user = User.objects.get(id=user_id, company=company, is_active=True)
 
                     # Create team member with default role and access
                     OpportunityTeamMember.objects.create(
@@ -550,7 +543,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, View):
                         opportunity_access="read",
                     )
                     added_users.append(user.get_full_name() or user.username)
-                except HorillaUser.DoesNotExist:
+                except User.DoesNotExist:
                     continue
 
         if added_users:
@@ -683,10 +676,6 @@ class AddSplitRowView(LoginRequiredMixin, View):
         Returns:
             QuerySet of User objects
         """
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
-
         team_selling_enabled = OpportunitySettings.is_team_selling_enabled(
             request.active_company
         )

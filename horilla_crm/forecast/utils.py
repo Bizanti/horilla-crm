@@ -16,7 +16,8 @@ Features:
 
 from django.db.models import Q, Sum
 
-from horilla_core.models import FiscalYearInstance, HorillaUser, Period
+from horilla.auth.models import User
+from horilla_core.models import FiscalYearInstance, Period
 from horilla_crm.forecast.models import Forecast, ForecastTarget, ForecastType
 from horilla_crm.opportunities.models import Opportunity
 
@@ -47,7 +48,7 @@ class ForecastCalculator:
         user_ids = list(set(combo[0] for combo in missing_combinations))
         period_ids = list(set(combo[1] for combo in missing_combinations))
 
-        users_map = {u.id: u for u in HorillaUser.objects.filter(id__in=user_ids)}
+        users_map = {u.id: u for u in User.objects.filter(id__in=user_ids)}
         periods_map = {
             p.id: p
             for p in Period.objects.filter(id__in=period_ids).select_related("quarter")
@@ -670,7 +671,7 @@ class ForecastCalculator:
     def bulk_generate_forecasts(self, users=None, periods=None):
         """Bulk generate forecasts for multiple users and periods"""
         if not users:
-            users = HorillaUser.objects.filter(is_active=True)
+            users = User.objects.filter(is_active=True)
 
         if not periods:
             periods = Period.objects.filter(quarter__fiscal_year=self.fiscal_year)

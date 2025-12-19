@@ -5,7 +5,7 @@ from django.db.models import Q, Sum
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_core.signals import company_currency_changed
 from horilla_crm.campaigns.models import Campaign, CampaignMember
 from horilla_crm.leads.models import Lead
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Define your campaigns signals here
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_campaign_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/campaigns/campaign-view/", "key": "C", "command": "alt"},

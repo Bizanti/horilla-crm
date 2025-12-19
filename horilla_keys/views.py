@@ -27,7 +27,6 @@ from horilla_keys.forms import ShortcutKeyForm
 from horilla_keys.models import ShortcutKey
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 
 class ShortKeyView(LoginRequiredMixin, HorillaView):

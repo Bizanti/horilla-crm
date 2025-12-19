@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-from horilla_core.models import HorillaUser
+from horilla.auth.models import User
 from horilla_core.signals import company_currency_changed
 from horilla_crm.accounts.models import Account
 from horilla_keys.models import ShortcutKey
@@ -9,7 +9,7 @@ from horilla_keys.models import ShortcutKey
 # Define your accounts signals here
 
 
-@receiver(post_save, sender=HorillaUser)
+@receiver(post_save, sender=User)
 def create_account_shortcuts(sender, instance, created, **kwargs):
     predefined = [
         {"page": "/accounts/accounts-view/", "key": "A", "command": "alt"},

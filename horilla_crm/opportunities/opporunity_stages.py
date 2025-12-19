@@ -15,13 +15,14 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View
 
+from horilla.auth.models import User
 from horilla.exceptions import HorillaHttp404
 from horilla_core.decorators import (
     htmx_required,
     permission_required,
     permission_required_or_denied,
 )
-from horilla_core.models import Company, HorillaUser
+from horilla_core.models import Company
 from horilla_core.progress import ProgressStepsMixin
 from horilla_crm.opportunities.filters import OpportunityStageFilter
 from horilla_crm.opportunities.forms import OpportunityStageForm
@@ -852,7 +853,7 @@ class CreateOppStageGroupView(LoginRequiredMixin, View):
                     created_by=(
                         request.user
                         if request.user.is_authenticated
-                        else HorillaUser.objects.first()
+                        else User.objects.first()
                     ),
                     stage_type=stage_type,
                 )

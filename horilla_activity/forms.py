@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.forms import ValidationError
 from django.urls import reverse_lazy
 
+from horilla.auth.models import User
 from horilla_activity.models import Activity
 from horilla_core.mixins import OwnerQuerysetMixin
 from horilla_generics.forms import HorillaModelForm
@@ -59,7 +60,10 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         if self.instance.pk:
             self.fields["is_all_day"].widget.attrs.update(
                 {
-                    "hx-get": f"/activity/meeting-update-form/{self.instance.pk}?toggle_is_all_day=true"
+                    "hx-get": (
+                        f"/activity/meeting-update-form/{self.instance.pk}"
+                        "?toggle_is_all_day=true"
+                    )
                 }
             )
         else:
@@ -74,7 +78,7 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         )
         if is_all_day == "on":  # Checkbox returns 'on' when checked
             is_all_day = True
-        elif is_all_day == "off" or is_all_day == False:
+        elif is_all_day in ("off", False):
             is_all_day = False
 
         # Update widget visibility based on current is_all_day value
@@ -95,7 +99,10 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
                 if start_datetime.time() >= end_datetime.time():
                     raise ValidationError(
                         {
-                            "end_datetime": "End time must be later than start time on the same date."
+                            "end_datetime": (
+                                "End time must be later than start time "
+                                "on the same date."
+                            )
                         }
                     )
             elif end_datetime <= start_datetime:
@@ -153,9 +160,11 @@ class LogCallForm(OwnerQuerysetMixin, HorillaModelForm):
                 raise ValidationError("Duration must be in HH:MM:SS format")
             try:
                 h, m, s = map(int, parts)
-            except ValueError:
-                raise ValidationError("Hours, minutes, and seconds must be integers")
-            if h < 0 or not (0 <= m < 60) or not (0 <= s < 60):
+            except ValueError as exc:
+                raise ValidationError(
+                    "Hours, minutes, and seconds must be integers"
+                ) from exc
+            if h < 0 or not 0 <= m < 60 or not 0 <= s < 60:
                 raise ValidationError(
                     "Hours must be >= 0; minutes and seconds must be between 00 and 59"
                 )
@@ -220,7 +229,10 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         if self.instance.pk:
             self.fields["is_all_day"].widget.attrs.update(
                 {
-                    "hx-get": f"/activity/event-update-form/{self.instance.pk}?toggle_is_all_day=true"
+                    "hx-get": (
+                        f"/activity/event-update-form/{self.instance.pk}"
+                        "?toggle_is_all_day=true"
+                    )
                 }
             )
         else:
@@ -235,7 +247,7 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         )
         if is_all_day == "on":  # Checkbox returns 'on' when checked
             is_all_day = True
-        elif is_all_day == "off" or is_all_day == False:
+        elif is_all_day in ("off", False):
             is_all_day = False
 
         # Update widget visibility based on current is_all_day value
@@ -256,7 +268,10 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
                 if start_datetime.time() >= end_datetime.time():
                     raise ValidationError(
                         {
-                            "end_datetime": "End time must be later than start time on the same date."
+                            "end_datetime": (
+                                "End time must be later than start time "
+                                "on the same date."
+                            )
                         }
                     )
             elif end_datetime <= start_datetime:
@@ -324,7 +339,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
             self.fields["activity_type"].choices = [
                 (value, label)
                 for value, label in self.fields["activity_type"].choices
-                if value != "log_call" and value != "email"
+                if value not in ("log_call", "email")
             ]
 
         # Get activity_type from initial, submitted data, or instance
@@ -439,19 +454,8 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
             try:
                 model_class = content_type.model_class()
 
-                # Get the object
-                try:
-                    obj = model_class.objects.get(id=object_id)
-                except model_class.DoesNotExist:
-                    raise ValidationError(
-                        {"object_id": "Selected object does not exist."}
-                    )
-
                 # Apply owner filtration validation
                 if self.request and self.request.user:
-                    from django.contrib.auth import get_user_model
-
-                    User = get_user_model()
                     user = self.request.user
 
                     # Get fresh filtered queryset
@@ -479,14 +483,19 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                     if not queryset.filter(id=object_id).exists():
                         raise ValidationError(
                             {
-                                "object_id": "Select a valid choice. That choice is not one of the available choices."
+                                "object_id": (
+                                    "Select a valid choice. That choice is not "
+                                    "one of the available choices."
+                                )
                             }
                         )
 
             except ValidationError:
                 raise
-            except Exception as e:
-                raise ValidationError({"object_id": "Invalid object selection."})
+            except Exception as exc:
+                raise ValidationError(
+                    {"object_id": "Invalid object selection."}
+                ) from exc
 
         # Existing date/time validation
         if not is_all_day and start_datetime and end_datetime:
@@ -494,7 +503,10 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                 if start_datetime.time() >= end_datetime.time():
                     raise ValidationError(
                         {
-                            "end_datetime": "End time must be later than start time on the same date."
+                            "end_datetime": (
+                                "End time must be later than start time "
+                                "on the same date."
+                            )
                         }
                     )
             elif end_datetime <= start_datetime:
@@ -507,9 +519,6 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
 
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
-        from django.contrib.auth import get_user_model
-
-        User = get_user_model()
 
         if not user or not user.is_authenticated:
             return []
