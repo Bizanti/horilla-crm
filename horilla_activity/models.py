@@ -169,7 +169,7 @@ class Activity(HorillaCoreModel):
             try:
                 h, m, s = map(int, self.call_duration_display.split(":"))
                 self.call_duration_seconds = h * 3600 + m * 60 + s
-            except:
+            except Exception:
                 self.call_duration_seconds = None
         super().save(*args, **kwargs)
 
