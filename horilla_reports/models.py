@@ -31,6 +31,10 @@ class ReportFolder(HorillaCoreModel):
 
     OWNER_FIELDS = ["report_folder_owner"]
 
+    class Meta:
+        verbose_name = _("Report Folder")
+        verbose_name_plural = _("Report Folders")
+
     def __str__(self):
         return self.name
 
@@ -88,7 +92,7 @@ class Report(HorillaCoreModel):
         verbose_name=_("Report Owner"),
     )
 
-    name = models.CharField(max_length=200, verbose_name="Report Name")
+    name = models.CharField(max_length=200, verbose_name=_("Report Name"))
     module = models.ForeignKey(
         HorillaContentType,
         on_delete=models.CASCADE,

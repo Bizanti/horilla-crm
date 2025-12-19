@@ -1,5 +1,7 @@
+from django.utils.translation import gettext_lazy as _
+
 __version__ = "1.0.0"
-__module_name__ = "Core System"
+__module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = ""
 __icon__ = "assets/icons/logo.png"

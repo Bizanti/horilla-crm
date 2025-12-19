@@ -16,7 +16,7 @@
             hx-swap="innerHTML"
             hx-on:click="openCalendarPreviewModal()"
             id="preview-calendar-btn">
-            {% trans ' Preview Calendar' %}
+            {% trans 'Preview Calendar' %}
         </button>
         {% has_perm "horilla_core.add_fiscalyear" as can_add_fiscalyear %}
         {% has_perm "horilla_core.change_fiscalyear" as can_change_fiscalyear %}
@@ -28,7 +28,7 @@
               hx-target="#modalBox"
               hx-trigger="click"
               hx-on:click="openModal()">
-              {% trans ' Manage Fiscal Year' %}
+              {% trans 'Manage Fiscal Year' %}
             </button>
           {% endif %}
 

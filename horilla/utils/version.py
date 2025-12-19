@@ -14,7 +14,7 @@ def get_module_version_info(module_name):
             "name": getattr(mod, "__module_name__", module_name),
             "version": getattr(mod, "__version__", "Unknown"),
             "description": getattr(mod, "__description__", ""),
-            "icon": getattr(mod, "__icon__", ""), 
+            "icon": getattr(mod, "__icon__", ""),
         }
 
     except ModuleNotFoundError:
@@ -48,4 +48,4 @@ def collect_all_versions():
 
     return {
         "module_versions": versions,
-        }
+    }

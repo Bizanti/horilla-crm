@@ -65,7 +65,7 @@ class HorillaMailTemplateForm(forms.ModelForm):
         """Meta class for HorillaMailTemplateForm."""
 
         model = HorillaMailTemplate
-        fields = ["title", "content_type", "body", "company"]
+        fields = ["title", "subject", "content_type", "body", "company"]
 
     def clean_title(self):
         """

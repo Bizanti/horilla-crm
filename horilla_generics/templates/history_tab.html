@@ -18,7 +18,7 @@
                     hx-swap="innerHTML"
                     hx-trigger="click"
                     class="flex items-center gap-3 text-sm p-2 rounded-md bg-primary-600 text-white shadow">
-                <img src="{% static 'assets/icons/filter1.svg' %}" alt="" width="18" />
+                <img src="{% static 'assets/icons/filter1.svg' %}" alt="{% trans 'Filter' %}" width="18" />
             </button>
         </div>
 
@@ -118,9 +118,9 @@
                 {% endif %}
             {% else %}
                 <div class="flex justify-between items-center h-0"></div>
-                <img src="{% static 'assets/img/not-found.svg' %}" alt="" class="w-80 m-auto mb-4 mt-5" />
+                <img src="{% static 'assets/img/not-found.svg' %}" alt="404" class="w-80 m-auto mb-4 mt-5" />
                 <p class="text-sm text-center mb-3 text-gray-500 justify-center">
-                   {% trans " No history available for this object." %}
+                   {% trans "No history available for this object." %}
                 </p>
             {% endif %}
         </div>

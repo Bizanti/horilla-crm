@@ -323,10 +323,10 @@ class AccountFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     fullwidth_fields = ["description"]
     total_steps = 4
     step_titles = {
-        "1": "Account Information",
-        "2": "Address Information",
-        "3": "Additional Information",
-        "4": "Description",
+        "1": _("Account Information"),
+        "2": _("Address Information"),
+        "3": _("Additional Information"),
+        "4": _("Description"),
     }
 
     single_step_url_name = {

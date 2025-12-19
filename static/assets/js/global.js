@@ -805,7 +805,8 @@ function initializeSelect2Pagination() {
         }
 
         const url = $this.data('url');
-        const placeholder = $this.data('placeholder') || 'Select an option...';
+        const placeholder = $this.data('placeholder') || gettext("Select an option");
+
         const initialData = $this.data('initial');
         const fieldName = $this.data('field-name') || `field_${index}`;
 

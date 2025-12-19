@@ -69,7 +69,7 @@
                     {% with field_name=cell.1 col_attrs_for_field=col_attrs|lookup:cell.1 %}
                         {% if col_attrs_for_field.is_draggable == 'true' %}
                             <div class="cursor-move drag-handle">
-                                <img src="{% static 'assets/icons/drag.svg' %}" alt="Drag" width="16" />
+                                <img src="{% static 'assets/icons/drag.svg' %}" alt="{% trans 'Drag' %}" width="16" />
                             </div>
                         {% endif %}
                         {{ data|get_field:cell.1|escape }}
@@ -95,7 +95,7 @@
                                             id="dropdownbtn-{{ data.id }}"
                                             type="button"
                                             class="flex">
-                                            <img src="{% static 'assets/icons/down.svg' %}" width="15" alt="More actions" />
+                                            <img src="{% static 'assets/icons/down.svg' %}" width="15" alt="{% trans 'More Action' %}" />
                                         </button>
 
                                         <div class="dropdown-content absolute z-20 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">

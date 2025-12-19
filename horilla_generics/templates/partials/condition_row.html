@@ -32,6 +32,6 @@
             hx-delete="/generics/remove-condition-row/{{ row_id }}/"
             hx-target="#condition-row-{{ row_id }}"
             hx-swap="outerHTML">
-        <img src="{% static 'assets/icons/close-red.svg' %}" alt="Remove" class="w-3 h-3"/>
+        <img src="{% static 'assets/icons/close-red.svg' %}" alt="{% trans 'Remove' %}" class="w-3 h-3"/>
     </button>
 </div>

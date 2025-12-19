@@ -13,7 +13,7 @@
         id="close-template-btn"
         onclick="closehorillaModal();"
         class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-        <img src="{% static 'assets/icons/close.svg' %}" alt="" />
+        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" />
     </button>
 </div>
 <div class="p-5 pt-2">
@@ -38,6 +38,29 @@
             {% if form.title.errors %}
                 <div class="text-red-500 text-xs mb-2">{{ form.title.errors.0 }}</div>
             {% endif %}
+
+                        <!-- Subject Field -->
+            <div class="mb-4">
+                <label for="subject" class="text-xs text-color-600">
+                    {{ form.subject.label }}
+                </label>
+                <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    placeholder="{% trans 'Enter email subject (optional)' %}"
+                    value="{{ form.subject.value|default:'' }}"
+                    class="text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1
+                        focus-visible:outline-0 placeholder:text-dark-100 text-sm
+                        [transition:.3s] focus:border-primary-600"
+                />
+                {% if form.subject.errors %}
+                    <div class="text-red-500 text-xs mt-1">
+                        {{ form.subject.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
 
             <!-- Content Type Field -->
             <div class="mb-4">
@@ -109,14 +132,14 @@
 
             <input type="hidden" name="body" id="template_body" value="{{ form.body.value|default:'' }}">
         </div>
-        <div class="flex justify-end gap-3">
+        <div class="flex justify-end gap-3 pt-4">
             <button
                 type="submit"
                 id="save-template-btn"
                 class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]">
                 <span class="flex items-center gap-2">
                     <span id="template-spinner" class="htmx-indicator hidden">
-                        <img src="{% static 'assets/icons/spinner.svg' %}" alt="Loading..." width="20">
+                        <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="20">
                     </span>
                     {% trans submit_text|default:"Save Template" %}
                 </span>

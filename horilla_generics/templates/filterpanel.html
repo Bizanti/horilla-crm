@@ -35,7 +35,7 @@
                   hx-push-url="false"
                   hx-swap="beforeend"
                   hx-trigger="click">
-            <img src="{% static 'assets/icons/filter.svg' %}" alt="" width="14" />
+            <img src="{% static 'assets/icons/filter.svg' %}" alt="{% trans 'Filter' %}" width="14" />
             {% trans 'Add more filter' %}
           </button>
         </div>
@@ -98,7 +98,7 @@
            {% endif %}
             hx-trigger="click"
             hx-on:click="$('#searchInput').val('')">
-            <img src="{% static '/assets/icons/close1.svg' %}" alt="" width="10" />
+            <img src="{% static '/assets/icons/close1.svg' %}" alt="{% trans 'Cancel' %}" width="10" />
           </button>
           </div>
         </li>
@@ -128,7 +128,7 @@
                    hx-push-url="false"
                  {% endif %}
                   hx-trigger="click">
-                  <img src="{% static '/assets/icons/close1.svg' %}" alt="" width="10" />
+                  <img src="{% static '/assets/icons/close1.svg' %}" alt="{% trans 'Cancel' %}" width="10" />
                 </button>
               </div>
             </li>

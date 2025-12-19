@@ -295,8 +295,9 @@ class MailTemplatePreviewView(LoginRequiredMixin, TemplateView):
         """Handle POST for large body content"""
         context = self.get_context_data(**kwargs)
         body_content = request.POST.get("body")
-        if body_content:
-            context["body"] = mark_safe(body_content)
+        subject = request.POST.get("subject")
+        context["body"] = mark_safe(body_content)
+        context["subject"] = mark_safe(subject)
         return self.render_to_response(context)
 
 
@@ -323,7 +324,12 @@ class TemplateContentView(LoginRequiredMixin, View):
             template = get_object_or_404(queryset, id=template_id)
 
             return JsonResponse(
-                {"success": True, "body": template.body, "title": template.title}
+                {
+                    "success": True,
+                    "body": template.body,
+                    "title": template.title,
+                    "subject": template.subject,
+                }
             )
 
         except Exception as e:
@@ -345,7 +351,12 @@ class MailTemplateSelectView(LoginRequiredMixin, View):
         model_name = request.GET.get("model_name")
         form = MailTemplateSelectForm(model_name=model_name)
         return render(
-            request, self.template_name, {"form": form, "model_name": model_name}
+            request,
+            self.template_name,
+            {
+                "form": form,
+                "model_name": model_name,
+            },
         )
 
 

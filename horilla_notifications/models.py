@@ -4,6 +4,7 @@ model for horilla notifications
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Notification(models.Model):
@@ -26,4 +27,6 @@ class Notification(models.Model):
         return f"Notification for {self.user.username}: {self.message}"
 
     class Meta:
+        verbose_name = _("Notification")
+        verbose_name_plural = _("Notifications")
         ordering = ["-created_at"]

@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.html import strip_tags
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView, TemplateView
 
 from horilla_core.decorators import htmx_required, permission_required_or_denied
@@ -55,7 +55,7 @@ class MailServerNavbar(LoginRequiredMixin, HorillaNavView):
     navbar view for mail server
     """
 
-    nav_title = "Horilla Outgoing Mail Configurations"
+    nav_title = _("Outgoing Mail Configurations")
     search_url = reverse_lazy("horilla_mail:mail_server_list_view")
     main_url = reverse_lazy("horilla_mail:mail_server_view")
     nav_width = False

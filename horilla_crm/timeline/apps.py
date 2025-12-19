@@ -10,7 +10,7 @@ class TimelineConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_crm.timeline"
-    verbose_name = _("Timeline")
+    verbose_name = "Timeline"
 
     def ready(self):
 

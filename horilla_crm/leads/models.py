@@ -300,16 +300,6 @@ class Lead(HorillaCoreModel):
     def __str__(self):
         return f"{str(self.title)}-{self.id}"
 
-    def actions(self):
-        """
-        This method for get custom column for action.
-        """
-
-        return render_template(
-            path="actions.html",
-            context={"instance": self},
-        )
-
     @property
     def get_annual_revenue_calc(self):
         """
@@ -405,6 +395,10 @@ class EmailToLeadConfig(HorillaCoreModel):
     last_fetched = models.DateTimeField(
         null=True, blank=True, verbose_name=_("Last Fetched On")
     )
+
+    class Meta:
+        verbose_name = _("Mail to Lead Config")
+        verbose_name_plural = _("Mail to Lead Config")
 
     def update_last_fetched(self):
         self.last_fetched = timezone.now()

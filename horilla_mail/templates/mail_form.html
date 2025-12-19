@@ -17,7 +17,7 @@
     hx-encoding="multipart/form-data"
     hx-on:click="openDeleteModeModal();"
     class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-    <img src="{% static 'assets/icons/close.svg' %}" alt="" />
+    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" />
     </button>
 </div>
 <div class="p-5 ">
@@ -177,7 +177,7 @@
         class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] rounded-tl-[5px] rounded-br-[0] rounded-tr-[0] rounded-bl-[5px] border-r-[1px] border-[#dad8d8]">
         <span class="flex items-center gap-2">
             <span id="mail-spinner" class="htmx-indicator">
-                <img src="{% static 'assets/icons/spinner.svg' %}" alt="Loading..." width="25">
+                <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
             </span>
             {% trans "Send Mail" %}
         </span>

@@ -4,7 +4,7 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-class Horilla_mailConfig(AppConfig):
+class HorillaMailConfig(AppConfig):
     """Configuration class for the Horilla mail application."""
 
     default_auto_field = "django.db.models.BigAutoField"

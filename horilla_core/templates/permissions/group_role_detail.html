@@ -11,14 +11,6 @@
             {{ role.role_name }}
         </h3>
         <div class="flex items-center gap-6">
-            <div class="flex items-center gap-4">
-                <button>
-                    <img src="/assets/icons/edit.svg" alt="" width="16" />
-                </button>
-                <button>
-                    <img src="/assets/icons/a4.svg" alt="" width="18" />
-                </button>
-            </div>
             <ul id="followup-tabs" class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400">
                 <li>
                     <a id="permissiontab" href="{% url 'horilla_core:role_permissions_view' role.id %}"
@@ -106,12 +98,12 @@
                                         hx-swap="innerHTML"
                                         onclick="openModal()"
                                     >
-                                        {{ model.verbose_name }}
+                                        {% trans model.verbose_name %}
                                     </button>
                                 {% else %}
                                     <div class="relative group inline-block cursor-pointer">
                                         <span class="whitespace-nowrap text-black ">
-                                            {{ model.verbose_name }}
+                                            {% trans model.verbose_name %}
                                         </span>
                                         <span class="min-w-max z-40 absolute h-auto py-[3px] px-[15px] left-[40px] top-0 bg-[#000000] text-[.7rem] rounded-[5px] text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                                             {% trans 'Field permissions not available for this model' %}
@@ -135,7 +127,7 @@
                                             hx-on::after-request="$('#reloadMessagesButton').click();"
                                             hx-swap="innerHTML"
                                         />
-                                        {{ perm.label }}
+                                        {% trans perm.label %}
                                     </label>
                                 {% endfor %}
                             </div>

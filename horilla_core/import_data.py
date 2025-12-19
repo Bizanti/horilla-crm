@@ -733,7 +733,7 @@ class ImportStep2View(View):
         if not model_fields:
             return HttpResponse(
                 f"""
-                <div class="text-red-500 text-sm">No valid fields found for the selected model: {module}</div>
+                <div class="text-red-500 text-sm">{_('No valid fields found for the selected model')}: {module}</div>
             """
             )
 
@@ -848,8 +848,8 @@ class ImportStep2View(View):
 
         if not module or not app_label:
             return HttpResponse(
-                """
-                <div class="text-red-500 text-sm">Missing module or app_label in session</div>
+                f"""
+                <div class="text-red-500 text-sm">{_('Missing module or app_label in session')}</div>
             """
             )
 
@@ -864,7 +864,7 @@ class ImportStep2View(View):
             if not model_fields:
                 return HttpResponse(
                     f"""
-                    <div class="text-red-500 text-sm">No valid fields found for the selected model: {module}</div>
+                    <div class="text-red-500 text-sm">{_('No valid fields found for the selected model')}: {module}</div>
                 """
                 )
 
@@ -926,8 +926,11 @@ class ImportStep2View(View):
                     if unmapped_values:
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
+                        ellipsis = "..." if len(unmapped_values) > 3 else ""
+                        values_str = ", ".join(unmapped_values[:3])
                         validation_errors[field_name].append(
-                            f"Unmapped choice values: {', '.join(unmapped_values[:3])}{'...' if len(unmapped_values) > 3 else ''}"
+                            _("Unmapped choice values: %(values)s%(ellipsis)s")
+                            % {"values": values_str, "ellipsis": ellipsis}
                         )
 
                     for slug_val, mapped_choice in mapped_values.items():
@@ -935,7 +938,8 @@ class ImportStep2View(View):
                             if field_name not in validation_errors:
                                 validation_errors[field_name] = []
                             validation_errors[field_name].append(
-                                f"Invalid choice value: {mapped_choice}"
+                                _("Invalid choice value: %(value)s")
+                                % {"value": mapped_choice}
                             )
 
                 elif field["is_foreign_key"]:
@@ -950,8 +954,11 @@ class ImportStep2View(View):
                     if unmapped_values:
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
+                        ellipsis = "..." if len(unmapped_values) > 3 else ""
+                        values_str = ", ".join(unmapped_values[:3])
                         validation_errors[field_name].append(
-                            f"Unmapped foreign key values: {', '.join(unmapped_values[:3])}{'...' if len(unmapped_values) > 3 else ''}"
+                            _("Unmapped foreign key values: %(values)s%(ellipsis)s")
+                            % {"values": values_str, "ellipsis": ellipsis}
                         )
 
                     # Verify all mapped FKs are valid IDs
@@ -962,13 +969,14 @@ class ImportStep2View(View):
                                 if field_name not in validation_errors:
                                     validation_errors[field_name] = []
                                 validation_errors[field_name].append(
-                                    f"Invalid foreign key ID: {mapped_id}"
+                                    _("Invalid foreign key ID: %(id)s")
+                                    % {"id": mapped_id}
                                 )
                         except (ValueError, TypeError):
                             if field_name not in validation_errors:
                                 validation_errors[field_name] = []
                             validation_errors[field_name].append(
-                                f"Foreign key must be a valid ID"
+                                _("Foreign key must be a valid ID")
                             )
 
                 elif field_type in ["DateField", "DateTimeField"]:
@@ -986,7 +994,14 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         validation_errors[field_name].append(
-                            f"Field type mismatch: '{field['verbose_name']}' expects DATE format, but file column '{file_header}' contains invalid date: '{invalid_dates[0]}'"
+                            _(
+                                "Field type mismatch: '%(field)s' expects DATE format, but file column '%(column)s' contains invalid date: '%(value)s'"
+                            )
+                            % {
+                                "field": field["verbose_name"],
+                                "column": file_header,
+                                "value": invalid_dates[0],
+                            }
                         )
 
                 elif field_type in [
@@ -1011,10 +1026,18 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         number_type = (
-                            "INTEGER" if "Integer" in field_type else "DECIMAL"
+                            _("INTEGER") if "Integer" in field_type else _("DECIMAL")
                         )
                         validation_errors[field_name].append(
-                            f"Field type mismatch: '{field['verbose_name']}' expects {number_type} format, but file column '{file_header}' contains invalid number: '{invalid_numbers[0]}'"
+                            _(
+                                "Field type mismatch: '%(field)s' expects %(type)s format, but file column '%(column)s' contains invalid number: '%(value)s'"
+                            )
+                            % {
+                                "field": field["verbose_name"],
+                                "type": number_type,
+                                "column": file_header,
+                                "value": invalid_numbers[0],
+                            }
                         )
 
                 elif field_type == "BooleanField":
@@ -1031,7 +1054,14 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         validation_errors[field_name].append(
-                            f"Field type mismatch: '{field['verbose_name']}' expects BOOLEAN (true/false/yes/no/1/0), but file column '{file_header}' contains like: '{invalid_bools[0]}'"
+                            _(
+                                "Field type mismatch: '%(field)s' expects BOOLEAN (true/false/yes/no/1/0), but file column '%(column)s' contains like: '%(value)s'"
+                            )
+                            % {
+                                "field": field["verbose_name"],
+                                "column": file_header,
+                                "value": invalid_bools[0],
+                            }
                         )
 
                 elif field_type == "EmailField":
@@ -1048,7 +1078,10 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         validation_errors[field_name].append(
-                            f"Field type mismatch: '{field['verbose_name']}' expects EMAIL format, but file column '{file_header}' contains invalid email"
+                            _(
+                                "Field type mismatch: '%(field)s' expects EMAIL format, but file column '%(column)s' contains invalid email"
+                            )
+                            % {"field": field["verbose_name"], "column": file_header}
                         )
 
                 elif field_type == "URLField":
@@ -1065,7 +1098,14 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         validation_errors[field_name].append(
-                            f"Field type mismatch: '{field['verbose_name']}' expects URL format, but file column '{file_header}' contains invalid URL: '{invalid_urls[0]}'"
+                            _(
+                                "Field type mismatch: '%(field)s' expects URL format, but file column '%(column)s' contains invalid URL: '%(value)s'"
+                            )
+                            % {
+                                "field": field["verbose_name"],
+                                "column": file_header,
+                                "value": invalid_urls[0],
+                            }
                         )
 
                 elif field_type in ["CharField", "TextField"]:
@@ -1091,7 +1131,13 @@ class ImportStep2View(View):
                             if field_name not in validation_errors:
                                 validation_errors[field_name] = []
                             validation_errors[field_name].append(
-                                f"Error: '{field['verbose_name']}' is a TEXT field, but file column '{file_header}' appears to contain DATES. Consider mapping to a DateField instead."
+                                _(
+                                    "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to contain DATES. Consider mapping to a DateField instead."
+                                )
+                                % {
+                                    "field": field["verbose_name"],
+                                    "column": file_header,
+                                }
                             )
 
                         # If 80% or more values look like emails
@@ -1099,14 +1145,26 @@ class ImportStep2View(View):
                             if field_name not in validation_errors:
                                 validation_errors[field_name] = []
                             validation_errors[field_name].append(
-                                f"Error: '{field['verbose_name']}' is a TEXT field, but file column '{file_header}' appears to contain EMAIL addresses. Consider mapping to an EmailField instead."
+                                _(
+                                    "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to contain EMAIL addresses. Consider mapping to an EmailField instead."
+                                )
+                                % {
+                                    "field": field["verbose_name"],
+                                    "column": file_header,
+                                }
                             )
 
                         elif number_count / total_samples >= 0.8:
                             if field_name not in validation_errors:
                                 validation_errors[field_name] = []
                             validation_errors[field_name].append(
-                                f"Error: '{field['verbose_name']}' is a TEXT field, but file column '{file_header}' appears to contain NUMBERS. Consider mapping to a numeric field instead."
+                                _(
+                                    "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to contain NUMBERS. Consider mapping to a numeric field instead."
+                                )
+                                % {
+                                    "field": field["verbose_name"],
+                                    "column": file_header,
+                                }
                             )
 
             # Validate required fields are mapped
@@ -1123,7 +1181,10 @@ class ImportStep2View(View):
                         if field_name not in validation_errors:
                             validation_errors[field_name] = []
                         validation_errors[field_name].append(
-                            f"Required field '{field['verbose_name']}' must be mapped to a file column."
+                            _(
+                                "Required field '%(field)s' must be mapped to a file column."
+                            )
+                            % {"field": field["verbose_name"]}
                         )
                         continue
 
@@ -1185,7 +1246,7 @@ class ImportStep2View(View):
             logger.error(tb)
             return HttpResponse(
                 f"""
-                <div class="text-red-500 text-sm">Error processing field mappings: {str(e)}")
+                <div class="text-red-500 text-sm">{_('Error processing field mappings')}: {str(e)}</div>
             """
             )
 

@@ -15,16 +15,16 @@
             "
         >
             <div class="module-icon">
-                <img src="{% static module.icon %}" alt="">
+                <img src="{% static module.icon %}" alt="{% trans 'Icon' %}">
             </div>
-            <div class="module-name">{{ module.name }}</div>
+            <div class="module-name">{% trans module.name %}</div>
         </div>
 
         <div class="module-version">v{{ module.version }}</div>
     </div>
 
     <div class="module-description">
-        {{ module.description }}
+        {% trans module.description %}
     </div>
 </div>
 {% endpartialdef %}
@@ -40,7 +40,7 @@
         <div class="core-module">
             <div style="display: flex; gap: 20px; align-items:center;">
                 <div class="core-module-icon">
-                    <img src="{% static core_module.icon %}" alt="">
+                    <img src="{% static core_module.icon %}" alt="{% trans 'Icon' %}">
                 </div>
                 <div class="core-module-info">
                     <h2>{{ core_module.name }}</h2>

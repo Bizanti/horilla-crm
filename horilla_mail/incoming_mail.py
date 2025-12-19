@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from horilla_core.decorators import htmx_required, permission_required_or_denied
@@ -47,7 +47,7 @@ class IncomingMailServerNavbar(LoginRequiredMixin, HorillaNavView):
     navbar view for mail server
     """
 
-    nav_title = "Horilla Incoming Mail Configurations"
+    nav_title = _("Incoming Mail Configurations")
     search_url = reverse_lazy("horilla_mail:incoming_mail_server_list_view")
     main_url = reverse_lazy("horilla_mail:incoming_mail_server_view")
     nav_width = False

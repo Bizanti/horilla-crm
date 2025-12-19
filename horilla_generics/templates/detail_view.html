@@ -35,13 +35,13 @@
                     <button class="disabled:opacity-50 cursor-pointer" {% if not has_previous %}disabled{% endif %}>
                         <a hx-get="{% if has_previous %}{% url app_label|add:':'|add:url_name previous_id %}?{{request.GET.urlencode}}{% endif %}" hx-target="#mainContent"
                             hx-swap = "outerHTML" hx-push-url= "true" hx-select ="#mainContent">
-                            <img src="{% static 'assets/icons/menuarrow.svg' %}" alt="Previous" />
+                            <img src="{% static 'assets/icons/menuarrow.svg' %}" alt="{% trans 'Previous' %}" />
                         </a>
                     </button>
                     <button class="-rotate-180 disabled:opacity-50 cursor-pointer" {% if not has_next %}disabled{% endif %}>
                         <a hx-get="{% if has_next %}{% url app_label|add:':'|add:url_name next_id %}?{{request.GET.urlencode}}{% endif %}" hx-target="#mainContent"
                         hx-swap = "outerHTML" hx-push-url= "true" hx-select ="#mainContent">
-                          <img src="{% static '/assets/icons/menuarrow.svg' %}" alt="Next" />
+                          <img src="{% static '/assets/icons/menuarrow.svg' %}" alt="{% trans 'Next' %}" />
                         </a>
                     </button>
                 </div>
@@ -54,7 +54,7 @@
                         type="button"
                         class="flex w-[30px] justify-end"
                       >
-                        <img src="{% static '/assets/icons/dots.svg' %}" alt="" width="4" />
+                        <img src="{% static '/assets/icons/dots.svg' %}" alt="{% trans 'Menu' %}" width="4" />
                       </button>
                       <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
                         <ul class="text-sm">
@@ -63,7 +63,7 @@
                             <a
                             class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full cursor-pointer"
                             {% if action.attrs %}{{ action.attrs|format:obj|safe }}{% endif %}
-                            > {{ action.action }}</a
+                            > {% trans action.action %}</a
                           >
                           </li>
                         {% endfor %}

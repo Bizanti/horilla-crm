@@ -358,6 +358,12 @@ class HorillaMailTemplate(HorillaCoreModel):
     """Model to store mail templates."""
 
     title = models.CharField(max_length=100, verbose_name=_("Template title"))
+    subject = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Subject"),
+    )
     body = models.TextField(verbose_name=_("Body"))
     content_type = models.ForeignKey(
         HorillaContentType,

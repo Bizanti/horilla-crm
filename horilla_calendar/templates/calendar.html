@@ -33,7 +33,7 @@
                             class="group text-xs p-2 w-8 h-8 flex justify-center items-center  bg-[#2996e33d] rounded-md hover:bg-[#3681b6] transition duration-300 text-[white] ">
                             <img
                                 src="{% static 'assets/icons/prev.svg' %}"
-                                alt=""
+                                alt="{% trans 'preview' %}"
                                 width="8"
                                 class="group-hover:filter group-hover:brightness-0 group-hover:invert transition duration-300"
                             />
@@ -46,7 +46,7 @@
                             class="group text-xs p-2 w-8 h-8 flex justify-center items-center  bg-[#2996e33d] rounded-md hover:bg-[#3681b6] transition duration-300 text-[white] ">
                             <img
                                 src="{% static 'assets/icons/next.svg' %}"
-                                alt=""
+                                alt="{% trans 'next' %}"
                                 width="8"
                                 class="group-hover:filter group-hover:brightness-0 group-hover:invert transition duration-300"
                             />
@@ -826,7 +826,7 @@
                                 </div>
                                 <div class="relative dropdown-wrapper">
                                     <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
-                                        <img src="{% static 'assets/icons/down.svg' %}" alt="Dropdown" width="13" />
+                                        <img src="{% static 'assets/icons/down.svg' %}" alt="{% trans 'Dropdown' %}" width="13" />
                                     </button>
                                     <div class="dropdown-content w-48 absolute bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
                                         <ul class="text-sm">

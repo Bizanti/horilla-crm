@@ -16,7 +16,7 @@
                 type="button"
                 onclick="event.stopPropagation();"
             >
-                <img src="{% static 'assets/icons/dots.svg' %}" width="3" alt="" />
+                <img src="{% static 'assets/icons/dots.svg' %}" width="3" alt="{% trans 'Menu' %}" />
             </button>
         {% endif %}
 
@@ -31,7 +31,7 @@
                             class="block px-3 py-1 hover:text-primary-600 transition duration-300 text-xs w-full flex"
                             {% if action.attrs %}{{ action.attrs|format:item|safe }}{% endif %}
                         >
-                            {{ action.action }}
+                            {% trans action.action %}
                         </button>
                     </li>
                 {% endfor %}
@@ -40,7 +40,7 @@
 
         <div class="flex gap-3 mb-3 pb-3 border-b border-b-[#565e6c13]">
             <div class="rounded-full w-10 h-10 overflow-hidden">
-                <img src="https://ui-avatars.com/api/?name={{item.display_columns.0.value|urlencode}}&background=ffccbc&color=e54f38" alt="A" class="rounded-full w-10 h-10 object-cover" loading="lazy" />
+                <img src="https://ui-avatars.com/api/?name={{item.display_columns.0.value|urlencode}}&background=ffccbc&color=e54f38" alt="{% trans 'Avatar' %}" class="rounded-full w-10 h-10 object-cover" loading="lazy" />
             </div>
 
             <div class="flex-1">

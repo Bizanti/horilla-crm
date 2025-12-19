@@ -101,7 +101,7 @@ class LeadNavbar(LoginRequiredMixin, HorillaNavView):
     def custom_view_type(self):
         """Custom view type for lead"""
         custom_view_type = {
-            "converted_lead": {"name": "Converted Lead", "show_list_only": True},
+            "converted_lead": {"name": _("Converted Lead"), "show_list_only": True},
         }
         return custom_view_type
 
@@ -131,6 +131,14 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("leads:leads_list")
     main_url = reverse_lazy("leads:leads_view")
     max_visible_actions = 5
+    columns = [
+        "title",
+        "first_name",
+        "email",
+        "lead_source",
+        "industry",
+        "annual_revenue",
+    ]
     bulk_update_fields = [
         "annual_revenue",
         "no_of_employees",
@@ -172,24 +180,6 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
                 "url": f"""{ reverse_lazy('leads:leads_create')}?new=true""",
                 "attrs": 'id="lead-create"',
             }
-
-    @cached_property
-    def columns(self):
-        """Columns for lead"""
-        instance = self.model()
-        return [
-            (instance._meta.get_field("title").verbose_name, "title"),
-            (instance._meta.get_field("first_name").verbose_name, "first_name"),
-            (instance._meta.get_field("email").verbose_name, "email"),
-            (
-                instance._meta.get_field("lead_source").verbose_name,
-                "get_lead_source_display",
-            ),
-            (instance._meta.get_field("industry").verbose_name, "get_industry_display"),
-            (instance._meta.get_field("annual_revenue").verbose_name, "annual_revenue"),
-        ]
-
-    actions = []
 
     @cached_property
     def actions(self):
@@ -315,6 +305,14 @@ class LeadKanbanView(LoginRequiredMixin, HorillaKanbanView):
     search_url = reverse_lazy("leads:leads_list")
     main_url = reverse_lazy("leads:leads_view")
     group_by_field = "industry"
+    columns = [
+        "title",
+        "first_name",
+        "email",
+        "lead_source",
+        "industry",
+        "annual_revenue",
+    ]
 
     actions = LeadListView.actions
 
@@ -337,18 +335,6 @@ class LeadKanbanView(LoginRequiredMixin, HorillaKanbanView):
             "own_permission": "leads.view_own_lead",
             "owner_field": "lead_owner",
         }
-
-    @cached_property
-    def columns(self):
-        """Columns for lead"""
-        instance = self.model()
-        return [
-            (instance._meta.get_field("title").verbose_name, "title"),
-            (instance._meta.get_field("first_name").verbose_name, "first_name"),
-            (instance._meta.get_field("email").verbose_name, "email"),
-            (instance._meta.get_field("lead_source").verbose_name, "lead_source"),
-            (instance._meta.get_field("industry").verbose_name, "industry"),
-        ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -416,10 +402,10 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         return reverse_lazy("leads:leads_create")
 
     step_titles = {
-        "1": "Basic Information",
-        "2": "Company Details",
-        "3": "Location",
-        "4": "Requirements",
+        "1": _("Basic Information"),
+        "2": _("Company Details"),
+        "3": _("Location"),
+        "4": _("Requirements"),
     }
 
     def get_form_kwargs(self):

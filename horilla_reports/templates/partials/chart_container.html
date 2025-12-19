@@ -4,7 +4,7 @@
         <h3 class="text-sm font-semibold mb-3">{{ report.chart_field|title|default:"Report" }} Chart</h3>
         <div class="relative">
             <button id="dropdownLeftEndButton" data-dropdown-toggle="dropdownLeftEnd12" data-dropdown-placement="left" type="button" class="flex">
-                <img src="{% static 'assets/icons/down.svg' %}" alt="" width="15" />
+                <img src="{% static 'assets/icons/down.svg' %}" alt="{% trans 'Down' %}" width="15" />
             </button>
             <div id="dropdownLeftEnd12" class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] top-8 -right-[15px]">
                 <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">

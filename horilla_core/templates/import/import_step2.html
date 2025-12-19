@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-2">
         <h2 class="text-md font-semibold">Import {{selected_module }}</h2>
         <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="Close" />
+            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" />
         </button>
     </div>
     {% endif %}
@@ -110,7 +110,7 @@
                                     {% endfor %}
                                 </select>
                             {% else %}
-                                <input type="text" name="replace_{{ field.name }}" placeholder="Default value"
+                                <input type="text" name="replace_{{ field.name }}" placeholder="{% trans "Default value" %}"
                                     value="{% if replace_values %}{{ replace_values|lookup:field.name|default:'' }}{% endif %}"
                                     class="text-color-600 px-2 py-1 border border-dark-50 rounded-md text-xs w-full">
                             {% endif %}

@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class HorillaConfig(AppConfig):
+class HorillaGenericsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_generics"
 

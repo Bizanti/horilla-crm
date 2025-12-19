@@ -1,6 +1,7 @@
 """Branding configuration utilities for Horilla."""
 
 from importlib import import_module
+
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -39,5 +40,3 @@ def load_branding():
             branding[key] = getattr(module, key)
 
     return branding
-
-

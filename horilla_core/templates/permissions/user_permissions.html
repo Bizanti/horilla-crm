@@ -59,12 +59,12 @@
                                     hx-swap="innerHTML"
                                     onclick="openModal()"
                                 >
-                                    {{ model.verbose_name }}
+                                    {% trans model.verbose_name %}
                                 </button>
                             {% else %}
                                 <div class="relative group inline-block">
                                     <span class="whitespace-nowrap text-black cursor-pointer">
-                                        {{ model.verbose_name }}
+                                        {% trans model.verbose_name %}
                                     </span>
                                     <span class="min-w-max z-40 absolute h-auto py-[3px] px-[15px] left-[40px] top-0 bg-[#000000] text-[.7rem] rounded-[5px] text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                                         {% trans 'Field permissions not available for this model' %}
@@ -88,7 +88,7 @@
                                         hx-target="#messages-container"
                                         hx-swap="innerHTML"
                                     />
-                                    {{ perm.label }}
+                                    {% trans perm.label %}
                                 </label>
                             {% endfor %}
                         </div>

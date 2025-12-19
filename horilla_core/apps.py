@@ -7,7 +7,7 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-class CoreConfig(AppConfig):
+class HorillaCoreConfig(AppConfig):
     """
     Configuration for the Horilla Core application.
     Includes URL registration and optional scheduler,signals and menu startup.

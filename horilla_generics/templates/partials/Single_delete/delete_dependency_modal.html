@@ -12,7 +12,7 @@
         </h3>
         {% if cannot_delete %}
             <button onclick="closeModal();" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-                <img src="{% static 'assets/icons/close.svg' %}" alt="Close" />
+                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" />
             </button>
         {% endif %}
 
@@ -84,7 +84,7 @@
                             hx-on::after-request="openDeleteModal()">
                         <span class="flex items-center gap-2">
                             <span class="htmx-indicator">
-                                <img src="{% static '/assets/icons/spinner.svg' %}" alt="Loading..." width="25" />
+                                <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25" />
                             </span>
                             {% trans 'Reassign All' %}
                         </span>
@@ -99,7 +99,7 @@
                             hx-on::after-request="openDeleteModal()">
                         <span class="flex items-center gap-2">
                             <span class="htmx-indicator">
-                                <img src="{% static '/assets/icons/spinner.svg' %}" alt="Loading..." width="25" />
+                                <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25" />
                             </span>
                             {% trans 'Reassign Individually' %}
                         </span>
@@ -113,7 +113,7 @@
                         hx-on::after-request="OpenDeleteConfirmModal()">
                     <span class="flex items-center gap-2">
                         <span id="bulk-delete-spinner" class="htmx-indicator">
-                            <img src="{% static '/assets/icons/spinner.svg' %}" alt="Loading..." width="25" />
+                            <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25" />
                         </span>
                         {% trans 'Delete All' %}
                     </span>
@@ -147,7 +147,7 @@
                         hx-indicator="#confirm-delete-spinner">
                     <span class="flex items-center gap-2">
                         <span id="confirm-delete-spinner" class="htmx-indicator">
-                            <img src="{% static '/assets/icons/spinner.svg' %}" alt="Loading..." width="25" />
+                            <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25" />
                         </span>
                         {% trans 'Confirm' %}
                     </span>
