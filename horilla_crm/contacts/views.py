@@ -820,7 +820,18 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                     "related_field": "contact",
                     "config": {
                         "title": _("Related Accounts"),
-                        "can_add": True,
+                        "can_add": self.request.user.has_perm(
+                            "contacts.add_contactaccountrelationship"
+                        )
+                        and (
+                            (
+                                is_owner(Contact, pk)
+                                and self.request.user.has_perm(
+                                    "contacts.change_own_contact"
+                                )
+                            )
+                            or self.request.user.has_perm("contacts.change_contact")
+                        ),
                         "add_url": reverse_lazy(
                             "contacts:create_contact_account_relation"
                         ),

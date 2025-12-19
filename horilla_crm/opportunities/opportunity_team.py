@@ -10,7 +10,6 @@ from functools import cached_property
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.db import models, transaction
@@ -24,6 +23,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, TemplateView, View
 
+from horilla.auth.models import User
 from horilla.exceptions import HorillaHttp404
 from horilla_core.decorators import htmx_required
 from horilla_crm.opportunities.filters import (
@@ -500,8 +500,7 @@ class OpportunityTeamMemberCreateView(LoginRequiredMixin, HorillaSingleFormView)
                     if existing:
                         try:
 
-                            user_model = get_user_model()
-                            user_obj = user_model.objects.get(pk=user_id)
+                            user_obj = User.objects.get(pk=user_id)
                             user_name = (
                                 f"{user_obj.first_name} {user_obj.last_name}".strip()
                                 or user_obj.username
@@ -561,8 +560,7 @@ class OpportunityTeamMemberCreateView(LoginRequiredMixin, HorillaSingleFormView)
                     ):
                         try:
 
-                            user_model = get_user_model()
-                            user_obj = user_model.objects.get(pk=user_id)
+                            user_obj = User.objects.get(pk=user_id)
                             user_name = (
                                 f"{user_obj.first_name} {user_obj.last_name}".strip()
                                 or user_obj.username
@@ -895,8 +893,8 @@ class AddOpportunityMemberView(LoginRequiredMixin, HorillaSingleFormView):
                 opportunity_id=opp_id.id if hasattr(opp_id, "id") else opp_id,
             ).exists():
                 try:
-                    user_model = get_user_model()
-                    user_obj = user_model.objects.get(pk=user_id)
+
+                    user_obj = User.objects.get(pk=user_id)
                     user_name = (
                         f"{user_obj.first_name} {user_obj.last_name}".strip()
                         or user_obj.username
