@@ -96,36 +96,32 @@ class ShortKeyListView(LoginRequiredMixin, HorillaListView):
             queryset = queryset.filter(user=user_id)
         return queryset
 
-    @cached_property
-    def actions(self):
-        """Return table row actions for edit and delete operations."""
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                        hx-get="{get_edit_url}?new=true"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#deleteModeBox"
-                        hx-swap="innerHTML"
-                        hx-trigger="click"
-                        hx-vals='{{"check_dependencies": "true"}}'
-                        onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
                     """,
-            },
-        ]
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                    hx-post="{get_delete_url}"
+                    hx-target="#deleteModeBox"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    hx-vals='{{"check_dependencies": "true"}}'
+                    onclick="openDeleteModeModal()"
+                """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

@@ -136,31 +136,25 @@ class OpportunityStageListView(LoginRequiredMixin, HorillaListView):
         "stage_type",
     ]
 
-    @cached_property
-    def actions(self):
-        instance = self.model()
-        actions = []
-        if self.request.user.has_perm("opportunities:change_opportunitystage"):
-            actions.append(
-                {
-                    "action": _("Edit"),
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-get="{get_edit_url}?new=true"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
-                },
-            )
-        if self.request.user.has_perm("opportunities:delete_opportunitystage"):
-            actions.append(
-                {
-                    "action": _("Delete"),
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
+    actions = [
+        {
+            "action": _("Edit"),
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "opportunities:change_opportunitystage",
+            "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+        },
+        {
+            "action": _("Delete"),
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "opportunities:delete_opportunitystage",
+            "attrs": """
                         hx-post="{get_delete_url}"
                         hx-target="#deleteModeBox"
                         hx-swap="innerHTML"
@@ -168,10 +162,8 @@ class OpportunityStageListView(LoginRequiredMixin, HorillaListView):
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
                     """,
-                }
-            )
-
-        return actions
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

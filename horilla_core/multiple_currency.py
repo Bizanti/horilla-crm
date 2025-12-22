@@ -52,51 +52,42 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
     def columns(self):
         instance = self.model()
         return [
-            (_("Currency Code"), "currency"),
-            (instance._meta.get_field("currency").verbose_name, "get_currency_display"),
+            (_("Currency Code"), "get_currency_code"),
+            "currency",
             (instance._meta.get_field("is_default").verbose_name, "is_default_col"),
-            (instance._meta.get_field("format").verbose_name, "get_format_display"),
-            (
-                instance._meta.get_field("conversion_rate").verbose_name,
-                "conversion_rate",
-            ),
-            (instance._meta.get_field("is_active").verbose_name, "is_active"),
-            (instance._meta.get_field("decimal_places").verbose_name, "decimal_places"),
+            "format",
+            "conversion_rate",
+            "is_active",
+            "decimal_places",
         ]
 
-    @cached_property
-    def actions(self):
-        """
-        Return list of actions for the detail view
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4 flex gap-4",
-                "permission": "horilla_core.change_multiplecurrency",
-                "attrs": """
-                            hx-get="{get_edit_url}"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4 flex gap-4",
+            "permission": "horilla_core.change_multiplecurrency",
+            "attrs": """
+                        hx-get="{get_edit_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_core.delete_multiplecurrency",
+            "attrs": """
+                            hx-post="{get_delete_url}"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
+                            hx-trigger="click"
                             onclick="openModal()"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_core.delete_multiplecurrency",
-                "attrs": """
-                                hx-post="{get_delete_url}"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                hx-trigger="click"
-                                onclick="openModal()"
-                                """,
-            },
-        ]
-        return actions
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

@@ -92,54 +92,34 @@ class ForecastTypeListView(LoginRequiredMixin, HorillaListView):
     enable_sorting = False
     table_height = False
     table_height_as_class = "h-[500px]"
+    columns = ["name", "forecast_type", "is_active"]
 
-    @cached_property
-    def columns(self):
-        """Return table column definitions."""
-        instance = self.model()
-        return [
-            (instance._meta.get_field("name").verbose_name, "name"),
-            (
-                instance._meta.get_field("forecast_type").verbose_name,
-                "get_forecast_type_display",
-            ),
-            (instance._meta.get_field("is_active").verbose_name, "is_active"),
-        ]
-
-    @cached_property
-    def actions(self):
-        """Return list of permitted actions (Edit/Delete)."""
-        actions = []
-        if self.request.user.has_perm("forecast.change_forecasttype"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                            hx-get="{get_edit_url}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-                },
-            )
-        if self.request.user.has_perm("forecast.delete_forecasttype"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-get="{get_delete_url}"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "forecast.change_forecasttype",
+            "attrs": """
+                        hx-get="{get_edit_url}"
                         hx-target="#modalBox"
                         hx-swap="innerHTML"
                         onclick="openModal()"
                         """,
-                },
-            )
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "forecast.delete_forecasttype",
+            "attrs": """
+                    hx-get="{get_delete_url}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

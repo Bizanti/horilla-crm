@@ -144,67 +144,64 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
         "primary_campaign_source",
     ]
 
-    @cached_property
-    def actions(self):
-        opp_permissions = {
-            "permission": "opportunities.change_opportunity",
-            "own_permission": "opportunities.change_own_opportunity",
-            "owner_field": "owner",
-        }
+    opp_permissions = {
+        "permission": "opportunities.change_opportunity",
+        "own_permission": "opportunities.change_own_opportunity",
+        "owner_field": "owner",
+    }
 
-        actions = [
-            {
-                **opp_permissions,
-                "action": _("Edit"),
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                        hx-get="{get_edit_url}?new=true"
-                        hx-target="#modalBox"
+    actions = [
+        {
+            **opp_permissions,
+            "action": _("Edit"),
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+        },
+        {
+            **opp_permissions,
+            "action": _("Change Owner"),
+            "src": "assets/icons/a2.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                    hx-get="{get_change_owner_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "opportunities.delete_opportunity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
                         hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
-            },
-            {
-                **opp_permissions,
-                "action": _("Change Owner"),
-                "src": "assets/icons/a2.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                        hx-get="{get_change_owner_url}?new=true"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "opportunities.delete_opportunity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "opportunities.add_opportunity",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
                             hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
-                        """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "opportunities.add_opportunity",
-                "attrs": """
-                              hx-get="{get_duplicate_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-        return actions
+                            onclick="openModal()"
+                            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

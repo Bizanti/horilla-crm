@@ -221,56 +221,48 @@ class AllActivityListView(LoginRequiredMixin, HorillaListView):
         "status",
     ]
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.change_activity",
-                "own_permission": "horilla_activity.change_own_activity",
-                "owner_field": ["owner", "assigned_to"],
-                "attrs": """
-                            hx-get="{get_activity_edit_url}?new=true"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.change_activity",
+            "own_permission": "horilla_activity.change_own_activity",
+            "owner_field": ["owner", "assigned_to"],
+            "attrs": """
+                        hx-get="{get_activity_edit_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.delete_activity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.add_activity",
+            "attrs": """
+                            hx-get="{get_activity_edit_url}?duplicate=true"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.delete_activity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
-                        """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.add_activity",
-                "attrs": """
-                              hx-get="{get_activity_edit_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-
-        return actions
+        },
+    ]
 
 
 @method_decorator(
@@ -560,44 +552,36 @@ class TaskListView(LoginRequiredMixin, HorillaListView):
         """
         return self.get_main_url()
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.change_activity",
-                "own_permission": "horilla_activity.change_own_activity",
-                "owner_field": ["owner", "assigned_to"],
-                "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.delete_activity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.change_activity",
+            "own_permission": "horilla_activity.change_own_activity",
+            "owner_field": ["owner", "assigned_to"],
+            "attrs": """
+                        hx-get="{get_edit_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.delete_activity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -735,44 +719,36 @@ class MeetingListView(HorillaListView):
         """
         return self.get_main_url()
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.change_activity",
-                "own_permission": "horilla_activity.change_own_activity",
-                "owner_field": ["owner", "assigned_to"],
-                "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.delete_activity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.change_activity",
+            "own_permission": "horilla_activity.change_own_activity",
+            "owner_field": ["owner", "assigned_to"],
+            "attrs": """
+                        hx-get="{get_edit_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.delete_activity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -869,44 +845,36 @@ class CallListView(HorillaListView):
         """
         return self.get_main_url()
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.change_activity",
-                "own_permission": "horilla_activity.change_own_activity",
-                "owner_field": ["owner", "assigned_to"],
-                "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.delete_activity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.change_activity",
+            "own_permission": "horilla_activity.change_own_activity",
+            "owner_field": ["owner", "assigned_to"],
+            "attrs": """
+                        hx-get="{get_edit_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.delete_activity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -1176,44 +1144,36 @@ class EventListView(HorillaListView):
         """
         return self.get_search_url()
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        actions = [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.change_activity",
-                "own_permission": "horilla_activity.change_own_activity",
-                "owner_field": ["owner", "assigned_to"],
-                "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "horilla_activity.delete_activity",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.change_activity",
+            "own_permission": "horilla_activity.change_own_activity",
+            "owner_field": ["owner", "assigned_to"],
+            "attrs": """
+                        hx-get="{get_edit_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_activity.delete_activity",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()

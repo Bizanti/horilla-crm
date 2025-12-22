@@ -4488,18 +4488,7 @@ class HorillaNotesAttachementSectionView(DetailView):
 
     template_name = "notes_attachments.html"
     context_object_name = "obj"
-
-    @cached_property
-    def columns(self):
-        """
-        Define columns like in ListView
-        """
-        instance = HorillaAttachment()
-        return [
-            (instance._meta.get_field("title").verbose_name, "title"),
-            (instance._meta.get_field("created_by").verbose_name, "created_by"),
-            (instance._meta.get_field("created_at").verbose_name, "created_at"),
-        ]
+    columns = ["title", "created_by", "created_at"]
 
     def get_actions(self):
         """

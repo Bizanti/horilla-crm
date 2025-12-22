@@ -127,32 +127,25 @@ class LeadStageListView(LoginRequiredMixin, HorillaListView):
             }
 
     columns = ["order", "name", (_("Is Final Stage"), "is_final_col"), "probability"]
-
-    @cached_property
-    def actions(self):
-        """Define actions for each row in the list view"""
-        actions = []
-        if self.request.user.has_perm("leads.change_leadstatus"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.change_leadstatus",
+            "attrs": """
                         hx-get="{get_edit_url}?new=true"
                         hx-target="#modalBox"
                         hx-swap="innerHTML"
                         onclick="openModal()"
                         """,
-                },
-            )
-        if self.request.user.has_perm("leads.delete_leadstatus"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.delete_leadstatus",
+            "attrs": """
                     hx-post="{get_delete_url}"
                     hx-target="#deleteModeBox"
                     hx-swap="innerHTML"
@@ -160,9 +153,8 @@ class LeadStageListView(LoginRequiredMixin, HorillaListView):
                     hx-vals='{{"check_dependencies": "true"}}'
                     onclick="openDeleteModeModal()"
                 """,
-                }
-            )
-        return actions
+        },
+    ]
 
 
 @method_decorator(

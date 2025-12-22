@@ -121,42 +121,34 @@ class MailTemplateListView(LoginRequiredMixin, HorillaListView):
         return None
 
     columns = ["title", (_("Related Model"), "get_related_model")]
-
-    @cached_property
-    def actions(self):
-        """Get row actions based on user permissions"""
-        actions = []
-        if self.request.user.has_perm("horilla_mail.change_horillaemailconfiguration"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                            hx-get="{get_edit_url}"
-                            hx-target="#horillaModalBox"
-                            hx-swap="innerHTML"
-                            onclick="openhorillaModal()"
-                            """,
-                },
-            )
-        if self.request.user.has_perm("horilla_mail.delete_horillaemailconfiguration"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#modalBox"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_mail.change_horillaemailconfiguration",
+            "attrs": """
+                        hx-get="{get_edit_url}"
+                        hx-target="#horillaModalBox"
                         hx-swap="innerHTML"
-                        hx-trigger="click"
-                        hx-vals='{{"check_dependencies": "false"}}'
-                        onclick="openModal()"
-                    """,
-                }
-            )
-        return actions
+                        onclick="openhorillaModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_mail.delete_horillaemailconfiguration",
+            "attrs": """
+                    hx-post="{get_delete_url}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    hx-vals='{{"check_dependencies": "false"}}'
+                    onclick="openModal()"
+                """,
+        },
+    ]
 
     @cached_property
     def raw_attrs(self):

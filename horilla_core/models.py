@@ -642,6 +642,12 @@ class MultipleCurrency(HorillaCoreModel):
     def __str__(self):
         return str(self.currency)
 
+    def get_currency_code(self):
+        """
+        Return currency code
+        """
+        return self.currency
+
     def save(self, *args, **kwargs):
         """
         Fixed save method to prevent recursion

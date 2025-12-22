@@ -139,42 +139,35 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
             (_("Deleted At"), "deleted_at"),
         ]
 
-    @cached_property
-    def actions(self):
-        instance = self.model()
-        actions = []
-        if self.request.user.has_perm("horilla_core.change_recyclebin"):
-            actions.append(
-                {
-                    "action": "Restore",
-                    "icon": "fa-solid fa-undo",
-                    "icon_class": "fa-solid fa-undo w-4 h-4",
-                    "attrs": """
-                            hx-post="{get_restore_url}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            hx-trigger='confirmed'
-                            hx-on:click="hxConfirm(this,'Are you sure you want to restore this item?')"
-                            """,
-                },
-            )
-        if self.request.user.has_perm("horilla_core.delete_recyclebin"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#deleteModeBox"
-                        hx-swap="innerHTML"
-                        hx-trigger='confirmed'
-                        hx-on:click="hxConfirm(this,'Are you sure you want to delete this item?',
-                        'When deleting the item, its dependent data will be set to NULL or reassigned.')"
+    actions = [
+        {
+            "action": "Restore",
+            "icon": "fa-solid fa-undo",
+            "icon_class": "fa-solid fa-undo w-4 h-4",
+            "permission": "horilla_core.change_recyclebin",
+            "attrs": """
+                    hx-post="{get_restore_url}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    hx-trigger='confirmed'
+                    hx-on:click="hxConfirm(this,'Are you sure you want to restore this item?')"
                     """,
-                }
-            )
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_core.delete_recyclebin",
+            "attrs": """
+                hx-post="{get_delete_url}"
+                hx-target="#deleteModeBox"
+                hx-swap="innerHTML"
+                hx-trigger='confirmed'
+                hx-on:click="hxConfirm(this,'Are you sure you want to delete this item?',
+                'When deleting the item, its dependent data will be set to NULL or reassigned.')"
+            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

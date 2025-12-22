@@ -143,41 +143,34 @@ class ScoringRuleListView(LoginRequiredMixin, HorillaListView):
             }
         ]
 
-    @cached_property
-    def actions(self):
-        instance = self.model()
-        actions = []
-        if self.request.user.has_perm("leads.change_scoringrule"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-                },
-            )
-        if self.request.user.has_perm("leads.delete_scoringrule"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#deleteModeBox"
-                        hx-swap="innerHTML"
-                        hx-trigger="click"
-                        hx-vals='{{"check_dependencies": "true"}}'
-                        onclick="openDeleteModeModal()"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.change_scoringrule",
+            "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
                     """,
-                }
-            )
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.delete_scoringrule",
+            "attrs": """
+                hx-post="{get_delete_url}"
+                hx-target="#deleteModeBox"
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-vals='{{"check_dependencies": "true"}}'
+                onclick="openDeleteModeModal()"
+            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

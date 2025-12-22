@@ -110,41 +110,34 @@ class MailToLeadListView(LoginRequiredMixin, HorillaListView):
             (instance._meta.get_field("lead_owner").verbose_name, "lead_owner"),
         ]
 
-    @cached_property
-    def actions(self):
-        """Define actions for each row in the list view"""
-        actions = []
-        if self.request.user.has_perm("leads.change_emailtoleadconfig"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-get="{get_edit_url}?new=true"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
-                },
-            )
-        if self.request.user.has_perm("leads.delete_emailtoleadconfig"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                    hx-post="{get_delete_url}"
-                    hx-target="#deleteModeBox"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.change_emailtoleadconfig",
+            "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
                     hx-swap="innerHTML"
-                    hx-trigger="click"
-                    hx-vals='{{"check_dependencies": "true"}}'
-                    onclick="openDeleteModeModal()"
-                """,
-                }
-            )
-        return actions
+                    onclick="openModal()"
+                    """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.delete_emailtoleadconfig",
+            "attrs": """
+                hx-post="{get_delete_url}"
+                hx-target="#deleteModeBox"
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-vals='{{"check_dependencies": "true"}}'
+                onclick="openDeleteModeModal()"
+            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

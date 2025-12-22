@@ -156,69 +156,63 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
         "budget_cost",
     ]
 
-    @cached_property
-    def actions(self):
-        """
-        Function to return list of actions for each record in the list view
-        """
-        campaingn_permissions = {
-            "permission": "campaigns.change_campaign",
-            "own_permission": "campaigns.change_own_campaign",
-            "owner_field": "campaign_owner",
-        }
-        actions = [
-            {
-                **campaingn_permissions,
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_edit_campaign_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                **campaingn_permissions,
-                "action": "Change Owner",
-                "src": "assets/icons/a2.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_change_owner_url}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "campaigns.delete_campaign",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+    campaingn_permissions = {
+        "permission": "campaigns.change_campaign",
+        "own_permission": "campaigns.change_own_campaign",
+        "owner_field": "campaign_owner",
+    }
+    actions = [
+        {
+            **campaingn_permissions,
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_edit_campaign_url}?new=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "campaigns.add_campaign",
-                "attrs": """
-                              hx-get="{get_duplicate_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-        return actions
+        },
+        {
+            **campaingn_permissions,
+            "action": "Change Owner",
+            "src": "assets/icons/a2.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_change_owner_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "campaigns.delete_campaign",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "campaigns.add_campaign",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+    ]
 
     def no_record_add_button(self):
         """

@@ -171,68 +171,63 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
 
     bulk_update_fields = ["account_type", "account_owner", "account_source", "industry"]
 
-    @cached_property
-    def actions(self):
-        """Return available actions for the account if the user has the necessary permissions."""
-        acc_permissions = {
-            "permission": "accounts.change_account",
-            "own_permission": "accounts.change_own_account",
-            "owner_field": "account_owner",
-        }
-        actions = [
-            {
-                **acc_permissions,
-                "action": _("Edit"),
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                              hx-get="{get_edit_url}?new=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-            {
-                **acc_permissions,
-                "action": _("Change Owner"),
-                "src": "assets/icons/a2.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_change_owner_url}"
+    acc_permissions = {
+        "permission": "accounts.change_account",
+        "own_permission": "accounts.change_own_account",
+        "owner_field": "account_owner",
+    }
+    actions = [
+        {
+            **acc_permissions,
+            "action": _("Edit"),
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "accounts.delete_account",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+        },
+        {
+            **acc_permissions,
+            "action": _("Change Owner"),
+            "src": "assets/icons/a2.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_change_owner_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "accounts.add_account",
-                "attrs": """
-                              hx-get="{get_duplicate_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "accounts.delete_account",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "accounts.add_account",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

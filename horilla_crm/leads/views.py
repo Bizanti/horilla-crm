@@ -181,87 +181,75 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
                 "attrs": 'id="lead-create"',
             }
 
-    @cached_property
-    def actions(self):
-        """
-        Return actions if user is superuser, has global perms, or owns any lead in the queryset.
-        Actions are shown globally (for all rows) but backend views enforce ownership/perms.
-        """
-        query_params = {}
-        if "section" in self.request.GET:
-            query_params["section"] = self.request.GET.get("section")
-        query_string = urlencode(query_params)
-        lead_permission = {
-            "permission": "leads.change_lead",
-            "own_permission": "leads.change_own_lead",
-            "owner_field": "lead_owner",
-        }
-        actions = [
-            {
-                **lead_permission,
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_edit_url}?new=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                **lead_permission,
-                "action": "Change Owner",
-                "src": "assets/icons/a2.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_change_owner_url}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-            },
-            {
-                **lead_permission,
-                "action": "Convert",
-                "src": "assets/icons/a3.svg",
-                "img_class": "w-4 h-4",
-                "attrs": f"""
-                            hx-get="{{get_lead_convert_url}}?{query_string}"
-                            hx-target="#contentModalBox"
-                            hx-swap="innerHTML"
-                            onclick="openContentModal()"
-                            """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "leads.delete_lead",
-                "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#deleteModeBox"
+    lead_permission = {
+        "permission": "leads.change_lead",
+        "own_permission": "leads.change_own_lead",
+        "owner_field": "lead_owner",
+    }
+    actions = [
+        {
+            **lead_permission,
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_edit_url}?new=true"
+                        hx-target="#modalBox"
                         hx-swap="innerHTML"
-                        hx-trigger="click"
-                        hx-vals='{{"check_dependencies": "true"}}'
-                        onclick="openDeleteModeModal()"
-                    """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "leads.add_lead",
-                "attrs": """
-                              hx-get="{get_duplicate_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-
-        return actions
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            **lead_permission,
+            "action": "Change Owner",
+            "src": "assets/icons/a2.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_change_owner_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            **lead_permission,
+            "action": "Convert",
+            "src": "assets/icons/a3.svg",
+            "img_class": "w-4 h-4",
+            "attrs": f"""
+                        hx-get="{{get_lead_convert_url}}"
+                        hx-target="#contentModalBox"
+                        hx-swap="innerHTML"
+                        onclick="openContentModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.delete_lead",
+            "attrs": """
+                    hx-post="{get_delete_url}"
+                    hx-target="#deleteModeBox"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    hx-vals='{{"check_dependencies": "true"}}'
+                    onclick="openDeleteModeModal()"
+                """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.add_lead",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()

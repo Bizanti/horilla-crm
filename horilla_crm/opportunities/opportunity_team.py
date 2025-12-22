@@ -140,26 +140,23 @@ class OpportunityTeamListView(LoginRequiredMixin, HorillaListView):
 
     columns = ["team_name", "description"]
 
-    @cached_property
-    def actions(self):
-        """Defines action buttons for each opportunity team in the list view."""
-        return [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
                       hx-get="{get_edit_url}?new=true"
                       hx-target="#modalBox"
                       hx-swap="innerHTML"
                       onclick="openModal()"
                      """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
                 hx-post="{get_delete_url}"
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"
@@ -167,8 +164,8 @@ class OpportunityTeamListView(LoginRequiredMixin, HorillaListView):
                 hx-vals='{{"check_dependencies": "true"}}'
                 onclick="openDeleteModeModal()"
             """,
-            },
-        ]
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -382,26 +379,23 @@ class OpportunityTeamDetailListView(LoginRequiredMixin, HorillaListView):
 
     columns = ["user", "team_role", "opportunity_access_level"]
 
-    @cached_property
-    def actions(self):
-        """Defines action buttons for each team member in the list view."""
-        return [
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
                       hx-get="{get_edit_url}?new=true"
                       hx-target="#modalBox"
                       hx-swap="innerHTML"
                       onclick="openModal()"
                      """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
                 hx-post="{get_delete_url}"
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"
@@ -409,8 +403,8 @@ class OpportunityTeamDetailListView(LoginRequiredMixin, HorillaListView):
                 hx-vals='{{"check_dependencies": "true"}}'
                 onclick="openDeleteModeModal()"
             """,
-            },
-        ]
+        },
+    ]
 
     def get_queryset(self):
         obj_id = self.request.GET.get("obj")

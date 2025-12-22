@@ -158,28 +158,22 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
     columns = [
         (_("Users"), "get_avatar_with_name"),
     ]
-
-    @cached_property
-    def actions(self):
-        instance = self.model()
-        actions = []
-        if self.request.user.has_perm("horilla_core.delete_role"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                    hx-post="{get_delete_user_from_role}"
-                    hx-target="#deleteModeBox"
-                    hx-swap="innerHTML"
-                    hx-trigger="confirmed"
-                    hx-on:click="hxConfirm(this,'Are you sure you want to delete the user from this role?')"
-                    hx-on::after-request="$('#reloadMessagesButton').click();"
-                """,
-                }
-            )
-        return actions
+    actions = [
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_core.delete_role",
+            "attrs": """
+                hx-post="{get_delete_user_from_role}"
+                hx-target="#deleteModeBox"
+                hx-swap="innerHTML"
+                hx-trigger="confirmed"
+                hx-on:click="hxConfirm(this,'Are you sure you want to delete the user from this role?')"
+                hx-on::after-request="$('#reloadMessagesButton').click();"
+            """,
+        }
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

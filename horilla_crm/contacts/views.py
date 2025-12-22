@@ -138,68 +138,63 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
 
     columns = ["first_name", "last_name", "title", "email", "phone", "contact_source"]
 
-    @cached_property
-    def actions(self):
-        """Return available actions for the contact if the user has the necessary permissions."""
-        contact_permissions = {
-            "permission": "contacts.change_contact",
-            "own_permission": "contacts.change_own_contact",
-            "owner_field": "contact_owner",
-        }
-        actions = [
-            {
-                **contact_permissions,
-                "action": _("Edit"),
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                              hx-get="{get_edit_url}?new=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-            {
-                **contact_permissions,
-                "action": _("Change Owner"),
-                "src": "assets/icons/a2.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_change_owner_url}"
+    contact_permissions = {
+        "permission": "contacts.change_contact",
+        "own_permission": "contacts.change_own_contact",
+        "owner_field": "contact_owner",
+    }
+    actions = [
+        {
+            **contact_permissions,
+            "action": _("Edit"),
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "contacts.delete_contact",
-                "attrs": """
-                            hx-post="{get_delete_url}"
-                            hx-target="#deleteModeBox"
-                            hx-swap="innerHTML"
-                            hx-trigger="click"
-                            hx-vals='{{"check_dependencies": "true"}}'
-                            onclick="openDeleteModeModal()"
+        },
+        {
+            **contact_permissions,
+            "action": _("Change Owner"),
+            "src": "assets/icons/a2.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_change_owner_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
                         """,
-            },
-            {
-                "action": _("Duplicate"),
-                "src": "assets/icons/duplicate.svg",
-                "img_class": "w-4 h-4",
-                "permission": "contacts.add_contact",
-                "attrs": """
-                              hx-get="{get_duplicate_url}?duplicate=true"
-                              hx-target="#modalBox"
-                              hx-swap="innerHTML"
-                              onclick="openModal()"
-                             """,
-            },
-        ]
-
-        return actions
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "contacts.delete_contact",
+            "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+        },
+        {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "contacts.add_contact",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+    ]
 
     @cached_property
     def col_attrs(self):

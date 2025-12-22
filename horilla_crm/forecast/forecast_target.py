@@ -224,42 +224,32 @@ class ForecastTargetListView(LoginRequiredMixin, HorillaListView):
             (instance._meta.get_field("target_amount").verbose_name, "target_amount"),
         ]
 
-    @cached_property
-    def actions(self):
-        """
-        Return a list of available action buttons (Edit, Delete) based on user permissions.
-        """
-
-        actions = []
-        if self.request.user.has_perm("forecast.change_forecasttarget"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                            hx-get="{get_edit_url}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
-                },
-            )
-        if self.request.user.has_perm("forecast.delete_forecasttarget"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4",
+            "permission": "forecast.change_forecasttarget",
+            "attrs": """
+                        hx-get="{get_edit_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "forecast.delete_forecasttarget",
+            "attrs": """
                             hx-get="{get_delete_url}"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
-                },
-            )
-        return actions
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")

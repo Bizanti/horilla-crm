@@ -645,40 +645,34 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
             }
         ]
 
-    @cached_property
-    def actions(self):
-        actions = []
-        if self.request.user.has_perm("horilla_core.change_holiday"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4 flex gap-4",
-                    "attrs": """
-                    hx-get="{get_edit_url}"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    onclick="openModal()"
-                """,
-                },
-            )
-        if self.request.user.has_perm("horilla_core.delete_holiday"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                    hx-post="{get_delete_url}"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    hx-trigger="click"
-                    hx-vals='{{"check_dependencies": "false"}}'
-                    onclick="openModal()"
-                """,
-                },
-            )
-        return actions
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4 flex gap-4",
+            "permission": "horilla_core.change_holiday",
+            "attrs": """
+                hx-get="{get_edit_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal()"
+            """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_core.delete_holiday",
+            "attrs": """
+                hx-post="{get_delete_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-vals='{{"check_dependencies": "false"}}'
+                onclick="openModal()"
+            """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -781,47 +775,37 @@ class HolidayDetailView(LoginRequiredMixin, HorillaModalDetailView):
         (_("Recurring"), "is_recurring_holiday"),
     ]
 
-    @cached_property
-    def actions(self):
-        actions = []
-        if self.request.user.has_perm("horilla_core.change_holiday"):
-            actions.append(
-                [
-                    {
-                        "action": "Edit",
-                        "src": "assets/icons/edit_white.svg",
-                        "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
-                        "attrs": """
-                        class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed"
-                        hx-get="{get_edit_url}"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal();"
-                    """,
-                    },
-                ]
-            )
-        if self.request.user.has_perm("horilla_core.delete_holiday"):
-            actions.append(
-                [
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-3 h-3 flex gap-4 brightness-0 saturate-100",
-                        "image_style": "filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
-                        "attrs": """
-                                class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600"
-                                hx-post="{get_delete_url}"
-                                hx-target="#deleteModeBox"
-                                hx-swap="innerHTML"
-                                hx-trigger="confirmed"
-                                hx-on:click="hxConfirm(this,'Are you sure you want to delete this holiday?')"
-                                hx-on::after-request="closeDetailModal();"
-                            """,
-                    },
-                ]
-            )
-        return actions
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit_white.svg",
+            "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
+            "permission": "horilla_core.change_holiday",
+            "attrs": """
+                class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed"
+                hx-get="{get_edit_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal();"
+            """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-3 h-3 flex gap-4 brightness-0 saturate-100",
+            "image_style": "filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
+            "permission": "horilla_core.delete_holiday",
+            "attrs": """
+                    class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600"
+                    hx-post="{get_delete_url}"
+                    hx-target="#deleteModeBox"
+                    hx-swap="innerHTML"
+                    hx-trigger="confirmed"
+                    hx-on:click="hxConfirm(this,'Are you sure you want to delete this holiday?')"
+                    hx-on::after-request="closeDetailModal();"
+                """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -962,40 +946,34 @@ class BusinessHourListView(LoginRequiredMixin, HorillaListView):
             }
         ]
 
-    @cached_property
-    def actions(self):
-        actions = []
-        if self.request.user.has_perm("horilla_core.change_businesshour"):
-            actions.append(
-                {
-                    "action": "Edit",
-                    "src": "assets/icons/edit.svg",
-                    "img_class": "w-4 h-4 flex gap-4",
-                    "attrs": """
-                    hx-get="{get_edit_url}"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4 flex gap-4",
+            "permission": "horilla_core.change_businesshour",
+            "attrs": """
+                hx-get="{get_edit_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal()"
+            """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "horilla_core.delete_businesshour",
+            "attrs": """
+                    hx-post="{get_delete_url}"
                     hx-target="#modalBox"
                     hx-swap="innerHTML"
+                    hx-trigger="click"
+                    hx-vals='{{"check_dependencies": "false"}}'
                     onclick="openModal()"
                 """,
-                },
-            )
-        if self.request.user.has_perm("horilla_core.delete_businesshour"):
-            actions.append(
-                {
-                    "action": "Delete",
-                    "src": "assets/icons/a4.svg",
-                    "img_class": "w-4 h-4",
-                    "attrs": """
-                        hx-post="{get_delete_url}"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        hx-trigger="click"
-                        hx-vals='{{"check_dependencies": "false"}}'
-                        onclick="openModal()"
-                    """,
-                },
-            )
-        return actions
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -1079,47 +1057,37 @@ class BusinessHourDetailView(LoginRequiredMixin, HorillaModalDetailView):
         (_("Business Days"), "get_formatted_week_days"),
     ]
 
-    @cached_property
-    def actions(self):
-        actions = []
-        if self.request.user.has_perm("horilla_core.change_businesshour"):
-            actions.append(
-                [
-                    {
-                        "action": "Edit",
-                        "src": "assets/icons/edit_white.svg",
-                        "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
-                        "attrs": """
-                    class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed"
-                    hx-get="{get_edit_url}"
-                    hx-target="#modalBox"
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit_white.svg",
+            "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
+            "permission": "horilla_core.change_businesshour",
+            "attrs": """
+                class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed"
+                hx-get="{get_edit_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal();"
+            """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-3 h-3 flex gap-4 brightness-0 saturate-100",
+            "image_style": "filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
+            "permission": "horilla_core.delete_businesshour",
+            "attrs": """
+                    class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600"
+                    hx-post="{get_delete_url}"
+                    hx-target="#deleteModeBox"
                     hx-swap="innerHTML"
-                    onclick="openModal();"
-                """,
-                    },
-                ]
-            )
-        if self.request.user.has_perm("horilla_core.delete_businesshour"):
-            actions.append(
-                [
-                    {
-                        "action": "Delete",
-                        "src": "assets/icons/a4.svg",
-                        "img_class": "w-3 h-3 flex gap-4 brightness-0 saturate-100",
-                        "image_style": "filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
-                        "attrs": """
-                                class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600"
-                                hx-post="{get_delete_url}"
-                                hx-target="#deleteModeBox"
-                                hx-swap="innerHTML"
-                                hx-trigger="confirmed"
-                                hx-on:click="hxConfirm(this,'Are you sure you want to delete this holiday?')"
-                                hx-on::after-request="closeDetailModal();"
-                            """,
-                    },
-                ]
-            )
-        return actions
+                    hx-trigger="confirmed"
+                    hx-on:click="hxConfirm(this,'Are you sure you want to delete this holiday?')"
+                    hx-on::after-request="closeDetailModal();"
+                    """,
+        },
+    ]
 
 
 @method_decorator(htmx_required, name="dispatch")
