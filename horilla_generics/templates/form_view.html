@@ -47,7 +47,7 @@
                 {% for i in total_steps|get_range %}
                     <li class="{% if i <= current_step %}active{% endif %}">
                         <div class="sec {% if i >= 2 and i != total_steps %} flex [flex-flow:column] items-center{% elif i == total_steps %}flex [flex-flow:column] items-end {% endif %}">
-                            <span class="bg-[#e54f38] h-[30px] w-[30px] flex items-center justify-center rounded-[50px] text-[white]">{{ i }}</span>
+                            <span class="bg-primary-600 h-[30px] w-[30px] flex items-center justify-center rounded-[50px] text-[white]">{{ i }}</span>
                             <p class="text-[.8rem] mb-0">{{ step_titles|get_item:i }}</p>
                         </div>
                     </li>
@@ -224,7 +224,7 @@
                 <button type="button" name="previous" value="previous" hx-post="{{ form_url }}"
                         hx-target="#modalBox"
                         hx-swap="innerHTML"
-                        class="text-sm border-[1px] border-[solid] hover:border-[#9b210f] hover:bg-secondary-600 rounded-[5px] px-4 py-2 text-[#e54f38] flex gap-3 btn-with-icon border-[#e54f38] transition-[.3s] hover:text-[white]"
+                        class="text-sm border-[1px] border-[solid] hover:bg-secondary-600 rounded-[5px] px-4 py-2 text-primary-600 flex gap-3 btn-with-icon border-primary-600 transition-[.3s] hover:text-[white]"
                         >
                         {% trans "Previous" %}
                 </button>

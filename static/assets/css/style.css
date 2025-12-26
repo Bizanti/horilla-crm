@@ -30,10 +30,6 @@
   bottom: 0;
 }
 
-.progress li.active .sec::before {
-  background-color: #e54f38;
-}
-
 .progress li span {
   position: relative;
   z-index: 1;
@@ -253,10 +249,11 @@
   transition: 0.3s;
 }
 
-.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+/* Comment this line for dynamic theme */
+/* .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
   background-color: #e54f3817 !important;
   color: #e54f38 !important;
-}
+} */
 
 .select2-results__option {
   font-size: 0.85rem !important;
@@ -288,12 +285,6 @@
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
   font-size: 0.7rem;
-}
-
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
-  background-color: #e54f38 !important;
-  color: white;
-  border: unset !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -367,7 +358,8 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  background-color: #e54f38 !important;
+  /* Comment this line for dynamic theme */
+  /* background-color: #e54f38 !important; */
   color: white;
   border: none !important;
   margin: 2px !important;
@@ -383,9 +375,10 @@
   padding: 0 5px !important;
 }
 
-input[type="checkbox"] {
+/* Comment this line for dynamic theme */
+/* input[type="checkbox"] {
   color: #e54f38;
-}
+} */
 
 /* table button img{
   filter: brightness(0);
@@ -873,7 +866,7 @@ canvas {
   font-size: 18px;
   line-height: 1;
   color: #ffffff;
-  background: #e54f38;
+  /* background: #e54f38; Comment this line for dynamic theme */
   border-radius: 50%;
   transform: rotate(0);
   transition: all 0.5s ease;
@@ -902,7 +895,7 @@ canvas {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #e54f38;
+  /* background: #e54f38; Comment this line for dynamic theme */
   cursor: pointer;
   position: absolute;
   transition: all 0.5s ease;
@@ -1630,12 +1623,15 @@ input[type="radio"] {
     font-size: 15px;
   }
 }
-.tablebtn button:first-child{
+
+.tablebtn button:first-child {
   border-radius: 5px 0 0 5px;
 }
-.tablebtn button:last-child{
+
+.tablebtn button:last-child {
   border-radius: 0 5px 5px 0;
 }
+
 .tablebtn button:only-child {
   border-radius: 5px;
 }

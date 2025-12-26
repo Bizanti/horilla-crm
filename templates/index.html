@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ TITLE }}</title>
 
+    <!-- Cache theme variables -->
+    {% with theme=request.active_company.companytheme_set.first.theme %}
+
     <!-- Theme Initialization (Blocking) -->
     <script>
         (function () {
@@ -25,14 +28,69 @@
 
     <!-- Core Scripts -->
     <script src="{% static 'assets/js/tailwind/tailwind.js' %}"></script>
-    <script src="{% static 'assets/js/tailwind.config.js' %}"></script>
+    <script>
+        window.tailwind.config = {
+            theme: {
+                colors: {
+                    white: '#FFFFFF',
+                    primary: {
+                        50:  '{{ theme.primary_50  | default:"#f6f6f6" }}',
+                        100: '{{ theme.primary_100 | default:"#FFF5F1" }}',
+                        200: '{{ theme.primary_200 | default:"#FEF6F5" }}',
+                        300: '{{ theme.primary_300 | default:"#FCEDEB" }}',
+                        400: '{{ theme.primary_400 | default:"#FBE5E1" }}',
+                        500: '{{ theme.primary_500 | default:"#F7C8C1" }}',
+                        600: '{{ theme.primary_600 | default:"#E54F38" }}',
+                        700: '{{ theme.primary_700 | default:"#ce4732" }}',
+                        800: '{{ theme.primary_800 | default:"#AC3B2A" }}',
+                        900: '{{ theme.primary_900 | default:"#672419" }}',
+                    },
+                    dark: {
+                        50:  '{{ theme.dark_50  | default:"#E6E6E6" }}',
+                        100: '{{ theme.dark_100 | default:"#A8A8A8" }}',
+                        200: '{{ theme.dark_200 | default:"#515151" }}',
+                        300: '{{ theme.dark_300 | default:"#501C14" }}',
+                        400: '{{ theme.dark_400 | default:"#64748B" }}',
+                        500: '{{ theme.dark_500 | default:"#190906" }}',
+                        600: '{{ theme.dark_600 | default:"#000000" }}',
+                    },
+                    secondary: {
+                        50:  '{{ theme.secondary_50  | default:"#f8fafc" }}',
+                        100: '{{ theme.secondary_100 | default:"#f1f5f9" }}',
+                        200: '{{ theme.secondary_200 | default:"#e2e8f0" }}',
+                        300: '{{ theme.secondary_300 | default:"#cbd5e1" }}',
+                        400: '{{ theme.secondary_400 | default:"#FBE5E1" }}',
+                        500: '{{ theme.secondary_500 | default:"#F7C8C1" }}',
+                        600: '{{ theme.secondary_600 | default:"#E54F38" }}',
+                        700: '{{ theme.secondary_700 | default:"#334155" }}',
+                        800: '{{ theme.secondary_800 | default:"#1e293b" }}',
+                        900: '{{ theme.secondary_900 | default:"#0f172a" }}',
+                    },
+                    success: { light: "#86efac", DEFAULT: "#22c55e", dark: "#15803d" },
+                    warning: { light: "#fde68a", DEFAULT: "#f59e0b", dark: "#b45309" },
+                    danger: { light: "#fca5a5", DEFAULT: "#ef4444", dark: "#b91c1c" },
+                },
+                extend: {
+                    boxShadow: { card: "0px 0px 10px rgba(0, 0, 0, 0.05)" },
+                    spacing: { 18: "4.5rem", 72: "18rem", 84: "21rem", 96: "24rem" },
+                    borderRadius: { "4xl": "2rem", "5xl": "2.5rem" },
+                    fontSize: { xxs: "0.625rem" },
+                    height: { "screen-50": "50vh", "screen-75": "75vh" },
+                },
+            },
+        };
+    </script>
+    <script>
+        !function(){const e='{{ theme.primary_800|default:"#AC3B2A" }}',d='#AC3B2A';if(e.toLowerCase()===d.toLowerCase()){document.documentElement.style.setProperty('--svg-filter','none');document.documentElement.style.setProperty('--svg-hue','0deg')}else{const t=parseInt(d.substr(1,2),16)/255,r=parseInt(d.substr(3,2),16)/255,n=parseInt(d.substr(5,2),16)/255,a=Math.max(t,r,n),s=Math.min(t,r,n);let o=0;if(a!==s){const e=a-s;switch(a){case t:o=((r-n)/e+(r<n?6:0))/6;break;case r:o=((n-t)/e+2)/6;break;case n:o=((t-r)/e+4)/6}}const dh=Math.round(360*o);const t2=parseInt(e.substr(1,2),16)/255,r2=parseInt(e.substr(3,2),16)/255,n2=parseInt(e.substr(5,2),16)/255,a2=Math.max(t2,r2,n2),s2=Math.min(t2,r2,n2);let o2=0;if(a2!==s2){const e2=a2-s2;switch(a2){case t2:o2=((r2-n2)/e2+(r2<n2?6:0))/6;break;case r2:o2=((n2-t2)/e2+2)/6;break;case n2:o2=((t2-r2)/e2+4)/6}}const ch=Math.round(360*o2);document.documentElement.style.setProperty('--svg-filter','contrast(1.1) saturate(1.3) hue-rotate('+(ch-dh)+'deg)');document.documentElement.style.setProperty('--svg-hue',(ch-dh)+'deg')}}();
+    </script>
+
     <script src="{% static 'assets/js/htmx/htmx.min.js' %}"></script>
     <script src="{% static 'assets/js/cloudflare/htmx.min.js' %}"></script>
     <script src="{% static 'assets/js/cloudflare/jquery.min.js' %}"></script>
     <script src="{% static 'assets/js/jquery/jquery-3.7.1.js' %}"></script>
     <script src="{% static 'assets/js/hyperscript/hyperscript.min.js' %}"></script>
 
-    <!-- UI Library Scripts -->
+    <!-- UI Libraries (Defer Non-Critical) -->
     <script src="{% static 'assets/js/flowbite/flowbite.min.js' %}"></script>
     <script src="{% static 'assets/js/sweetalert2.js' %}"></script>
     <script src="{% static 'assets/js/select2.min.js' %}"></script>
@@ -54,9 +112,23 @@
     <link rel="stylesheet" href="{% static 'assets/css/animate.min.css' %}" />
     <link rel="stylesheet" href="{% static 'assets/css/summernote/summernote-lite.min.css' %}" />
 
+    <!-- Dynamic Styles -->
+    <style>
+        input[type="checkbox"]{color:{{ theme.primary_600|default:"#E54F38" }}}
+        .progress li.active .sec::before{background-color:{{ theme.primary_600|default:"#E54F38" }}}
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable{background-color:{{ theme.primary_100|default:"#e54f3817" }}!important;color:{{ theme.primary_600|default:"#E54F38" }}!important}
+        .select2-container--default .select2-selection--multiple .select2-selection__choice{background-color:{{ theme.primary_600|default:"#E54F38" }}}
+        .radio-group input[type="radio"]:checked+.custom-radio::after{background-color:{{ theme.primary_600|default:"#E54F38" }}}
+        .dropdown-content a:hover{color:{{ theme.primary_600|default:"#E54F38" }}}
+        .dropdown-content{border-color:{{ theme.primary_400|default:"#FBE5E1" }}}
+        .core-module{background:linear-gradient(135deg,{{ theme.primary_600|default:"#E54F38" }} 0%,{{ theme.primary_800|default:"#C5311B" }} 100%)}
+    </style>
+
+    {% endwith %}
+
     {% block extra_css %}{% endblock extra_css %}
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts (Preconnect) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="{% static 'assets/css/googlefonts/css2.css' %}" />
@@ -66,12 +138,7 @@
 <body class="bg-secondary-50 font-[Inter,_sans-serif]">
     <!-- Apply Dark Mode to Body -->
     <script>
-        (function () {
-            const theme = localStorage.getItem("theme");
-            if (theme === "dark") {
-                document.body.classList.add("dark");
-            }
-        })();
+        !function(){const t=localStorage.getItem("theme");"dark"===t&&document.body.classList.add("dark")}();
     </script>
 
     <!-- Main Content Wrapper -->
@@ -108,7 +175,7 @@
         });
     </script>
 
-    <!-- Global Scripts -->
+    <!-- Global Scripts (Defer) -->
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'assets/js/global.js' %}"></script>
     <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
