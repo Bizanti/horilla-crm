@@ -1,5 +1,6 @@
 {% load static i18n %}
 {% load reports_tags %}
+
 <div class="flex gap-2 items-center filter-row" data-field-name="{{ field_name }}">
     <div class="w-20 text-xs px-2 py-1 rounded-md border border-[#d9d9d9]">
         <span>{{ original_field_name|get_field_verbose_name:report.model_class }}</span>
