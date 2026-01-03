@@ -2,13 +2,13 @@
 <div class="flex rounded-md overflow-hidden">
     {% has_perm "horilla_reports.change_reportfolder" as can_change_report_folder %}
     {% if can_change_report_folder   or instance.report_folder_owner == request.user %}
-        <button class="w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center"
+        <button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-post="{% url 'horilla_reports:mark_folder_favourite' instance.id %}?{{ request.GET.urlencode}}"
             hx-swap="outerHTML"
             hx-trigger="click">
             <i class="fa-solid fa-star {% if instance.is_favourite %}text-primary-600{% else %}text-primary-300{% endif %}"></i>
         </button>
-        <button class="w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center"
+        <button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-get="{% url 'horilla_reports:update_folder' instance.id %}?{{ request.GET.urlencode}}"
             hx-target="#modalBox"
             hx-swap="innerHTML"
@@ -18,7 +18,7 @@
     {% endif %}
     {% has_perm "horilla_reports.delete_reportfolder" as can_delete_report_folder %}
     {% if can_delete_report_folder %}
-        <button class="w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center"
+        <button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-post="{% url 'horilla_reports:delete_folder' instance.id %}?{{ request.GET.urlencode}}"
             hx-target="#deleteModeBox"
             hx-swap="innerHTML"

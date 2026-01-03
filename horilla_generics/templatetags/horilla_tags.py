@@ -194,7 +194,7 @@ def render_action_button(action, obj):
 
         return mark_safe(
             f"""
-                <button {attrs} class='group relative w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center'>
+                <button {attrs} class='group relative w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center'>
                     <img src="{static_url}" alt="{tooltip}" width="16" class="{image_class}" />
                     <div class="min-w-max z-40 absolute h-auto py-[3px] px-[15px] right-[40px] top-0 bg-[#000000] text-[.7rem] rounded-[5px] text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         <p>{tooltip}</p>
@@ -208,7 +208,7 @@ def render_action_button(action, obj):
         icon_class = action.get("icon_class", "")
         button_class = action.get("class", "")
         return mark_safe(
-            f'<button class="w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center" {attrs} title="{tooltip}">'
+            f'<button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center" {attrs} title="{tooltip}">'
             f'<i class="{icon_name} {icon_class}"></i>'
             f"</button>"
         )

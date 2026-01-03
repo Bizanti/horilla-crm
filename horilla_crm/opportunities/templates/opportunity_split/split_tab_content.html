@@ -99,7 +99,7 @@
                             {% if split.user.id == opportunity.owner.id %}
                                 <div class="flex tablebtn">
                                     <button type="button"
-                                            class="rounded-md group relative w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] cursor-not-allowed items-center"
+                                            class="rounded-md group relative w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] cursor-not-allowed items-center"
                                             disabled
                                            >
                                         <img src="{% static "assets/icons/a4.svg" %}" alt="{% trans 'Delete' %}" width="16" class="opacity-50">
@@ -111,7 +111,7 @@
                             {% else %}
                                 <div class="flex tablebtn">
                                     <button type="button"
-                                            class="rounded-md group relative w-10 h-7 bg-[#f0f0f0] flex-1 flex justify-center border-r border-r-[white] hover:bg-[#e0e0e0] transition duration-300 items-center"
+                                            class="rounded-md group relative w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
                                             hx-delete="{% url 'opportunities:delete_split_row' split.id %}"
                                             hx-target="#split-form-{{ split_type.id }}"
                                             hx-swap="outerHTML"
