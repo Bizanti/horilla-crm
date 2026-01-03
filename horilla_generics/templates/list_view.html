@@ -160,7 +160,11 @@
 
                         {% if bulk_delete_enabled %}
                             {% has_perm app_label|add:".delete_"|add:model_name|lower as has_delete_perm %}
-                            {% if has_delete_perm %}
+                            {% has_perm app_label|add:".delete_own_"|add:model_name|lower as has_delete_own_perm %}
+                            {% has_perm app_label|add:".view_"|add:model_name|lower as has_view_perm %}
+                            {% has_perm app_label|add:".view_own_"|add:model_name|lower as has_view_own_perm %}
+
+                            {% if has_view_perm and has_delete_perm or has_delete_own_perm and has_view_own_perm %}
                                 <button
                                     class="text-xs px-4 py-2 bg-[#c0392b26] rounded-md hover:bg-[#c0392b] transition duration-300 text-[#c0392b]  border border-[#c0392b42] hover:text-[white]"
                                     hx-post="{{ search_url }}"
