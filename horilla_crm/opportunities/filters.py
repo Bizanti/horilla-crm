@@ -6,6 +6,7 @@ using HorillaFilterSet. Each filter class allows filtering all fields
 (except 'additional_info') and provides specific search fields.
 """
 
+from horilla_core.mixins import OwnerFiltersetMixin
 from horilla_crm.opportunities.models import (
     BigDealAlert,
     DefaultOpportunityMember,
@@ -16,7 +17,7 @@ from horilla_crm.opportunities.models import (
 from horilla_generics.filters import HorillaFilterSet
 
 
-class OpportunityFilter(HorillaFilterSet):
+class OpportunityFilter(OwnerFiltersetMixin, HorillaFilterSet):
     """Filter for Opportunity model with search on 'name'."""
 
     class Meta:

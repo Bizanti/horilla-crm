@@ -2,12 +2,13 @@
 Defines filters for the Campaign model, enabling search and exclusion of specific fields.
 """
 
+from horilla_core.mixins import OwnerFiltersetMixin
 from horilla_generics.filters import HorillaFilterSet
 
 from .models import Campaign
 
 
-class CampaignFilter(HorillaFilterSet):
+class CampaignFilter(OwnerFiltersetMixin, HorillaFilterSet):
     """
     Campaign Filter
     """
