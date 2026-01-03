@@ -6,7 +6,7 @@ models.
 Features implemented in this module include:
 - Automatic fiscal year configuration when a company is created or updated.
 - Default currency initialization and handling of multi-currency configurations.
-- Custom permission creation during migrations (e.g., 'can_import', 'view_own').
+- Custom permission creation during migrations.
 - Helper utilities to dynamically discover models and build filter queries.
 
 """
@@ -37,6 +37,8 @@ logger = logging.getLogger(__name__)
 
 company_currency_changed = Signal()
 company_created = Signal()
+pre_logout_signal = Signal()
+pre_login_render_signal = Signal()
 
 
 @receiver(post_save, sender="horilla_core.Company")
@@ -102,7 +104,7 @@ def create_default_currency(sender, instance, created, **kwargs):
 
 def add_custom_permissions(sender, **kwargs):
     """
-    Add custom permissions ('can_import' and 'view_own') for models
+    Add custom permissions for models
     that define default Django permissions.
     """
     for model in apps.get_models():
@@ -114,11 +116,6 @@ def add_custom_permissions(sender, **kwargs):
 
         content_type = ContentType.objects.get_for_model(model)
 
-        add_import = (
-            "can_import" in opts.default_permissions
-            or opts.default_permissions == ("add", "change", "delete", "view")
-        )
-
         add_view_own = (
             "view_own" in opts.default_permissions
             or opts.default_permissions == ("add", "change", "delete", "view")
@@ -129,9 +126,17 @@ def add_custom_permissions(sender, **kwargs):
             or opts.default_permissions == ("add", "change", "delete", "view")
         )
 
+        add_create_own = (
+            "create_own" in opts.default_permissions
+            or opts.default_permissions == ("add", "change", "delete", "view")
+        )
+
+        add_delete_own = (
+            "delete_own" in opts.default_permissions
+            or opts.default_permissions == ("add", "change", "delete", "view")
+        )
+
         custom_perms = []
-        if add_import:
-            custom_perms.append(("can_import", f"Can import {opts.verbose_name_raw}"))
 
         if add_view_own:
             custom_perms.append(("view_own", f"Can view own {opts.verbose_name_raw}"))
@@ -139,6 +144,14 @@ def add_custom_permissions(sender, **kwargs):
         if add_change_own:
             custom_perms.append(
                 ("change_own", f"Can change own {opts.verbose_name_raw}")
+            )
+
+        if add_create_own:
+            custom_perms.append(("add_own", f"Can create own {opts.verbose_name_raw}"))
+
+        if add_delete_own:
+            custom_perms.append(
+                ("delete_own", f"Can delete own {opts.verbose_name_raw}")
             )
 
         for code_prefix, name in custom_perms:

@@ -2,6 +2,7 @@
 A generic class-based view for rendering the home page.
 """
 
+import json
 import logging
 import os
 from datetime import datetime, timedelta
@@ -64,7 +65,7 @@ from rest_framework_simplejwt.tokens import UntypedToken
 
 from horilla_core.decorators import htmx_required, permission_required_or_denied
 
-from .signals import company_created
+from .signals import company_created, pre_login_render_signal, pre_logout_signal
 
 
 def is_jwt_token_valid(auth_header):
@@ -167,6 +168,7 @@ class SaveActiveTabView(LoginRequiredMixin, View):
 
 
 class LoginUserView(View):
+
     def get(self, request):
         """
         Render login page with an optional 'next' param preserved.
@@ -187,6 +189,10 @@ class LoginUserView(View):
             "initialize_database": initialize_database,
             "show_forgot_password": show_forgot_password,
         }
+
+        responses = pre_login_render_signal.send(
+            sender=self.__class__, request=request, context=context
+        )
 
         return render(request, "login.html", context=context)
 
@@ -216,7 +222,6 @@ class LoginUserView(View):
                 request, _("Invalid credentials. Please check and try again.")
             )
             return redirect(reverse_lazy("horilla_core:login") + f"?next={next_url}")
-            # return render(request, "login.html", {"next": next_url})
 
         if not user.is_active:
             messages.warning(
@@ -240,28 +245,51 @@ class LoginUserView(View):
 class LogoutView(View):
     """
     Class-based view to logout the user and clear local storage.
+    All preservation logic is handled by signal receivers.
     """
 
     def get(self, request, *args, **kwargs):
+        # Collect data from all registered signal receivers
+        storage_data = {}
+
+        if request.user.is_authenticated:
+            responses = pre_logout_signal.send(sender=self.__class__, request=request)
+
+            for receiver, response in responses:
+                if response and isinstance(response, tuple) and len(response) == 2:
+                    storage_key, data = response
+                    if storage_key and data:
+                        storage_data[storage_key] = data
+
         if request.user.is_authenticated:
             logout(request)
-        response = HttpResponse()
-        response.content = """
-            <script>
-                // Save theme before clearing localStorage
-                const theme = localStorage.getItem('theme');
 
-                // Clear everything
-                localStorage.clear();
+        storage_data_json = json.dumps(storage_data) if storage_data else "{}"
 
-                // Restore theme if it existed
-                if (theme !== null) {
-                    localStorage.setItem('theme', theme);
-                }
-            </script>
+        script_content = f"""
+        <script>
+            // Save theme mode before clearing (always preserved)
+            const theme = localStorage.getItem('theme');
 
-            <meta http-equiv="refresh" content="0;url=/login">
+            // Clear everything
+            localStorage.clear();
+
+            // Always restore theme mode if it existed
+            if (theme !== null) {{
+                localStorage.setItem('theme', theme);
+            }}
+
+            const storageData = {storage_data_json};
+            for (const [key, value] of Object.entries(storageData)) {{
+                localStorage.setItem(key, JSON.stringify(value));
+            }}
+        </script>
+
+        <meta http-equiv="refresh" content="0;url=/login">
         """
+
+        response = HttpResponse()
+        response.content = script_content
         return response
 
 
