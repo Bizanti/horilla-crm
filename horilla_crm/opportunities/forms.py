@@ -67,7 +67,7 @@ class OpportunityFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["updated_by"].required = False
 
 
-class OpportunitySingleForm(HorillaModelForm):
+class OpportunitySingleForm(OwnerQuerysetMixin, HorillaModelForm):
     """
     Custom form for opportunity to add HTMX attributes
     Inherits from HorillaModelForm to preserve all existing behavior.

@@ -68,7 +68,7 @@ class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
                 self.initial["is_partner"] = self.instance.is_partner
 
 
-class AccountSingleForm(HorillaModelForm):
+class AccountSingleForm(OwnerQuerysetMixin, HorillaModelForm):
     """
     Custom form for Lead to add HTMX attributes
     Inherits from HorillaModelForm to preserve all existing behavior.

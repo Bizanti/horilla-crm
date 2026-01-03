@@ -58,7 +58,7 @@ class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["is_primary"].required = False
 
 
-class ContactSingleForm(HorillaModelForm):
+class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
     """
     Custom form for Contact to add HTMX attributes
     Inherits from HorillaModelForm to preserve all existing behavior.
