@@ -5,28 +5,30 @@ services:
       dockerfile: Dockerfile
     container_name: horilla_app
     restart: always
-    # Comando vital: Espera a la DB, instala Gunicorn/Whitenoise (para producción), migra, colecta estáticos y arranca.
+    # Comando ajustado: Instala dependencias -> Espera 5s extra -> Migra -> Arranca
     command: >
-      sh -c "pip install gunicorn whitenoise &&
+      sh -c "pip install gunicorn whitenoise psycopg2-binary &&
+             echo 'Esperando a la DB...' &&
+             sleep 5 &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn horilla.wsgi:application --bind 0.0.0.0:8000"
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - ALLOWED_HOSTS=*
-      - DB_ENGINE=django.db.backends.postgresql_psycopg2
+      - DB_ENGINE=django.db.backends.postgresql
       - DB_NAME=${POSTGRES_DB:-horilla}
       - DB_USER=${POSTGRES_USER:-horilla}
       - DB_PASSWORD=${POSTGRES_PASSWORD:-securepassword}
       - DB_HOST=db
       - DB_PORT=5432
-      # Configuración para servir archivos estáticos con Whitenoise (inyectado arriba)
-      - USE_WHITENOISE=True 
+      - USE_WHITENOISE=True
     volumes:
       - horilla_static:/app/static
       - horilla_media:/app/media
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - horilla_net
     expose:
@@ -46,9 +48,9 @@ services:
       - horilla_net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-horilla}"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
 networks:
   horilla_net:
