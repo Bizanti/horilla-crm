@@ -5,14 +5,14 @@ services:
       dockerfile: Dockerfile
     container_name: horilla_app
     restart: always
-    # Comando ajustado: Instala dependencias -> Espera 5s extra -> Migra -> Arranca
+    # CAMBIO IMPORTANTE ABAJO: Usamos 'python -m gunicorn' para evitar el error de ruta
     command: >
       sh -c "pip install gunicorn whitenoise psycopg2-binary &&
              echo 'Esperando a la DB...' &&
              sleep 5 &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn horilla.wsgi:application --bind 0.0.0.0:8000"
+             python -m gunicorn horilla.wsgi:application --bind 0.0.0.0:8000"
     environment:
       - DEBUG=True
       - ALLOWED_HOSTS=*
