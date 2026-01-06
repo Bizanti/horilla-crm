@@ -5,9 +5,10 @@ services:
       dockerfile: Dockerfile
     container_name: horilla_app
     restart: always
-    # CAMBIO IMPORTANTE ABAJO: Usamos 'python -m gunicorn' para evitar el error de ruta
+    # COMANDO MAGICO: Inyectamos la configuración CSRF si no existe, y luego arrancamos.
     command: >
       sh -c "pip install gunicorn whitenoise psycopg2-binary &&
+             grep -q 'CSRF_TRUSTED_ORIGINS = os.getenv' horilla/settings.py || echo \"import os; CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')\" >> horilla/settings.py &&
              echo 'Esperando a la DB...' &&
              sleep 5 &&
              python manage.py migrate &&
@@ -23,6 +24,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - USE_WHITENOISE=True
+      # Esta variable la tomará del entorno de Coolify que configuraste en el Paso 1
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
     volumes:
       - horilla_static:/app/static
       - horilla_media:/app/media
