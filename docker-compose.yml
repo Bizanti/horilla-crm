@@ -1,45 +1,60 @@
 services:
   web:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-      - staticfiles:/app/staticfiles
-      - media:/app/media
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: horilla_app
+    restart: always
+    # Comando vital: Espera a la DB, instala Gunicorn/Whitenoise (para producción), migra, colecta estáticos y arranca.
+    command: >
+      sh -c "pip install gunicorn whitenoise &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn horilla.wsgi:application --bind 0.0.0.0:8000"
     environment:
-      - DEBUG=1
-      - SECRET_KEY=dev-secret-key
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - CSRF_TRUSTED_ORIGINS=http://localhost:8000
-      - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
+      - DEBUG=False
+      - ALLOWED_HOSTS=*
+      - DB_ENGINE=django.db.backends.postgresql_psycopg2
+      - DB_NAME=${POSTGRES_DB:-horilla}
+      - DB_USER=${POSTGRES_USER:-horilla}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-securepassword}
+      - DB_HOST=db
+      - DB_PORT=5432
+      # Configuración para servir archivos estáticos con Whitenoise (inyectado arriba)
+      - USE_WHITENOISE=True 
+    volumes:
+      - horilla_static:/app/static
+      - horilla_media:/app/media
     depends_on:
       - db
+    networks:
+      - horilla_net
+    expose:
+      - "8000"
 
   db:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
+    container_name: horilla_db
+    restart: always
     environment:
-      POSTGRES_DB: horilla_db
-      POSTGRES_USER: horilla_user
-      POSTGRES_PASSWORD: horilla_pass
+      - POSTGRES_DB=${POSTGRES_DB:-horilla}
+      - POSTGRES_USER=${POSTGRES_USER:-horilla}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-securepassword}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - horilla_db_data:/var/lib/postgresql/data
+    networks:
+      - horilla_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-horilla}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - staticfiles:/static:ro
-      - media:/media:ro
-      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - web
-    profiles: ["production"]
+networks:
+  horilla_net:
+    driver: bridge
 
 volumes:
-  staticfiles:
-  media:
-  postgres_data:
+  horilla_db_data:
+  horilla_static:
+  horilla_media:
